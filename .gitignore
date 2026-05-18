@@ -1,0 +1,24 @@
+# STM32CubeIDE generated outputs
+Debug/
+Release/
+*.elf
+*.bin
+*.hex
+*.map
+*.list
+*.o
+*.d
+*.su
+
+# Agent/tool working files
+.hermes/
+.omx/
+.omc/
+
+# Local temp/backup files
+*.bak*
+*.__tmp
+*.tmp
+~$*
+Thumbs.db
+.DS_Store
