@@ -17,6 +17,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -203,26 +204,35 @@ private fun ConfigEditDialog(config: ConfigEdit, onDismiss: () -> Unit, onApply:
                 if (config.allowTextInput) {
                     Spacer(Modifier.height(10.dp))
                     if (config.decimalScale > 1) {
-                        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Top) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.Bottom,
+                        ) {
                             OutlinedTextField(
                                 value = intText,
                                 onValueChange = { input ->
                                     intText = input.filterIndexed { index, ch -> ch.isDigit() || (ch == '-' && index == 0 && config.min < 0) }
                                 },
-                                modifier = Modifier.weight(1f),
+                                modifier = Modifier.width(92.dp),
                                 singleLine = true,
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                label = { Text("Integer") },
+                                textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.End, fontSize = 20.sp),
                                 isError = validValue == null,
                             )
-                            Text(".", modifier = Modifier.padding(horizontal = 8.dp, vertical = 18.dp), fontSize = 24.sp, fontWeight = FontWeight.W700)
+                            Text(
+                                ".",
+                                modifier = Modifier.padding(start = 6.dp, end = 6.dp, bottom = 8.dp),
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.W700,
+                            )
                             OutlinedTextField(
                                 value = fracText,
                                 onValueChange = { input -> fracText = input.filter { it.isDigit() }.take(2) },
-                                modifier = Modifier.weight(1f),
+                                modifier = Modifier.width(76.dp),
                                 singleLine = true,
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                label = { Text("Decimal") },
+                                textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Start, fontSize = 20.sp),
                                 isError = validValue == null,
                             )
                         }
