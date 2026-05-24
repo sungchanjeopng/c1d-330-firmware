@@ -90,16 +90,16 @@ static void DpMSRCal_UdtAutoGainGuide(void)
 	switch(lang)
 	{
 		case MnSYS_LANG_KOR:
-			// SBR(연속회분식) 공법을 사용하는 현장에서는 자동 감도 조정 옵션을
+			// SBR(연속회분식) 공법을 사용하는 현장에서는
 			DpSTR_GuiLeft(x0,      y0, _cPOP_ST_EXP, _cPOP_BG_WND, _fE12HsM,    (I08*)"SBR(");
 			DpSTR_GuiLeft_KOR(x0+41,  y0, _cPOP_ST_EXP, _cPOP_BG_WND, _fE12HsMKOR, (I08*)lDpMSRCal_sSbrKor0);
 			DpSTR_GuiLeft(x0+131, y0, _cPOP_ST_EXP, _cPOP_BG_WND, _fE12HsM,    (I08*)")");
 			DpSTR_GuiLeft_KOR(x0+137, y0, _cPOP_ST_EXP, _cPOP_BG_WND, _fE12HsMKOR, (I08*)lDpMSRCal_sSbrKor1);
-			DpSTR_GuiLeft_KOR(x0+335, y0, _cPOP_ST_EXP, _cPOP_BG_WND, _fE12HsMKOR, (I08*)lDpMSRCal_sSbrKor2);
-			// OFF로 설정해야합니다.
-			DpSTR_GuiLeft(x0,    y0+DpMSRCal_GUIDE_YG, _cPOP_ST_EXP, _cPOP_BG_WND, _fE12HsM,    (I08*)"OFF");
-			DpSTR_GuiLeft_KOR(x0+32, y0+DpMSRCal_GUIDE_YG, _cPOP_ST_EXP, _cPOP_BG_WND, _fE12HsMKOR, (I08*)lDpMSRCal_sSbrKor3);
-			DpSTR_GuiLeft(x0+160, y0+DpMSRCal_GUIDE_YG, _cPOP_ST_EXP, _cPOP_BG_WND, _fE12HsM,    (I08*)".");
+			// 자동 감도 조정 옵션을 OFF로 설정해야합니다.
+			DpSTR_GuiLeft_KOR(x0,     y0+DpMSRCal_GUIDE_YG, _cPOP_ST_EXP, _cPOP_BG_WND, _fE12HsMKOR, (I08*)lDpMSRCal_sSbrKor2);
+			DpSTR_GuiLeft(x0+184, y0+DpMSRCal_GUIDE_YG, _cPOP_ST_EXP, _cPOP_BG_WND, _fE12HsM,    (I08*)"OFF");
+			DpSTR_GuiLeft_KOR(x0+216, y0+DpMSRCal_GUIDE_YG, _cPOP_ST_EXP, _cPOP_BG_WND, _fE12HsMKOR, (I08*)lDpMSRCal_sSbrKor3);
+			DpSTR_GuiLeft(x0+365, y0+DpMSRCal_GUIDE_YG, _cPOP_ST_EXP, _cPOP_BG_WND, _fE12HsM,    (I08*)".");
 			break;
 
 		case MnSYS_LANG_ENG:

@@ -22,3 +22,28 @@ Release/
 ~$*
 Thumbs.db
 .DS_Store
+# Local / VCS metadata
+.git/
+.svn/
+.hermes/
+.omx/
+.omc/
+~$*
+*.bak*
+*.tmp
+*.__tmp
+NUL
+.codex
+
+# STM32CubeIDE / firmware build artifacts
+.metadata/
+Debug/
+Release/
+*.elf
+*.bin
+*.hex
+*.map
+*.list
+*.o
+*.d
+*.su

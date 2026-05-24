@@ -1402,10 +1402,10 @@ void DaBT_InItMain(void)
     if(gBle_found_baud == 0)
     {
         buff_cnt = sprintf((char*)buff, "AT&F\r");
-        BLE_SendATCmd(buff, buff_cnt, "+OK", 3000);
+        BLE_SendATCmd(buff, buff_cnt, "+OK", 1000);
 
         URT_InitMain(URT_IDX_BT, 9600);
-        BLE_SendATCmd(0, 0, "+READY", 5000);
+        BLE_SendATCmd(0, 0, "+READY", 1000);
     }
 
     URT_InitMain(URT_IDX_BT, (gBle_found_baud != 2) ? 9600 : 115200);

@@ -60,6 +60,15 @@
 MnLY3_LS lMnLy3;
 
 
+static void MnLY3_GotoLyr2AfterFtrReset(void)
+{
+	// Factory reset splash clears the whole frame, including the title bar.
+	// The menu title flag remains set, so force the menu title redraw before returning to L2.
+	MnLY3_GotoLyr2();
+	DpTTB_UdtIntro(TEXT_LIST_MENU, 330, _cTTB_ST_TITLE);
+}
+
+
 //------------------------------------------------------------------------------------------------------------------------------
 //  Local Functions - Intro (Section)
 //------------------------------------------------------------------------------------------------------------------------------
@@ -1321,7 +1330,7 @@ void MnLy2Act_EnterSys(void)
 					case MnSYS_OPT_FTR_RST:
 						switch(lMnLy3.val)
 						{
-							case MENU_CHK_YES:		APP_FtrReset();					MnLY3_GotoLyr2();		break;
+							case MENU_CHK_YES:		APP_FtrReset();					MnLY3_GotoLyr2AfterFtrReset();		break;
 							case MENU_CHK_NO:
 							default:												MnLY3_GotoLyr2();			break;
 						}
@@ -1355,7 +1364,7 @@ void MnLy2Act_EnterSys(void)
 					case MnSYS_OPT_SINGLE_FTR_RST:
 						switch(lMnLy3.val)
 						{
-							case MENU_CHK_YES:		APP_FtrReset(); 				MnLY3_GotoLyr2();		break;
+							case MENU_CHK_YES:		APP_FtrReset(); 				MnLY3_GotoLyr2AfterFtrReset();		break;
 							case MENU_CHK_NO:
 							default:												MnLY3_GotoLyr2();			break;
 						}
@@ -1439,7 +1448,7 @@ void MnLy2Act_EnterFtr(void)
 			case MnFTR_I18_FTR_RST:
 				switch(lMnLy3.val)
 				{
-					case MENU_CHK_YES:		APP_FtrReset();					MnLY3_GotoLyr2();		break;
+					case MENU_CHK_YES:		APP_FtrReset();					MnLY3_GotoLyr2AfterFtrReset();		break;
 					case MENU_CHK_NO:
 					default:												MnLY3_GotoLyr2();		break;
 				}
@@ -1476,7 +1485,7 @@ void MnLy2Act_EnterFtr(void)
 			case MnFTR_OPT_SINGLE_FTR_RST:
 				switch(lMnLy3.val)
 				{
-					case MENU_CHK_YES:		APP_FtrReset();					MnLY3_GotoLyr2();		break;
+					case MENU_CHK_YES:		APP_FtrReset();					MnLY3_GotoLyr2AfterFtrReset();		break;
 					case MENU_CHK_NO:
 					default:												MnLY3_GotoLyr2();		break;
 				}
