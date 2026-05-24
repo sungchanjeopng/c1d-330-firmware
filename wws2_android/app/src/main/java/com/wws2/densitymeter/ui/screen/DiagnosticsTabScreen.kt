@@ -15,6 +15,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -101,7 +103,6 @@ fun DiagnosticsTabScreen(vm: MainViewModel) {
 
 @Composable
 private fun InterfaceParametersPanel(state: MainUiState, onEdit: (ConfigEdit) -> Unit) {
-    val echo = state.interfaceEchoReading
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -129,19 +130,6 @@ private fun InterfaceParametersPanel(state: MainUiState, onEdit: (ConfigEdit) ->
         EditableDiagRow("Damping", state.damping.toString()) {
             onEdit(ConfigEdit("Damping", 11, state.damping, 1, 100, 1) { it.toString() })
         }
-        EditableDiagRow("Echo Amp", echo?.echoAmp?.toString() ?: "--") {
-            onEdit(ConfigEdit("Echo Amp", 1, echo?.echoAmp ?: 15, 1, 50, 1) { it.toString() })
-        }
-        val lightAuto = echo?.thrLightMode != 1
-        EditableDiagRow("Thr.Light", echo?.let { if (lightAuto) "${it.thrLightSet}% Auto" else "%.1fV Manual".format(it.thrLightSet / 10.0) } ?: "--") {
-            if (lightAuto) onEdit(ConfigEdit("Thr.Light Auto", 2, echo?.thrLightSet ?: 50, 0, 95, 5) { "$it%" })
-            else onEdit(ConfigEdit("Thr.Light Manual", 4, echo?.thrLightSet ?: 16, 0, 32, 1) { "%.1fV".format(it / 10.0) })
-        }
-        val heavyAuto = echo?.thrHeavyMode != 1
-        EditableDiagRow("Thr.Heavy", echo?.let { if (heavyAuto) "${it.thrHeavySet}% Auto" else "%.1fV Manual".format(it.thrHeavySet / 10.0) } ?: "--") {
-            if (heavyAuto) onEdit(ConfigEdit("Thr.Heavy Auto", 3, echo?.thrHeavySet ?: 50, 0, 95, 5) { "$it%" })
-            else onEdit(ConfigEdit("Thr.Heavy Manual", 5, echo?.thrHeavySet ?: 16, 0, 32, 1) { "%.1fV".format(it / 10.0) })
-        }
     }
 }
 
@@ -168,18 +156,29 @@ private fun EditableDiagRow(label: String, value: String, onClick: () -> Unit) {
 
 @Composable
 private fun ConfigEditDialog(config: ConfigEdit, onDismiss: () -> Unit, onApply: (Int) -> Unit) {
-    var value by remember(config) { mutableIntStateOf(config.value.coerceIn(config.min, config.max)) }
+    var text by remember(config) { mutableStateOf(config.value.coerceIn(config.min, config.max).toString()) }
+    val parsed = text.toIntOrNull()
+    val validValue = parsed?.takeIf { it in config.min..config.max }
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(config.title) },
         text = {
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                Button(onClick = { value = (value - config.step).coerceAtLeast(config.min) }) { Text("-") }
-                Text(config.formatter(value), fontSize = 24.sp, fontWeight = FontWeight.W700)
-                Button(onClick = { value = (value + config.step).coerceAtMost(config.max) }) { Text("+") }
+            Column(modifier = Modifier.fillMaxWidth()) {
+                OutlinedTextField(
+                    value = text,
+                    onValueChange = { input ->
+                        text = input.filterIndexed { index, ch -> ch.isDigit() || (ch == '-' && index == 0 && config.min < 0) }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    label = { Text("Value") },
+                    supportingText = { Text("Range ${config.min} ~ ${config.max} / ${validValue?.let(config.formatter) ?: "Invalid"}") },
+                    isError = parsed == null || parsed !in config.min..config.max,
+                )
             }
         },
-        confirmButton = { TextButton(onClick = { onApply(value) }) { Text("Apply") } },
+        confirmButton = { TextButton(enabled = validValue != null, onClick = { validValue?.let(onApply) }) { Text("Apply") } },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
     )
 }

@@ -16,6 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalConfiguration
@@ -262,18 +264,29 @@ private data class EchoEdit(
 
 @Composable
 private fun EchoEditDialog(config: EchoEdit, onDismiss: () -> Unit, onApply: (Int) -> Unit) {
-    var value by remember(config) { mutableIntStateOf(config.value.coerceIn(config.min, config.max)) }
+    var text by remember(config) { mutableStateOf(config.value.coerceIn(config.min, config.max).toString()) }
+    val parsed = text.toIntOrNull()
+    val validValue = parsed?.takeIf { it in config.min..config.max }
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(config.title) },
         text = {
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                Button(onClick = { value = (value - config.step).coerceAtLeast(config.min) }) { Text("-") }
-                Text(config.formatter(value), fontSize = 24.sp, fontWeight = FontWeight.W700)
-                Button(onClick = { value = (value + config.step).coerceAtMost(config.max) }) { Text("+") }
+            Column(modifier = Modifier.fillMaxWidth()) {
+                OutlinedTextField(
+                    value = text,
+                    onValueChange = { input ->
+                        text = input.filterIndexed { index, ch -> ch.isDigit() || (ch == '-' && index == 0 && config.min < 0) }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    label = { Text("Value") },
+                    supportingText = { Text("Range ${config.min} ~ ${config.max} / ${validValue?.let(config.formatter) ?: "Invalid"}") },
+                    isError = parsed == null || parsed !in config.min..config.max,
+                )
             }
         },
-        confirmButton = { TextButton(onClick = { onApply(value) }) { Text("Apply") } },
+        confirmButton = { TextButton(enabled = validValue != null, onClick = { validValue?.let(onApply) }) { Text("Apply") } },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
     )
 }
