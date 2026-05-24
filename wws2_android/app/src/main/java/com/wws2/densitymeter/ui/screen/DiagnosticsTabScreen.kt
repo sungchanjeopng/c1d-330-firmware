@@ -158,23 +158,36 @@ private fun EditableDiagRow(label: String, value: String, onClick: () -> Unit) {
 
 @Composable
 private fun ConfigEditDialog(config: ConfigEdit, onDismiss: () -> Unit, onApply: (Int) -> Unit) {
-    fun textFor(raw: Int): String = if (config.decimalScale > 1) {
-        "%.2f".format(raw / config.decimalScale.toDouble())
-    } else raw.toString()
-    fun parseRaw(input: String): Int? = if (config.decimalScale > 1) {
-        input.toDoubleOrNull()?.let { (it * config.decimalScale).roundToInt() }
-    } else {
-        input.toIntOrNull()
+    fun integerText(raw: Int): String {
+        if (config.decimalScale <= 1) return raw.toString()
+        val absRaw = kotlin.math.abs(raw)
+        val sign = if (raw < 0) "-" else ""
+        return sign + (absRaw / config.decimalScale).toString()
+    }
+    fun fractionText(raw: Int): String {
+        val absRaw = kotlin.math.abs(raw)
+        return (absRaw % config.decimalScale).toString().padStart(2, '0')
+    }
+    fun parseRaw(intInput: String, fracInput: String): Int? {
+        if (config.decimalScale <= 1) return intInput.toIntOrNull()
+        val intPart = intInput.toIntOrNull() ?: return null
+        val fracPart = fracInput.toIntOrNull() ?: return null
+        if (fracPart !in 0 until config.decimalScale) return null
+        val negative = intInput.trim().startsWith("-")
+        val rawAbs = kotlin.math.abs(intPart) * config.decimalScale + fracPart
+        return if (negative) -rawAbs else rawAbs
     }
 
     var value by remember(config) { mutableIntStateOf(config.value.coerceIn(config.min, config.max)) }
-    var text by remember(config) { mutableStateOf(textFor(config.value.coerceIn(config.min, config.max))) }
-    val parsed = if (config.allowTextInput) parseRaw(text) else value
+    var intText by remember(config) { mutableStateOf(integerText(config.value.coerceIn(config.min, config.max))) }
+    var fracText by remember(config) { mutableStateOf(fractionText(config.value.coerceIn(config.min, config.max))) }
+    val parsed = if (config.allowTextInput) parseRaw(intText, fracText) else value
     val validValue = parsed?.takeIf { it in config.min..config.max }
 
     fun setValue(newValue: Int) {
         value = newValue.coerceIn(config.min, config.max)
-        text = textFor(value)
+        intText = integerText(value)
+        fracText = fractionText(value)
     }
 
     AlertDialog(
@@ -189,20 +202,45 @@ private fun ConfigEditDialog(config: ConfigEdit, onDismiss: () -> Unit, onApply:
                 }
                 if (config.allowTextInput) {
                     Spacer(Modifier.height(10.dp))
-                    OutlinedTextField(
-                        value = text,
-                        onValueChange = { input ->
-                            text = input.filterIndexed { index, ch ->
-                                ch.isDigit() || (ch == '.' && config.decimalScale > 1) || (ch == '-' && index == 0 && config.min < 0)
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = if (config.decimalScale > 1) KeyboardType.Decimal else KeyboardType.Number),
-                        label = { Text("Value") },
-                        supportingText = { Text("Range ${config.formatter(config.min)} ~ ${config.formatter(config.max)}") },
-                        isError = validValue == null,
-                    )
+                    if (config.decimalScale > 1) {
+                        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Top) {
+                            OutlinedTextField(
+                                value = intText,
+                                onValueChange = { input ->
+                                    intText = input.filterIndexed { index, ch -> ch.isDigit() || (ch == '-' && index == 0 && config.min < 0) }
+                                },
+                                modifier = Modifier.weight(1f),
+                                singleLine = true,
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                label = { Text("Integer") },
+                                isError = validValue == null,
+                            )
+                            Text(".", modifier = Modifier.padding(horizontal = 8.dp, vertical = 18.dp), fontSize = 24.sp, fontWeight = FontWeight.W700)
+                            OutlinedTextField(
+                                value = fracText,
+                                onValueChange = { input -> fracText = input.filter { it.isDigit() }.take(2) },
+                                modifier = Modifier.weight(1f),
+                                singleLine = true,
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                label = { Text("Decimal") },
+                                isError = validValue == null,
+                            )
+                        }
+                        Text("Range ${config.formatter(config.min)} ~ ${config.formatter(config.max)}", fontSize = 12.sp, color = AppColors.GrayLabel)
+                    } else {
+                        OutlinedTextField(
+                            value = intText,
+                            onValueChange = { input ->
+                                intText = input.filterIndexed { index, ch -> ch.isDigit() || (ch == '-' && index == 0 && config.min < 0) }
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            label = { Text("Value") },
+                            supportingText = { Text("Range ${config.formatter(config.min)} ~ ${config.formatter(config.max)}") },
+                            isError = validValue == null,
+                        )
+                    }
                 }
             }
         },
