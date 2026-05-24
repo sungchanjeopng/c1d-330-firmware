@@ -7,6 +7,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.HealthAndSafety
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -152,7 +153,16 @@ private fun EditableDiagRow(label: String, value: String, onClick: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(label, fontSize = 19.sp, color = AppColors.GrayLabel)
-        Text("$value  >", fontSize = 20.sp, fontWeight = FontWeight.W600, color = AppColors.DarkText)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(value, fontSize = 20.sp, fontWeight = FontWeight.W600, color = AppColors.DarkText)
+            Spacer(Modifier.width(6.dp))
+            Icon(
+                imageVector = Icons.Outlined.Edit,
+                contentDescription = "Edit",
+                modifier = Modifier.size(15.dp),
+                tint = AppColors.WeakText,
+            )
+        }
     }
 }
 
