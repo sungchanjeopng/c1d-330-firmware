@@ -152,7 +152,7 @@ private fun EditableDiagRow(label: String, value: String, onClick: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(label, fontSize = 19.sp, color = AppColors.GrayLabel)
-        Text(value, fontSize = 20.sp, fontWeight = FontWeight.W600, color = AppColors.Primary)
+        Text("$value  >", fontSize = 20.sp, fontWeight = FontWeight.W600, color = AppColors.DarkText)
     }
 }
 

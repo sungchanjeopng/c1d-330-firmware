@@ -173,7 +173,7 @@ private fun InterfaceEchoInfoRow(ifReading: InterfaceEchoReading?, vm: MainViewM
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            "Thr.Light  ${ifReading?.let { if (it.thrLightMode == 1) "%.1fV".format(it.thrLightSet / 10.0) else "${it.thrLightSet}%" } ?: "--"}",
+            "Thr.Light  ${ifReading?.let { if (it.thrLightMode == 1) "%.1fV".format(it.thrLightSet / 10.0) else "${it.thrLightSet}%" } ?: "--"}  >",
             modifier = Modifier.weight(1f).clickable {
                 if (ifReading != null) {
                     edit = if (ifReading.thrLightMode == 1) EchoEdit("Thr.Light Manual", 4, ifReading.thrLightSet, 0, 32, 1) { "%.1fV".format(it / 10.0) }
@@ -182,11 +182,11 @@ private fun InterfaceEchoInfoRow(ifReading: InterfaceEchoReading?, vm: MainViewM
             },
             fontSize = 15.sp,
             fontWeight = FontWeight.W700,
-            color = AppColors.GrayLabel,
+            color = AppColors.DarkText,
             textAlign = TextAlign.Start,
         )
         Text(
-            "Thr.Heavy  ${ifReading?.let { if (it.thrHeavyMode == 1) "%.1fV".format(it.thrHeavySet / 10.0) else "${it.thrHeavySet}%" } ?: "--"}",
+            "Thr.Heavy  ${ifReading?.let { if (it.thrHeavyMode == 1) "%.1fV".format(it.thrHeavySet / 10.0) else "${it.thrHeavySet}%" } ?: "--"}  >",
             modifier = Modifier.weight(1f).clickable {
                 if (ifReading != null) {
                     edit = if (ifReading.thrHeavyMode == 1) EchoEdit("Thr.Heavy Manual", 5, ifReading.thrHeavySet, 0, 32, 1) { "%.1fV".format(it / 10.0) }
@@ -195,17 +195,17 @@ private fun InterfaceEchoInfoRow(ifReading: InterfaceEchoReading?, vm: MainViewM
             },
             fontSize = 15.sp,
             fontWeight = FontWeight.W700,
-            color = OrangeColor,
+            color = AppColors.DarkText,
             textAlign = TextAlign.Center,
         )
         Text(
-            "Echo Amp  ${ifReading?.echoAmp?.toString() ?: "--"}",
+            "Echo Amp  ${ifReading?.echoAmp?.toString() ?: "--"}  >",
             modifier = Modifier.weight(1f).clickable {
                 edit = EchoEdit("Echo Amp", 1, ifReading?.echoAmp ?: 15, 1, 50, 1) { it.toString() }
             },
             fontSize = 15.sp,
             fontWeight = FontWeight.W700,
-            color = AppColors.Primary,
+            color = AppColors.DarkText,
             textAlign = TextAlign.End,
         )
     }
