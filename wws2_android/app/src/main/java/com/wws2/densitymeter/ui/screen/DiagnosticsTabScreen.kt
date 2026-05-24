@@ -123,6 +123,12 @@ private fun InterfaceParametersPanel(state: MainUiState, onEdit: (ConfigEdit) ->
         EditableDiagRow("Offset", "%.2f m".format(state.offset)) {
             onEdit(ConfigEdit("Offset", 7, (state.offset * 100).roundToInt(), -100, 100, 1, decimalScale = 100) { v -> "%.2f m".format(v / 100.0) })
         }
+        EditableDiagRow("Empty", "%.2f m".format(state.emptyDistance)) {
+            onEdit(ConfigEdit("Empty", 12, (state.emptyDistance * 100).roundToInt(), 1, 1000, 1, decimalScale = 100) { v -> "%.2f m".format(v / 100.0) })
+        }
+        EditableDiagRow("Dead Zone", "%.2f m".format(state.deadZone)) {
+            onEdit(ConfigEdit("Dead Zone", 13, (state.deadZone * 100).roundToInt(), 35, 1000, 1, decimalScale = 100) { v -> "%.2f m".format(v / 100.0) })
+        }
         EditableDiagRow("4mA Set", "%.2f".format(state.set4mA)) {
             onEdit(ConfigEdit("4mA Set", 8, (state.set4mA * 100).roundToInt(), 0, 1000, 1, decimalScale = 100) { v -> "%.2f".format(v / 100.0) })
         }

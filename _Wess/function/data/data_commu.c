@@ -747,6 +747,8 @@ void DaBT_SendStatus_Ch(U08 ch)
 	U08 relay   = gRly_state;
 	U16 err = (U16)BLE_GetErrorCode(ch);
 	U16 echoAmp = (U16)MnMSR_CalGet_Ch_Value(ch, MnMS1_OPT_SINGLE_ECHO_AMP);
+	U16 empty   = (U16)MnMSR_BaseGet_Ch_Value(ch, MnMS0_OPT_SINGLE_EMPTY);
+	U16 deadzone = (U16)MnMSR_BaseGet_Ch_Value(ch, MnMS0_OPT_SINGLE_DEADZONE);
 	U08 cmd_lo = (ch == APP_CH_1) ? 0x00 : 0x10;
 
 	buff[buff_cnt++] = 0x02;
@@ -782,7 +784,12 @@ void DaBT_SendStatus_Ch(U08 ch)
 	// Echo Amp/FAMP 수신감도: append at reserved offset 26~27 to keep existing 26B layout compatible.
 	buff[buff_cnt++] = (U08)((echoAmp >> 8) & 0xFF);
 	buff[buff_cnt++] = (U08)(echoAmp & 0xFF);
-	// buff_cnt = 31 here. DATA payload extended to 200B; remaining 172B stay 0x00 (reserved).
+	// Empty/Dead Zone: append at reserved offset 28~31 as meters x100.
+	buff[buff_cnt++] = (U08)((empty >> 8) & 0xFF);
+	buff[buff_cnt++] = (U08)(empty & 0xFF);
+	buff[buff_cnt++] = (U08)((deadzone >> 8) & 0xFF);
+	buff[buff_cnt++] = (U08)(deadzone & 0xFF);
+	// DATA payload extended to 200B; remaining bytes stay 0x00 (reserved).
 
 	buff_cnt = 1 + 2 + 200;  // jump to end of DATA (203). Bytes 31..202 already 0 from init.
 
@@ -1491,12 +1498,12 @@ static U16 DaBT_ApplyAppSetting(U16 cmd, U16 data)
 	U16 item;
 	S16 sdata;
 
-	if(cmd >= 1000 && cmd <= 1011)
+	if(cmd >= 1000 && cmd <= 1013)
 	{
 		ch = APP_CH_2;
 		item = cmd - 1000;
 	}
-	else if(cmd >= 1 && cmd <= 11)
+	else if(cmd >= 1 && cmd <= 13)
 	{
 		ch = APP_CH_1;
 		item = cmd;
@@ -1567,6 +1574,16 @@ static U16 DaBT_ApplyAppSetting(U16 cmd, U16 data)
 		case 11: // Damping
 			if(data < MnMS1_DAMPING_MIN || data > MnMS1_DAMPING_MAX) return 1;
 			MnMSR_CalSet_Ch_Value(ch, MnMS1_OPT_SINGLE_DAMPING, data);
+			break;
+
+		case 12: // Empty, x0.01m
+			if(data < MnMS0_EMPTY_MIN || data > MnMS0_EMPTY_MAX) return 1;
+			MnMSR_BaseSet_Ch_Value(ch, MnMS0_OPT_SINGLE_EMPTY, data);
+			break;
+
+		case 13: // Dead Zone, x0.01m
+			if(data < MnMS0_DEADZONE_MIN || data > MnMS0_DEADZONE_MAX) return 1;
+			MnMSR_BaseSet_Ch_Value(ch, MnMS0_OPT_SINGLE_DEADZONE, data);
 			break;
 
 		default:
