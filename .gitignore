@@ -22,6 +22,12 @@ Release/
 ~$*
 Thumbs.db
 .DS_Store
+
+# Android local/build artifacts
+local.properties
+.gradle/
+build/
+app/build/
 # Local / VCS metadata
 .git/
 .svn/
