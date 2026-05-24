@@ -62,7 +62,7 @@ fun EchoTabScreen(vm: MainViewModel) {
                 // 태블릿: 차트 위 + 컨트롤/카드 아래, 스크롤 없이 한 화면
                 EchoModeToggle(currentMode = state.echoMode, onModeChange = { vm.setEchoMode(it) })
                 Spacer(Modifier.height(8.dp))
-                InterfaceEchoInfoRow(ifReading)
+                InterfaceEchoInfoRow(ifReading, vm)
                 Spacer(Modifier.height(4.dp))
                 InterfaceEchoChart(reading = ifReading, modifier = Modifier.weight(1f))
                 Spacer(Modifier.height(8.dp))
@@ -73,7 +73,7 @@ fun EchoTabScreen(vm: MainViewModel) {
                 Column(modifier = Modifier.weight(1f).verticalScroll(rememberScrollState())) {
                     EchoModeToggle(currentMode = state.echoMode, onModeChange = { vm.setEchoMode(it) })
                     Spacer(Modifier.height(8.dp))
-                    InterfaceEchoInfoRow(ifReading)
+                    InterfaceEchoInfoRow(ifReading, vm)
                     Spacer(Modifier.height(4.dp))
                     InterfaceEchoChart(reading = ifReading, modifier = Modifier.fillMaxWidth().height(chartH))
                     Spacer(Modifier.height(8.dp))
@@ -83,7 +83,7 @@ fun EchoTabScreen(vm: MainViewModel) {
                 // 세로: 기존 레이아웃
                 EchoModeToggle(currentMode = state.echoMode, onModeChange = { vm.setEchoMode(it) })
                 Spacer(Modifier.height(8.dp))
-                InterfaceEchoInfoRow(ifReading)
+                InterfaceEchoInfoRow(ifReading, vm)
                 Spacer(Modifier.height(4.dp))
                 InterfaceEchoChart(reading = ifReading, modifier = Modifier.weight(1f))
                 Spacer(Modifier.height(8.dp))
@@ -165,23 +165,34 @@ private fun EchoModeToggle(currentMode: EchoMode, onModeChange: (EchoMode) -> Un
 }
 
 @Composable
-private fun InterfaceEchoInfoRow(ifReading: InterfaceEchoReading?) {
+private fun InterfaceEchoInfoRow(ifReading: InterfaceEchoReading?, vm: MainViewModel) {
+    var edit by remember { mutableStateOf<EchoEdit?>(null) }
     Row(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            "Thr.Light  ${ifReading?.thrLightSet?.let { "${it}%" } ?: "--"}",
-            modifier = Modifier.weight(1f),
+            "Thr.Light  ${ifReading?.let { if (it.thrLightMode == 1) "%.1fV".format(it.thrLightSet / 10.0) else "${it.thrLightSet}%" } ?: "--"}",
+            modifier = Modifier.weight(1f).clickable {
+                if (ifReading != null) {
+                    edit = if (ifReading.thrLightMode == 1) EchoEdit("Thr.Light Manual", 4, ifReading.thrLightSet, 0, 32, 1) { "%.1fV".format(it / 10.0) }
+                    else EchoEdit("Thr.Light Auto", 2, ifReading.thrLightSet, 0, 95, 5) { "$it%" }
+                }
+            },
             fontSize = 15.sp,
             fontWeight = FontWeight.W700,
             color = AppColors.GrayLabel,
             textAlign = TextAlign.Start,
         )
         Text(
-            "Thr.Heavy  ${ifReading?.thrHeavySet?.let { "${it}%" } ?: "--"}",
-            modifier = Modifier.weight(1f),
+            "Thr.Heavy  ${ifReading?.let { if (it.thrHeavyMode == 1) "%.1fV".format(it.thrHeavySet / 10.0) else "${it.thrHeavySet}%" } ?: "--"}",
+            modifier = Modifier.weight(1f).clickable {
+                if (ifReading != null) {
+                    edit = if (ifReading.thrHeavyMode == 1) EchoEdit("Thr.Heavy Manual", 5, ifReading.thrHeavySet, 0, 32, 1) { "%.1fV".format(it / 10.0) }
+                    else EchoEdit("Thr.Heavy Auto", 3, ifReading.thrHeavySet, 0, 95, 5) { "$it%" }
+                }
+            },
             fontSize = 15.sp,
             fontWeight = FontWeight.W700,
             color = OrangeColor,
@@ -189,13 +200,49 @@ private fun InterfaceEchoInfoRow(ifReading: InterfaceEchoReading?) {
         )
         Text(
             "Echo Amp  ${ifReading?.echoAmp?.toString() ?: "--"}",
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f).clickable {
+                edit = EchoEdit("Echo Amp", 1, ifReading?.echoAmp ?: 15, 1, 50, 1) { it.toString() }
+            },
             fontSize = 15.sp,
             fontWeight = FontWeight.W700,
             color = AppColors.Primary,
             textAlign = TextAlign.End,
         )
     }
+    edit?.let { cfg ->
+        EchoEditDialog(cfg, onDismiss = { edit = null }) { value ->
+            vm.sendAppSetting(cfg.cmd, value)
+            edit = null
+        }
+    }
+}
+
+private data class EchoEdit(
+    val title: String,
+    val cmd: Int,
+    val value: Int,
+    val min: Int,
+    val max: Int,
+    val step: Int,
+    val formatter: (Int) -> String,
+)
+
+@Composable
+private fun EchoEditDialog(config: EchoEdit, onDismiss: () -> Unit, onApply: (Int) -> Unit) {
+    var value by remember(config) { mutableIntStateOf(config.value.coerceIn(config.min, config.max)) }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(config.title) },
+        text = {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                Button(onClick = { value = (value - config.step).coerceAtLeast(config.min) }) { Text("-") }
+                Text(config.formatter(value), fontSize = 24.sp, fontWeight = FontWeight.W700)
+                Button(onClick = { value = (value + config.step).coerceAtMost(config.max) }) { Text("+") }
+            }
+        },
+        confirmButton = { TextButton(onClick = { onApply(value) }) { Text("Apply") } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
+    )
 }
 
 @Composable

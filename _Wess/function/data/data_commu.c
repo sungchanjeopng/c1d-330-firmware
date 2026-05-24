@@ -695,7 +695,7 @@ void DaBT_SetRxBuff(URT_IDX idx, U08 dr)
 
 	if(interrupt_cnt[idx] == 0)
 	{
-		if(dr == 0x02)
+		if(dr == 0x02 || dr == 0x03)
 		{
 			lmdb.interrupt_buf[idx][0] = dr;
 			interrupt_cnt[idx] = 1;
@@ -1469,6 +1469,113 @@ void DaBT_InItMain(void)
 //------------------------------------------------------------------------------------------------------------------------------
 //  BLE Main Process - Interface Meter
 //------------------------------------------------------------------------------------------------------------------------------
+static void DaBT_SendSettingAck(U16 cmd, U16 result)
+{
+	U08 buff[7];
+	U16 crc;
+
+	buff[0] = 0x02;
+	buff[1] = (U08)((cmd >> 8) & 0xFF);
+	buff[2] = (U08)(cmd & 0xFF);
+	buff[3] = (U08)((result >> 8) & 0xFF);
+	buff[4] = (U08)(result & 0xFF);
+	crc = Mdb_GetCrc16(buff, 5);
+	buff[5] = (U08)(crc & 0xFF);
+	buff[6] = (U08)((crc >> 8) & 0xFF);
+	URT_TxPkt(URT_IDX_BT, buff, 7);
+}
+
+static U16 DaBT_ApplyAppSetting(U16 cmd, U16 data)
+{
+	U08 ch;
+	U16 item;
+	S16 sdata;
+
+	if(cmd >= 1000 && cmd <= 1011)
+	{
+		ch = APP_CH_2;
+		item = cmd - 1000;
+	}
+	else if(cmd >= 1 && cmd <= 11)
+	{
+		ch = APP_CH_1;
+		item = cmd;
+	}
+	else
+	{
+		return 3; // unknown command
+	}
+
+	sdata = (S16)data;
+
+	switch(item)
+	{
+		case 1: // Echo Amp
+			if(data < MnMS1_ECHO_AMP_MIN || data > MnMS1_ECHO_AMP_MAX) return 1;
+			MnMSR_CalSet_Ch_Value(ch, MnMS1_OPT_SINGLE_ECHO_AMP, data);
+			break;
+
+		case 2: // Thr.Light Auto (%)
+			if(data < MnMS1_THR_VAL_AUTO_MIN || data > MnMS1_THR_VAL_AUTO_MAX) return 1;
+			MnMSR_CalSet_Ch_Value(ch, MnMS1_OPT_SINGLE_THR_LIGHT, MnMS1_THRESHOLD_AUTO);
+			MnMSR_Set_Threshold_Ch_Value(ch, MnMS1_OPT_SINGLE_THR_LIGHT, data);
+			break;
+
+		case 3: // Thr.Heavy Auto (%)
+			if(data < MnMS1_THR_VAL_AUTO_MIN || data > MnMS1_THR_VAL_AUTO_MAX) return 1;
+			MnMSR_CalSet_Ch_Value(ch, MnMS1_OPT_SINGLE_THR_HEAVY, MnMS1_THRESHOLD_AUTO);
+			MnMSR_Set_Threshold_Ch_Value(ch, MnMS1_OPT_SINGLE_THR_HEAVY, data);
+			break;
+
+		case 4: // Thr.Light Manual (0.1V)
+			if(data < MnMS1_THR_VAL_MANUAL_MIN || data > MnMS1_THR_VAL_MANUAL_MAX) return 1;
+			MnMSR_CalSet_Ch_Value(ch, MnMS1_OPT_SINGLE_THR_LIGHT, MnMS1_THRESHOLD_MANUAL);
+			MnMSR_Set_Threshold_Ch_Value(ch, MnMS1_OPT_SINGLE_THR_LIGHT, data);
+			break;
+
+		case 5: // Thr.Heavy Manual (0.1V)
+			if(data < MnMS1_THR_VAL_MANUAL_MIN || data > MnMS1_THR_VAL_MANUAL_MAX) return 1;
+			MnMSR_CalSet_Ch_Value(ch, MnMS1_OPT_SINGLE_THR_HEAVY, MnMS1_THRESHOLD_MANUAL);
+			MnMSR_Set_Threshold_Ch_Value(ch, MnMS1_OPT_SINGLE_THR_HEAVY, data);
+			break;
+
+		case 6: // Frequency index: 0=380K, 1=270K, 2=160K, 3=130K
+			if(data < MnMS1_FREQ_MIN || data > MnMS1_FREQ_MAX) return 1;
+			MnMSR_CalSet_Ch_Value(ch, MnMS1_OPT_SINGLE_FREQ, data);
+			break;
+
+		case 7: // Offset, signed x0.01m
+			if(sdata < MnMS1_OFFSET_MIN || sdata > MnMS1_OFFSET_MAX) return 1;
+			MnMSR_CalSet_Ch_Value(ch, MnMS1_OPT_SINGLE_OFFSET, sdata);
+			break;
+
+		case 8: // 4mA set, x0.01m
+			if(data < MnOS0_SET_MA_MIN || data > MnOS0_SET_MA_MAX) return 1;
+			MnOUT_CurPrSet_Ch_Value(ch, MnOS0_OPT_SINGLE_SET_04mA, data);
+			break;
+
+		case 9: // 20mA set, x0.01m
+			if(data < MnOS0_SET_MA_MIN || data > MnOS0_SET_MA_MAX) return 1;
+			MnOUT_CurPrSet_Ch_Value(ch, MnOS0_OPT_SINGLE_SET_20mA, data);
+			break;
+
+		case 10: // TVG
+			if(data < MnEGN_TVG_MIN || data > MnEGN_TVG_MAX) return 1;
+			MnEGN_PrSet_Ch_Value(ch, MnEGN_OPT_SINGLE_TVG, data);
+			break;
+
+		case 11: // Damping
+			if(data < MnMS1_DAMPING_MIN || data > MnMS1_DAMPING_MAX) return 1;
+			MnMSR_CalSet_Ch_Value(ch, MnMS1_OPT_SINGLE_DAMPING, data);
+			break;
+
+		default:
+			return 3;
+	}
+
+	return 0;
+}
+
 void DaBT_ProcMain(void)
 {
 	if(gTrend_streaming)
@@ -1484,6 +1591,8 @@ void DaBT_ProcMain(void)
 
 	U08 buff[20] = {0, };
 	U16 buff_cnt = 0;
+	U08 sof = lmdb.rx_buf[idx][0];
+	U16 cmd16 = ((U16)lmdb.rx_buf[idx][1] << 8) | (U16)lmdb.rx_buf[idx][2];
 	U08 cmd = lmdb.rx_buf[idx][2];
 	U16 data16 = ((U16)lmdb.rx_buf[idx][3] << 8) | (U16)lmdb.rx_buf[idx][4];
 
@@ -1495,6 +1604,14 @@ void DaBT_ProcMain(void)
 			Damdb_ClrRxBuff(idx);
 			return;
 		}
+	}
+
+	if(sof == 0x03)
+	{
+		U16 result = DaBT_ApplyAppSetting(cmd16, data16);
+		DaBT_SendSettingAck(cmd16, result);
+		Damdb_ClrRxBuff(idx);
+		return;
 	}
 
 	switch(cmd)

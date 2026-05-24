@@ -289,6 +289,23 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _state.update { it.copy(tabIndex = 4, subPage = "calib") }
     }
 
+    private fun appSettingCmd(baseCmd: Int): Int {
+        return if (_state.value.activeDeviceId.endsWith("_CH2")) baseCmd + 1000 else baseCmd
+    }
+
+    fun sendAppSetting(baseCmd: Int, value: Int) {
+        val proto = activeProtocol
+        if (proto == null) {
+            _snackbarMessage.tryEmit("No active device.")
+            return
+        }
+        viewModelScope.launch {
+            val cmd = appSettingCmd(baseCmd)
+            val ok = proto.write(proto.buildSettingFrame(cmd, value), withoutResponse = false)
+            _snackbarMessage.tryEmit(if (ok) "Setting sent." else "Setting failed.")
+        }
+    }
+
     // ?????? BLE Pairing ??????
     fun openPairing() {
         _state.update { it.copy(tabIndex = 4, subPage = "pairing") }
