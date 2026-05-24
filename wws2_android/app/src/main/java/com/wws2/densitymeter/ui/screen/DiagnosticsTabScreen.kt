@@ -16,7 +16,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -180,15 +182,15 @@ private fun ConfigEditDialog(config: ConfigEdit, onDismiss: () -> Unit, onApply:
     }
 
     var value by remember(config) { mutableIntStateOf(config.value.coerceIn(config.min, config.max)) }
-    var intText by remember(config) { mutableStateOf(integerText(config.value.coerceIn(config.min, config.max))) }
-    var fracText by remember(config) { mutableStateOf(fractionText(config.value.coerceIn(config.min, config.max))) }
-    val parsed = if (config.allowTextInput) parseRaw(intText, fracText) else value
+    var intText by remember(config) { mutableStateOf(TextFieldValue(integerText(config.value.coerceIn(config.min, config.max)), selection = TextRange(integerText(config.value.coerceIn(config.min, config.max)).length))) }
+    var fracText by remember(config) { mutableStateOf(TextFieldValue(fractionText(config.value.coerceIn(config.min, config.max)), selection = TextRange(fractionText(config.value.coerceIn(config.min, config.max)).length))) }
+    val parsed = if (config.allowTextInput) parseRaw(intText.text, fracText.text) else value
     val validValue = parsed?.takeIf { it in config.min..config.max }
 
     fun setValue(newValue: Int) {
         value = newValue.coerceIn(config.min, config.max)
-        intText = integerText(value)
-        fracText = fractionText(value)
+        intText = TextFieldValue(integerText(value), selection = TextRange(integerText(value).length))
+        fracText = TextFieldValue(fractionText(value), selection = TextRange(fractionText(value).length))
     }
 
     AlertDialog(
@@ -212,12 +214,14 @@ private fun ConfigEditDialog(config: ConfigEdit, onDismiss: () -> Unit, onApply:
                             OutlinedTextField(
                                 value = intText,
                                 onValueChange = { input ->
-                                    intText = input.filterIndexed { index, ch -> ch.isDigit() || (ch == '-' && index == 0 && config.min < 0) }
+                                    val filtered = input.text.filterIndexed { index, ch -> ch.isDigit() || (ch == '-' && index == 0 && config.min < 0) }
+                                    intText = TextFieldValue(filtered, selection = TextRange(filtered.length))
                                 },
                                 modifier = Modifier.width(92.dp),
                                 singleLine = true,
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                 textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.End, fontSize = 20.sp),
+                                colors = OutlinedTextFieldDefaults.colors(cursorColor = androidx.compose.ui.graphics.Color.Transparent),
                                 isError = validValue == null,
                             )
                             Text(
@@ -228,11 +232,15 @@ private fun ConfigEditDialog(config: ConfigEdit, onDismiss: () -> Unit, onApply:
                             )
                             OutlinedTextField(
                                 value = fracText,
-                                onValueChange = { input -> fracText = input.filter { it.isDigit() }.take(2) },
+                                onValueChange = { input ->
+                                    val filtered = input.text.filter { it.isDigit() }.take(2)
+                                    fracText = TextFieldValue(filtered, selection = TextRange(filtered.length))
+                                },
                                 modifier = Modifier.width(76.dp),
                                 singleLine = true,
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                 textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Start, fontSize = 20.sp),
+                                colors = OutlinedTextFieldDefaults.colors(cursorColor = androidx.compose.ui.graphics.Color.Transparent),
                                 isError = validValue == null,
                             )
                         }
@@ -241,13 +249,15 @@ private fun ConfigEditDialog(config: ConfigEdit, onDismiss: () -> Unit, onApply:
                         OutlinedTextField(
                             value = intText,
                             onValueChange = { input ->
-                                intText = input.filterIndexed { index, ch -> ch.isDigit() || (ch == '-' && index == 0 && config.min < 0) }
+                                val filtered = input.text.filterIndexed { index, ch -> ch.isDigit() || (ch == '-' && index == 0 && config.min < 0) }
+                                intText = TextFieldValue(filtered, selection = TextRange(filtered.length))
                             },
                             modifier = Modifier.fillMaxWidth(),
                             singleLine = true,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             label = { Text("Value") },
                             supportingText = { Text("Range ${config.formatter(config.min)} ~ ${config.formatter(config.max)}") },
+                            colors = OutlinedTextFieldDefaults.colors(cursorColor = androidx.compose.ui.graphics.Color.Transparent),
                             isError = validValue == null,
                         )
                     }

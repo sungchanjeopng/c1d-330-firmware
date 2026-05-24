@@ -17,7 +17,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalConfiguration
@@ -265,13 +267,13 @@ private data class EchoEdit(
 @Composable
 private fun EchoEditDialog(config: EchoEdit, onDismiss: () -> Unit, onApply: (Int) -> Unit) {
     var value by remember(config) { mutableIntStateOf(config.value.coerceIn(config.min, config.max)) }
-    var text by remember(config) { mutableStateOf(config.value.coerceIn(config.min, config.max).toString()) }
-    val parsed = text.toIntOrNull()
+    var text by remember(config) { mutableStateOf(TextFieldValue(config.value.coerceIn(config.min, config.max).toString(), selection = TextRange(config.value.coerceIn(config.min, config.max).toString().length))) }
+    val parsed = text.text.toIntOrNull()
     val validValue = parsed?.takeIf { it in config.min..config.max }
 
     fun setValue(newValue: Int) {
         value = newValue.coerceIn(config.min, config.max)
-        text = value.toString()
+        text = TextFieldValue(value.toString(), selection = TextRange(value.toString().length))
     }
 
     AlertDialog(
@@ -288,13 +290,15 @@ private fun EchoEditDialog(config: EchoEdit, onDismiss: () -> Unit, onApply: (In
                 OutlinedTextField(
                     value = text,
                     onValueChange = { input ->
-                        text = input.filterIndexed { index, ch -> ch.isDigit() || (ch == '-' && index == 0 && config.min < 0) }
+                        val filtered = input.text.filterIndexed { index, ch -> ch.isDigit() || (ch == '-' && index == 0 && config.min < 0) }
+                        text = TextFieldValue(filtered, selection = TextRange(filtered.length))
                     },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     label = { Text("Value") },
                     supportingText = { Text("Range ${config.min} ~ ${config.max} / ${validValue?.let(config.formatter) ?: "Invalid"}") },
+                    colors = OutlinedTextFieldDefaults.colors(cursorColor = androidx.compose.ui.graphics.Color.Transparent),
                     isError = validValue == null,
                 )
             }
