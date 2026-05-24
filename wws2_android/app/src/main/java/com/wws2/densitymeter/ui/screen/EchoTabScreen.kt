@@ -8,6 +8,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ShowChart
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -172,47 +173,79 @@ private fun InterfaceEchoInfoRow(ifReading: InterfaceEchoReading?, vm: MainViewM
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
-            "Thr.Light  ${ifReading?.let { if (it.thrLightMode == 1) "%.1fV".format(it.thrLightSet / 10.0) else "${it.thrLightSet}%" } ?: "--"}  >",
-            modifier = Modifier.weight(1f).clickable {
+        EditableEchoInfo(
+            text = "Thr.Light  ${ifReading?.let { if (it.thrLightMode == 1) "%.1fV".format(it.thrLightSet / 10.0) else "${it.thrLightSet}%" } ?: "--"}",
+            color = AppColors.GrayLabel,
+            textAlign = TextAlign.Start,
+            modifier = Modifier.weight(1f),
+            onClick = {
                 if (ifReading != null) {
                     edit = if (ifReading.thrLightMode == 1) EchoEdit("Thr.Light Manual", 4, ifReading.thrLightSet, 0, 32, 1) { "%.1fV".format(it / 10.0) }
                     else EchoEdit("Thr.Light Auto", 2, ifReading.thrLightSet, 0, 95, 5) { "$it%" }
                 }
             },
-            fontSize = 15.sp,
-            fontWeight = FontWeight.W700,
-            color = AppColors.DarkText,
-            textAlign = TextAlign.Start,
         )
-        Text(
-            "Thr.Heavy  ${ifReading?.let { if (it.thrHeavyMode == 1) "%.1fV".format(it.thrHeavySet / 10.0) else "${it.thrHeavySet}%" } ?: "--"}  >",
-            modifier = Modifier.weight(1f).clickable {
+        EditableEchoInfo(
+            text = "Thr.Heavy  ${ifReading?.let { if (it.thrHeavyMode == 1) "%.1fV".format(it.thrHeavySet / 10.0) else "${it.thrHeavySet}%" } ?: "--"}",
+            color = OrangeColor,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.weight(1f),
+            onClick = {
                 if (ifReading != null) {
                     edit = if (ifReading.thrHeavyMode == 1) EchoEdit("Thr.Heavy Manual", 5, ifReading.thrHeavySet, 0, 32, 1) { "%.1fV".format(it / 10.0) }
                     else EchoEdit("Thr.Heavy Auto", 3, ifReading.thrHeavySet, 0, 95, 5) { "$it%" }
                 }
             },
-            fontSize = 15.sp,
-            fontWeight = FontWeight.W700,
-            color = AppColors.DarkText,
-            textAlign = TextAlign.Center,
         )
-        Text(
-            "Echo Amp  ${ifReading?.echoAmp?.toString() ?: "--"}  >",
-            modifier = Modifier.weight(1f).clickable {
+        EditableEchoInfo(
+            text = "Echo Amp  ${ifReading?.echoAmp?.toString() ?: "--"}",
+            color = AppColors.Primary,
+            textAlign = TextAlign.End,
+            modifier = Modifier.weight(1f),
+            onClick = {
                 edit = EchoEdit("Echo Amp", 1, ifReading?.echoAmp ?: 15, 1, 50, 1) { it.toString() }
             },
-            fontSize = 15.sp,
-            fontWeight = FontWeight.W700,
-            color = AppColors.DarkText,
-            textAlign = TextAlign.End,
         )
     }
     edit?.let { cfg ->
         EchoEditDialog(cfg, onDismiss = { edit = null }) { value ->
             vm.sendAppSetting(cfg.cmd, value)
             edit = null
+        }
+    }
+}
+
+@Composable
+private fun EditableEchoInfo(
+    text: String,
+    color: androidx.compose.ui.graphics.Color,
+    textAlign: TextAlign,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    Box(
+        modifier = modifier.clickable(onClick = onClick),
+        contentAlignment = when (textAlign) {
+            TextAlign.Center -> Alignment.Center
+            TextAlign.End -> Alignment.CenterEnd
+            else -> Alignment.CenterStart
+        },
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.W700,
+                color = color,
+                textAlign = textAlign,
+            )
+            Spacer(Modifier.width(3.dp))
+            Icon(
+                imageVector = Icons.Outlined.Edit,
+                contentDescription = "Edit",
+                modifier = Modifier.size(12.dp),
+                tint = AppColors.WeakText,
+            )
         }
     }
 }
