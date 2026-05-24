@@ -62,10 +62,7 @@ fun EchoTabScreen(vm: MainViewModel) {
                 // 태블릿: 차트 위 + 컨트롤/카드 아래, 스크롤 없이 한 화면
                 EchoModeToggle(currentMode = state.echoMode, onModeChange = { vm.setEchoMode(it) })
                 Spacer(Modifier.height(8.dp))
-                Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp), horizontalArrangement = Arrangement.SpaceAround) {
-                    Text("Thr.Light  ${ifReading?.thrLightSet?.let { "${it}%" } ?: "--"}", fontSize = 16.sp, fontWeight = FontWeight.W700, color = AppColors.GrayLabel)
-                    Text("Thr.Heavy  ${ifReading?.thrHeavySet?.let { "${it}%" } ?: "--"}", fontSize = 16.sp, fontWeight = FontWeight.W700, color = OrangeColor)
-                }
+                InterfaceEchoInfoRow(ifReading)
                 Spacer(Modifier.height(4.dp))
                 InterfaceEchoChart(reading = ifReading, modifier = Modifier.weight(1f))
                 Spacer(Modifier.height(8.dp))
@@ -76,10 +73,7 @@ fun EchoTabScreen(vm: MainViewModel) {
                 Column(modifier = Modifier.weight(1f).verticalScroll(rememberScrollState())) {
                     EchoModeToggle(currentMode = state.echoMode, onModeChange = { vm.setEchoMode(it) })
                     Spacer(Modifier.height(8.dp))
-                    Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp), horizontalArrangement = Arrangement.SpaceAround) {
-                        Text("Thr.Light  ${ifReading?.thrLightSet?.let { "${it}%" } ?: "--"}", fontSize = 16.sp, fontWeight = FontWeight.W700, color = AppColors.GrayLabel)
-                        Text("Thr.Heavy  ${ifReading?.thrHeavySet?.let { "${it}%" } ?: "--"}", fontSize = 16.sp, fontWeight = FontWeight.W700, color = OrangeColor)
-                    }
+                    InterfaceEchoInfoRow(ifReading)
                     Spacer(Modifier.height(4.dp))
                     InterfaceEchoChart(reading = ifReading, modifier = Modifier.fillMaxWidth().height(chartH))
                     Spacer(Modifier.height(8.dp))
@@ -89,10 +83,7 @@ fun EchoTabScreen(vm: MainViewModel) {
                 // 세로: 기존 레이아웃
                 EchoModeToggle(currentMode = state.echoMode, onModeChange = { vm.setEchoMode(it) })
                 Spacer(Modifier.height(8.dp))
-                Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp), horizontalArrangement = Arrangement.SpaceAround) {
-                    Text("Thr.Light  ${ifReading?.thrLightSet?.let { "${it}%" } ?: "--"}", fontSize = 16.sp, fontWeight = FontWeight.W700, color = AppColors.GrayLabel)
-                    Text("Thr.Heavy  ${ifReading?.thrHeavySet?.let { "${it}%" } ?: "--"}", fontSize = 16.sp, fontWeight = FontWeight.W700, color = OrangeColor)
-                }
+                InterfaceEchoInfoRow(ifReading)
                 Spacer(Modifier.height(4.dp))
                 InterfaceEchoChart(reading = ifReading, modifier = Modifier.weight(1f))
                 Spacer(Modifier.height(8.dp))
@@ -170,6 +161,40 @@ private fun EchoModeToggle(currentMode: EchoMode, onModeChange: (EchoMode) -> Un
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun InterfaceEchoInfoRow(ifReading: InterfaceEchoReading?) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            "Thr.Light  ${ifReading?.thrLightSet?.let { "${it}%" } ?: "--"}",
+            modifier = Modifier.weight(1f),
+            fontSize = 15.sp,
+            fontWeight = FontWeight.W700,
+            color = AppColors.GrayLabel,
+            textAlign = TextAlign.Start,
+        )
+        Text(
+            "Thr.Heavy  ${ifReading?.thrHeavySet?.let { "${it}%" } ?: "--"}",
+            modifier = Modifier.weight(1f),
+            fontSize = 15.sp,
+            fontWeight = FontWeight.W700,
+            color = OrangeColor,
+            textAlign = TextAlign.Center,
+        )
+        Text(
+            "Echo Amp  ${ifReading?.echoAmp?.toString() ?: "--"}",
+            modifier = Modifier.weight(1f),
+            fontSize = 15.sp,
+            fontWeight = FontWeight.W700,
+            color = AppColors.Primary,
+            textAlign = TextAlign.End,
+        )
     }
 }
 
