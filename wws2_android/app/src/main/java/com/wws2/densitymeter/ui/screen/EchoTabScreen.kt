@@ -264,14 +264,27 @@ private data class EchoEdit(
 
 @Composable
 private fun EchoEditDialog(config: EchoEdit, onDismiss: () -> Unit, onApply: (Int) -> Unit) {
+    var value by remember(config) { mutableIntStateOf(config.value.coerceIn(config.min, config.max)) }
     var text by remember(config) { mutableStateOf(config.value.coerceIn(config.min, config.max).toString()) }
     val parsed = text.toIntOrNull()
     val validValue = parsed?.takeIf { it in config.min..config.max }
+
+    fun setValue(newValue: Int) {
+        value = newValue.coerceIn(config.min, config.max)
+        text = value.toString()
+    }
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(config.title) },
         text = {
-            Column(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                    Button(onClick = { setValue((validValue ?: value) - config.step) }) { Text("-") }
+                    Text(config.formatter(validValue ?: value), fontSize = 24.sp, fontWeight = FontWeight.W700)
+                    Button(onClick = { setValue((validValue ?: value) + config.step) }) { Text("+") }
+                }
+                Spacer(Modifier.height(10.dp))
                 OutlinedTextField(
                     value = text,
                     onValueChange = { input ->
@@ -282,7 +295,7 @@ private fun EchoEditDialog(config: EchoEdit, onDismiss: () -> Unit, onApply: (In
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     label = { Text("Value") },
                     supportingText = { Text("Range ${config.min} ~ ${config.max} / ${validValue?.let(config.formatter) ?: "Invalid"}") },
-                    isError = parsed == null || parsed !in config.min..config.max,
+                    isError = validValue == null,
                 )
             }
         },

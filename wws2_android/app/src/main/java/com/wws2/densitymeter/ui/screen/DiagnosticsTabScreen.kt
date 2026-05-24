@@ -38,6 +38,8 @@ private data class ConfigEdit(
     val min: Int,
     val max: Int,
     val step: Int,
+    val allowTextInput: Boolean = true,
+    val decimalScale: Int = 1,
     val formatter: (Int) -> String,
 )
 
@@ -113,19 +115,19 @@ private fun InterfaceParametersPanel(state: MainUiState, onEdit: (ConfigEdit) ->
             fontSize = 18.sp, fontWeight = FontWeight.W700, color = AppColors.DarkText)
         EditableDiagRow("Freq", "%d kHz".format((state.freqMHz * 1000).roundToInt())) {
             val current = when ((state.freqMHz * 1000).roundToInt()) { 380 -> 0; 270 -> 1; 160 -> 2; 130 -> 3; else -> 0 }
-            onEdit(ConfigEdit("Frequency", 6, current, 0, 3, 1) { v -> when (v) { 0 -> "380 kHz"; 1 -> "270 kHz"; 2 -> "160 kHz"; 3 -> "130 kHz"; else -> "--" } })
+            onEdit(ConfigEdit("Frequency", 6, current, 0, 3, 1, allowTextInput = false) { v -> when (v) { 0 -> "380 kHz"; 1 -> "270 kHz"; 2 -> "160 kHz"; 3 -> "130 kHz"; else -> "--" } })
         }
         EditableDiagRow("Offset", "%.2f m".format(state.offset)) {
-            onEdit(ConfigEdit("Offset", 7, (state.offset * 100).roundToInt(), -100, 100, 1) { v -> "%.2f m".format(v / 100.0) })
+            onEdit(ConfigEdit("Offset", 7, (state.offset * 100).roundToInt(), -100, 100, 1, decimalScale = 100) { v -> "%.2f m".format(v / 100.0) })
         }
         EditableDiagRow("4mA Set", "%.2f".format(state.set4mA)) {
-            onEdit(ConfigEdit("4mA Set", 8, (state.set4mA * 100).roundToInt(), 0, 1000, 1) { v -> "%.2f".format(v / 100.0) })
+            onEdit(ConfigEdit("4mA Set", 8, (state.set4mA * 100).roundToInt(), 0, 1000, 1, decimalScale = 100) { v -> "%.2f".format(v / 100.0) })
         }
         EditableDiagRow("20mA Set", "%.2f".format(state.set20mA)) {
-            onEdit(ConfigEdit("20mA Set", 9, (state.set20mA * 100).roundToInt(), 0, 1000, 1) { v -> "%.2f".format(v / 100.0) })
+            onEdit(ConfigEdit("20mA Set", 9, (state.set20mA * 100).roundToInt(), 0, 1000, 1, decimalScale = 100) { v -> "%.2f".format(v / 100.0) })
         }
         EditableDiagRow("TVG", state.tvg.toString()) {
-            onEdit(ConfigEdit("TVG", 10, state.tvg, 0, 7, 1) { it.toString() })
+            onEdit(ConfigEdit("TVG", 10, state.tvg, 0, 7, 1, allowTextInput = false) { it.toString() })
         }
         EditableDiagRow("Damping", state.damping.toString()) {
             onEdit(ConfigEdit("Damping", 11, state.damping, 1, 100, 1) { it.toString() })
@@ -156,26 +158,52 @@ private fun EditableDiagRow(label: String, value: String, onClick: () -> Unit) {
 
 @Composable
 private fun ConfigEditDialog(config: ConfigEdit, onDismiss: () -> Unit, onApply: (Int) -> Unit) {
-    var text by remember(config) { mutableStateOf(config.value.coerceIn(config.min, config.max).toString()) }
-    val parsed = text.toIntOrNull()
+    fun textFor(raw: Int): String = if (config.decimalScale > 1) {
+        "%.2f".format(raw / config.decimalScale.toDouble())
+    } else raw.toString()
+    fun parseRaw(input: String): Int? = if (config.decimalScale > 1) {
+        input.toDoubleOrNull()?.let { (it * config.decimalScale).roundToInt() }
+    } else {
+        input.toIntOrNull()
+    }
+
+    var value by remember(config) { mutableIntStateOf(config.value.coerceIn(config.min, config.max)) }
+    var text by remember(config) { mutableStateOf(textFor(config.value.coerceIn(config.min, config.max))) }
+    val parsed = if (config.allowTextInput) parseRaw(text) else value
     val validValue = parsed?.takeIf { it in config.min..config.max }
+
+    fun setValue(newValue: Int) {
+        value = newValue.coerceIn(config.min, config.max)
+        text = textFor(value)
+    }
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(config.title) },
         text = {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                OutlinedTextField(
-                    value = text,
-                    onValueChange = { input ->
-                        text = input.filterIndexed { index, ch -> ch.isDigit() || (ch == '-' && index == 0 && config.min < 0) }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    label = { Text("Value") },
-                    supportingText = { Text("Range ${config.min} ~ ${config.max} / ${validValue?.let(config.formatter) ?: "Invalid"}") },
-                    isError = parsed == null || parsed !in config.min..config.max,
-                )
+            Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                    Button(onClick = { setValue((validValue ?: value) - config.step) }) { Text("-") }
+                    Text(config.formatter(validValue ?: value), fontSize = 24.sp, fontWeight = FontWeight.W700)
+                    Button(onClick = { setValue((validValue ?: value) + config.step) }) { Text("+") }
+                }
+                if (config.allowTextInput) {
+                    Spacer(Modifier.height(10.dp))
+                    OutlinedTextField(
+                        value = text,
+                        onValueChange = { input ->
+                            text = input.filterIndexed { index, ch ->
+                                ch.isDigit() || (ch == '.' && config.decimalScale > 1) || (ch == '-' && index == 0 && config.min < 0)
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = if (config.decimalScale > 1) KeyboardType.Decimal else KeyboardType.Number),
+                        label = { Text("Value") },
+                        supportingText = { Text("Range ${config.formatter(config.min)} ~ ${config.formatter(config.max)}") },
+                        isError = validValue == null,
+                    )
+                }
             }
         },
         confirmButton = { TextButton(enabled = validValue != null, onClick = { validValue?.let(onApply) }) { Text("Apply") } },
