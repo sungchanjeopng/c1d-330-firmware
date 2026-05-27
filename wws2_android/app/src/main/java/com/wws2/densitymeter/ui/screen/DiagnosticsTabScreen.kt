@@ -13,6 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.foundation.text.KeyboardOptions
@@ -22,6 +23,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.wws2.densitymeter.model.TemperatureUnit
 import com.wws2.densitymeter.ui.component.DeviceStripBar
@@ -135,9 +137,6 @@ private fun InterfaceParametersPanel(state: MainUiState, onEdit: (ConfigEdit) ->
         EditableDiagRow("20mA Set", "%.2f".format(state.set20mA)) {
             onEdit(ConfigEdit("20mA Set", 9, (state.set20mA * 100).roundToInt(), 0, 1000, 1, decimalScale = 100) { v -> "%.2f".format(v / 100.0) })
         }
-        EditableDiagRow("TVG", state.tvg.toString()) {
-            onEdit(ConfigEdit("TVG", 10, state.tvg, 0, 7, 1, allowTextInput = false) { it.toString() })
-        }
         EditableDiagRow("Damping", state.damping.toString()) {
             onEdit(ConfigEdit("Damping", 11, state.damping, 1, 100, 1) { it.toString() })
         }
@@ -199,80 +198,169 @@ private fun ConfigEditDialog(config: ConfigEdit, onDismiss: () -> Unit, onApply:
         fracText = TextFieldValue(fractionText(value), selection = TextRange(fractionText(value).length))
     }
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(config.title) },
-        text = {
-            Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                    Button(onClick = { setValue((validValue ?: value) - config.step) }) { Text("-") }
-                    Text(config.formatter(validValue ?: value), fontSize = 24.sp, fontWeight = FontWeight.W700)
-                    Button(onClick = { setValue((validValue ?: value) + config.step) }) { Text("+") }
-                }
-                if (config.allowTextInput) {
-                    Spacer(Modifier.height(10.dp))
-                    if (config.decimalScale > 1) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.Bottom,
-                        ) {
-                            OutlinedTextField(
-                                value = intText,
-                                onValueChange = { input ->
-                                    val filtered = input.text.filterIndexed { index, ch -> ch.isDigit() || (ch == '-' && index == 0 && config.min < 0) }
-                                    intText = TextFieldValue(filtered, selection = TextRange(filtered.length))
-                                },
-                                modifier = Modifier.width(92.dp),
-                                singleLine = true,
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.End, fontSize = 20.sp),
-                                colors = OutlinedTextFieldDefaults.colors(cursorColor = androidx.compose.ui.graphics.Color.Transparent),
-                                isError = validValue == null,
-                            )
-                            Text(
-                                ".",
-                                modifier = Modifier.padding(start = 6.dp, end = 6.dp, bottom = 8.dp),
-                                fontSize = 24.sp,
-                                fontWeight = FontWeight.W700,
-                            )
-                            OutlinedTextField(
-                                value = fracText,
-                                onValueChange = { input ->
-                                    val filtered = input.text.filter { it.isDigit() }.take(2)
-                                    fracText = TextFieldValue(filtered, selection = TextRange(filtered.length))
-                                },
-                                modifier = Modifier.width(76.dp),
-                                singleLine = true,
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Start, fontSize = 20.sp),
-                                colors = OutlinedTextFieldDefaults.colors(cursorColor = androidx.compose.ui.graphics.Color.Transparent),
-                                isError = validValue == null,
-                            )
-                        }
-                        Text("Range ${config.formatter(config.min)} ~ ${config.formatter(config.max)}", fontSize = 12.sp, color = AppColors.GrayLabel)
-                    } else {
+    // Design mirrors iOS ConfigEditSheet (DiagnosticsTabScreen.swift:266-478):
+    // rounded primary-tinted [-]/[+] tiles, centered value, rounded-border text
+    // fields that turn red when invalid, and full-width Cancel/Apply buttons.
+    Dialog(onDismissRequest = onDismiss) {
+        Column(
+            modifier = Modifier
+                .clip(RoundedCornerShape(16.dp))
+                .background(AppColors.White)
+                .padding(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                config.title,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.W700,
+                color = AppColors.DarkText,
+            )
+
+            Spacer(Modifier.height(18.dp))
+
+            // Stepper row: [-]  formatted value  [+]
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                StepperTile("-") { setValue((validValue ?: value) - config.step) }
+                Text(
+                    config.formatter(validValue ?: value),
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.W700,
+                    color = AppColors.DarkText,
+                )
+                StepperTile("+") { setValue((validValue ?: value) + config.step) }
+            }
+
+            if (config.allowTextInput) {
+                Spacer(Modifier.height(18.dp))
+                if (config.decimalScale > 1) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.Bottom,
+                    ) {
                         OutlinedTextField(
                             value = intText,
                             onValueChange = { input ->
                                 val filtered = input.text.filterIndexed { index, ch -> ch.isDigit() || (ch == '-' && index == 0 && config.min < 0) }
                                 intText = TextFieldValue(filtered, selection = TextRange(filtered.length))
                             },
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier.width(100.dp),
                             singleLine = true,
+                            shape = RoundedCornerShape(8.dp),
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            label = { Text("Value") },
-                            supportingText = { Text("Range ${config.formatter(config.min)} ~ ${config.formatter(config.max)}") },
+                            textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.End, fontSize = 20.sp),
+                            colors = OutlinedTextFieldDefaults.colors(cursorColor = androidx.compose.ui.graphics.Color.Transparent),
+                            isError = validValue == null,
+                        )
+                        Text(
+                            ".",
+                            modifier = Modifier.padding(start = 6.dp, end = 6.dp, bottom = 8.dp),
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.W700,
+                            color = AppColors.DarkText,
+                        )
+                        OutlinedTextField(
+                            value = fracText,
+                            onValueChange = { input ->
+                                val filtered = input.text.filter { it.isDigit() }.take(2)
+                                fracText = TextFieldValue(filtered, selection = TextRange(filtered.length))
+                            },
+                            modifier = Modifier.width(80.dp),
+                            singleLine = true,
+                            shape = RoundedCornerShape(8.dp),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Start, fontSize = 20.sp),
                             colors = OutlinedTextFieldDefaults.colors(cursorColor = androidx.compose.ui.graphics.Color.Transparent),
                             isError = validValue == null,
                         )
                     }
+                    Spacer(Modifier.height(4.dp))
+                    Text("Range ${config.formatter(config.min)} ~ ${config.formatter(config.max)}", fontSize = 12.sp, color = AppColors.GrayLabel)
+                } else {
+                    OutlinedTextField(
+                        value = intText,
+                        onValueChange = { input ->
+                            val filtered = input.text.filterIndexed { index, ch -> ch.isDigit() || (ch == '-' && index == 0 && config.min < 0) }
+                            intText = TextFieldValue(filtered, selection = TextRange(filtered.length))
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        shape = RoundedCornerShape(8.dp),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        label = { Text("Value") },
+                        supportingText = { Text("Range ${config.formatter(config.min)} ~ ${config.formatter(config.max)}") },
+                        colors = OutlinedTextFieldDefaults.colors(cursorColor = androidx.compose.ui.graphics.Color.Transparent),
+                        isError = validValue == null,
+                    )
                 }
             }
-        },
-        confirmButton = { TextButton(enabled = validValue != null, onClick = { validValue?.let(onApply) }) { Text("Apply") } },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
-    )
+
+            Spacer(Modifier.height(18.dp))
+
+            // Action buttons: Cancel / Apply (full width, mirrors iOS)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                DialogActionButton(
+                    text = "Cancel",
+                    background = AppColors.LightGray,
+                    contentColor = AppColors.DarkText,
+                    modifier = Modifier.weight(1f),
+                    onClick = onDismiss,
+                )
+                DialogActionButton(
+                    text = "Apply",
+                    background = if (validValue == null) AppColors.WeakText else AppColors.Primary,
+                    contentColor = AppColors.White,
+                    enabled = validValue != null,
+                    modifier = Modifier.weight(1f),
+                    onClick = { validValue?.let(onApply) },
+                )
+            }
+        }
+    }
+}
+
+/** Rounded primary-tinted +/- stepper tile — mirrors iOS ConfigEditSheet stepper buttons. */
+@Composable
+private fun StepperTile(label: String, onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .size(width = 56.dp, height = 44.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .background(AppColors.Primary.copy(alpha = 0.1f))
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(label, fontSize = 24.sp, fontWeight = FontWeight.W700, color = AppColors.Primary)
+    }
+}
+
+/** Full-width filled action button — mirrors iOS ConfigEditSheet Cancel/Apply buttons. */
+@Composable
+private fun DialogActionButton(
+    text: String,
+    background: androidx.compose.ui.graphics.Color,
+    contentColor: androidx.compose.ui.graphics.Color,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    onClick: () -> Unit,
+) {
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(10.dp))
+            .background(background)
+            .clickable(enabled = enabled, onClick = onClick)
+            .padding(vertical = 12.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(text, fontSize = 16.sp, fontWeight = FontWeight.W600, color = contentColor)
+    }
 }
 
 @Composable
