@@ -27,7 +27,9 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.wws2.densitymeter.model.TemperatureUnit
 import com.wws2.densitymeter.ui.component.DeviceStripBar
+import com.wws2.densitymeter.ui.component.DialogActionButton
 import com.wws2.densitymeter.ui.component.DiagRow
+import com.wws2.densitymeter.ui.component.StepperTile
 import com.wws2.densitymeter.ui.component.SettingsPanel
 import com.wws2.densitymeter.ui.component.StatusInfoPanel
 import com.wws2.densitymeter.ui.theme.AppColors
@@ -326,42 +328,6 @@ private fun ConfigEditDialog(config: ConfigEdit, onDismiss: () -> Unit, onApply:
     }
 }
 
-/** Rounded primary-tinted +/- stepper tile — mirrors iOS ConfigEditSheet stepper buttons. */
-@Composable
-private fun StepperTile(label: String, onClick: () -> Unit) {
-    Box(
-        modifier = Modifier
-            .size(width = 56.dp, height = 44.dp)
-            .clip(RoundedCornerShape(10.dp))
-            .background(AppColors.Primary.copy(alpha = 0.1f))
-            .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(label, fontSize = 24.sp, fontWeight = FontWeight.W700, color = AppColors.Primary)
-    }
-}
-
-/** Full-width filled action button — mirrors iOS ConfigEditSheet Cancel/Apply buttons. */
-@Composable
-private fun DialogActionButton(
-    text: String,
-    background: androidx.compose.ui.graphics.Color,
-    contentColor: androidx.compose.ui.graphics.Color,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    onClick: () -> Unit,
-) {
-    Box(
-        modifier = modifier
-            .clip(RoundedCornerShape(10.dp))
-            .background(background)
-            .clickable(enabled = enabled, onClick = onClick)
-            .padding(vertical = 12.dp),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(text, fontSize = 16.sp, fontWeight = FontWeight.W600, color = contentColor)
-    }
-}
 
 @Composable
 private fun InterfaceStatusPanel(state: MainUiState) {

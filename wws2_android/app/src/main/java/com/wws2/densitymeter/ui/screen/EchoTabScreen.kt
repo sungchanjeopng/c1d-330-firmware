@@ -24,13 +24,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.foundation.border
 import com.wws2.densitymeter.model.InterfaceEchoReading
 import com.wws2.densitymeter.ui.component.DeviceStripBar
+import com.wws2.densitymeter.ui.component.DialogActionButton
 import com.wws2.densitymeter.ui.component.EchoChart
 import com.wws2.densitymeter.ui.component.InterfaceEchoChart
 import com.wws2.densitymeter.ui.component.StatRow
+import com.wws2.densitymeter.ui.component.StepperTile
 import com.wws2.densitymeter.ui.theme.AppColors
 import com.wws2.densitymeter.ui.theme.isTablet
 import com.wws2.densitymeter.ui.theme.isWideLayout
@@ -276,36 +279,83 @@ private fun EchoEditDialog(config: EchoEdit, onDismiss: () -> Unit, onApply: (In
         text = TextFieldValue(value.toString(), selection = TextRange(value.toString().length))
     }
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(config.title) },
-        text = {
-            Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                    Button(onClick = { setValue((validValue ?: value) - config.step) }) { Text("-") }
-                    Text(config.formatter(validValue ?: value), fontSize = 24.sp, fontWeight = FontWeight.W700)
-                    Button(onClick = { setValue((validValue ?: value) + config.step) }) { Text("+") }
-                }
-                Spacer(Modifier.height(10.dp))
-                OutlinedTextField(
-                    value = text,
-                    onValueChange = { input ->
-                        val filtered = input.text.filterIndexed { index, ch -> ch.isDigit() || (ch == '-' && index == 0 && config.min < 0) }
-                        text = TextFieldValue(filtered, selection = TextRange(filtered.length))
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    label = { Text("Value") },
-                    supportingText = { Text("Range ${config.min} ~ ${config.max} / ${validValue?.let(config.formatter) ?: "Invalid"}") },
-                    colors = OutlinedTextFieldDefaults.colors(cursorColor = androidx.compose.ui.graphics.Color.Transparent),
-                    isError = validValue == null,
+    // Design mirrors iOS EchoEditSheet (EchoTabScreen.swift:227-345): rounded
+    // primary-tinted +/- tiles, centered value, rounded-border field (red when
+    // invalid), full-width Cancel/Apply buttons.
+    Dialog(onDismissRequest = onDismiss) {
+        Column(
+            modifier = Modifier
+                .clip(RoundedCornerShape(16.dp))
+                .background(AppColors.White)
+                .padding(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                config.title,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.W700,
+                color = AppColors.DarkText,
+            )
+
+            Spacer(Modifier.height(18.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                StepperTile("-") { setValue((validValue ?: value) - config.step) }
+                Text(
+                    config.formatter(validValue ?: value),
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.W700,
+                    color = AppColors.DarkText,
+                )
+                StepperTile("+") { setValue((validValue ?: value) + config.step) }
+            }
+
+            Spacer(Modifier.height(18.dp))
+
+            OutlinedTextField(
+                value = text,
+                onValueChange = { input ->
+                    val filtered = input.text.filterIndexed { index, ch -> ch.isDigit() || (ch == '-' && index == 0 && config.min < 0) }
+                    text = TextFieldValue(filtered, selection = TextRange(filtered.length))
+                },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                shape = RoundedCornerShape(8.dp),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                label = { Text("Value") },
+                supportingText = { Text("Range ${config.min} ~ ${config.max} / ${validValue?.let(config.formatter) ?: "Invalid"}") },
+                colors = OutlinedTextFieldDefaults.colors(cursorColor = androidx.compose.ui.graphics.Color.Transparent),
+                isError = validValue == null,
+            )
+
+            Spacer(Modifier.height(18.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                DialogActionButton(
+                    text = "Cancel",
+                    background = AppColors.LightGray,
+                    contentColor = AppColors.DarkText,
+                    modifier = Modifier.weight(1f),
+                    onClick = onDismiss,
+                )
+                DialogActionButton(
+                    text = "Apply",
+                    background = if (validValue == null) AppColors.WeakText else AppColors.Primary,
+                    contentColor = AppColors.White,
+                    enabled = validValue != null,
+                    modifier = Modifier.weight(1f),
+                    onClick = { validValue?.let(onApply) },
                 )
             }
-        },
-        confirmButton = { TextButton(enabled = validValue != null, onClick = { validValue?.let(onApply) }) { Text("Apply") } },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
-    )
+        }
+    }
 }
 
 @Composable
