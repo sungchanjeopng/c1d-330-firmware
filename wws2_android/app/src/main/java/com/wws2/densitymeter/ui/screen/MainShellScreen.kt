@@ -137,6 +137,7 @@ fun MainShellScreen(vm: MainViewModel = viewModel()) {
                 title = vm.currentTitle,
                 showBack = showTopBarBack,
                 rxBlink = state.rxBlink,
+                isReconnecting = vm.isReconnecting,
                 aiActive = showAiSheet,
                 onBackTap = { vm.handleTopBarBack() },
                 onBleTap = { vm.openPairing() },

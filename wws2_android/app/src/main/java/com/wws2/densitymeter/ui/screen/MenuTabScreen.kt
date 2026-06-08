@@ -52,6 +52,7 @@ fun MenuTabScreen(vm: MainViewModel) {
             DeviceStripBar(
                 devices = devices,
                 selectedDeviceId = state.activeDeviceId,
+                reconnectingIds = state.reconnectingIds,
                 onDeviceTap = { vm.requestConnectDevice(it) },
                 onMoreTap = { vm.openPairing() },
             )

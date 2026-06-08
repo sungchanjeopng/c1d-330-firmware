@@ -43,6 +43,7 @@ fun MainTabScreen(vm: MainViewModel) {
             DeviceStripBar(
                 devices = devices,
                 selectedDeviceId = state.activeDeviceId,
+                reconnectingIds = state.reconnectingIds,
                 onDeviceTap = { vm.requestConnectDevice(it) },
                 onMoreTap = { vm.openPairing() },
             )
@@ -53,6 +54,7 @@ fun MainTabScreen(vm: MainViewModel) {
                 isSelected = true,
                 isCompact = false,
                 densUnit = densUnit,
+                isReconnecting = activeDevice.id in state.reconnectingIds,
                 onTap = {},
                 modifier = Modifier.weight(1f).fillMaxWidth(),
             )
@@ -96,6 +98,7 @@ private fun DeviceCard(
     isSelected: Boolean,
     isCompact: Boolean,
     densUnit: DensityUnit,
+    isReconnecting: Boolean = false,
     onTap: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -112,7 +115,8 @@ private fun DeviceCard(
     ) {
         // Device label top-left
         Row(modifier = Modifier.align(Alignment.TopStart), verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.size(8.dp).clip(CircleShape).background(AppColors.Success))
+            // 라벨 옆 점: 초록=연결 / 주황=재연결 중
+            Box(Modifier.size(8.dp).clip(CircleShape).background(if (isReconnecting) AppColors.Reconnecting else AppColors.Success))
             Spacer(Modifier.width(8.dp))
             Text(device.label, fontSize = if (isCompact) 13.sp else 16.sp, fontWeight = FontWeight.W600, color = AppColors.DarkText, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }

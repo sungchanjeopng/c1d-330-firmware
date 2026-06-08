@@ -62,7 +62,7 @@ fun EchoTabScreen(vm: MainViewModel) {
         val wide = isWideLayout
         val tablet = isTablet
         Column(modifier = Modifier.fillMaxSize().padding(12.dp)) {
-            DeviceStripBar(devices = devices, selectedDeviceId = state.activeDeviceId,
+            DeviceStripBar(devices = devices, selectedDeviceId = state.activeDeviceId, reconnectingIds = state.reconnectingIds,
                 onDeviceTap = { vm.requestConnectDevice(it) }, onMoreTap = { vm.openPairing() })
             Spacer(Modifier.height(8.dp))
 
@@ -104,7 +104,7 @@ fun EchoTabScreen(vm: MainViewModel) {
         val wide = isWideLayout
         val tablet = isTablet
         Column(modifier = Modifier.fillMaxSize().padding(12.dp)) {
-            DeviceStripBar(devices = devices, selectedDeviceId = state.activeDeviceId,
+            DeviceStripBar(devices = devices, selectedDeviceId = state.activeDeviceId, reconnectingIds = state.reconnectingIds,
                 onDeviceTap = { vm.requestConnectDevice(it) }, onMoreTap = { vm.openPairing() })
             Spacer(Modifier.height(8.dp))
 

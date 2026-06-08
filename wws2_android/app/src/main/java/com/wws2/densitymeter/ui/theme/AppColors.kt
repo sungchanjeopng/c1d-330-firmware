@@ -10,6 +10,7 @@ object AppColors {
     val Border = Color(0xFFD1D6DB)
     val Error = Color(0xFFEB5757)
     val Success = Color(0xFF34C759)
+    val Reconnecting = Color(0xFFFF9500)  // 주황(앰버): 재연결 중 상태
     val Temperature = Color(0xFFE03131)
     val White = Color(0xFFFFFFFF)
     val LightGray = Color(0xFFF8F9FA)

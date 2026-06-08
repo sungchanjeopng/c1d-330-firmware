@@ -26,6 +26,7 @@ fun DeviceStripBar(
     devices: List<ConnectedBleDevice>,
     selectedDeviceId: String,
     visibleDeviceIds: Set<String> = emptySet(),
+    reconnectingIds: Set<String> = emptySet(),
     onDeviceTap: (String) -> Unit,
     onMoreTap: () -> Unit = {},
 ) {
@@ -63,11 +64,13 @@ fun DeviceStripBar(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
+                // 왼쪽 점 = 연결 상태: 초록(연결) / 주황(재연결 중)
+                val dotColor = if (device.id in reconnectingIds) AppColors.Reconnecting else AppColors.Success
                 Box(
                     Modifier
                         .size(6.dp)
                         .clip(CircleShape)
-                        .background(if (isActive) AppColors.Primary else AppColors.GrayLabel)
+                        .background(dotColor)
                 )
                 Spacer(Modifier.width(6.dp))
                 Text(

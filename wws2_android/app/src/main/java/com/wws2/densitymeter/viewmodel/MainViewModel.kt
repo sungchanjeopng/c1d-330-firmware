@@ -30,6 +30,8 @@ private const val MAX_MISSED_HEARTBEATS = 5
 // Status(Main/Diag/Trend): 0x00/0x10, Echo(CH1/CH2·AVG): 0x01/0x05/0x11/0x15.
 // Calib(0x03)·Pairing(5)·Menu·Chatbot 등 무응답/미통신 화면은 제외 → 오탐 방지.
 private val WATCHDOG_PAGES = setOf(0x00, 0x10, 0x01, 0x05, 0x11, 0x15)
+// 자동 재연결 시도 간격(고정). backoff 없이 3초마다 성공할 때까지 재시도.
+private const val RECONNECT_INTERVAL_MS = 3000L
 
 enum class DeviceType { DENSITY, INTERFACE }
 enum class EchoMode { REAL, AVG }
@@ -106,6 +108,9 @@ data class MainUiState(
 
     // Scan
     val connectingIds: Set<String> = emptySet(),
+    // 링크가 끊겨 자동 재연결 중인 기기들. connectedDevices에는 그대로 남아 있고(목록에서
+    // 안 빠짐) UI는 "Reconnecting…"으로 표시한다. 사용자가 수동(✕) 해제 전까지 무한 재시도.
+    val reconnectingIds: Set<String> = emptySet(),
 
     // Device type (auto-detected from response LEN)
     val deviceType: DeviceType = DeviceType.DENSITY,
@@ -124,6 +129,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val connectionService = BleConnectionService(application)
     private val protocolServices = mutableMapOf<String, BleProtocolService>()
     private val activeProtocol: BleProtocolService? get() = protocolServices[_state.value.activeDeviceId]
+
+    // 자동 재연결용: 물리주소별 재연결 루프 Job.
+    private val reconnectJobs = mutableMapOf<String, Job>()
+
+    /** "<addr>_CH1"/"_CH2" 같은 가상 id에서 물리 BLE 주소를 추출한다. */
+    private fun physicalAddress(id: String): String = id.replace("_CH1", "").replace("_CH2", "")
 
     private val _state = MutableStateFlow(MainUiState())
     val state: StateFlow<MainUiState> = _state.asStateFlow()
@@ -482,12 +493,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 viewModelScope.launch {
                     proto.connectionState.collect { connected ->
                         if (!connected) {
-                            Log.w(TAG, "BLE disconnected: $address")
-                            disconnectDevice(address)
-                            if (isInterface) {
-                                disconnectDevice("${address}_CH1")
-                                disconnectDevice("${address}_CH2")
-                            }
+                            Log.w(TAG, "BLE disconnected: $address → 재연결 시도")
+                            beginReconnect(address)
                         }
                     }
                 }
@@ -504,8 +511,80 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    /**
+     * 링크가 끊긴 기기를 목록에서 빼지 않고 "재연결 중(Reconnecting…)" 상태로 두고
+     * 백그라운드에서 3초 간격으로 무한 재연결을 시도한다. (성공 시 정상 복귀, 수동 ✕ 해야 완전 해제)
+     * 펌웨어는 PIN 인증(0xF0) 없이도 데이터 명령에 응답하므로, 재연결 시 페어링은 생략하고
+     * BLE 링크만 다시 연결한다.
+     */
+    private fun beginReconnect(deviceId: String) {
+        val address = physicalAddress(deviceId)
+        if (address in reconnectJobs) return
+        if (_state.value.reconnectingIds.any { physicalAddress(it) == address }) return
+        val ids = _state.value.connectedDevices.map { it.id }.filter { physicalAddress(it) == address }
+        if (ids.isEmpty()) return
+
+        _state.update { it.copy(reconnectingIds = it.reconnectingIds + ids) }
+
+        reconnectJobs[address] = viewModelScope.launch {
+            // 활성 기기였다면 실시간 파이프라인(heartbeat/notify/parse) 정지
+            if (_state.value.activeDeviceId in ids) {
+                stopHeartbeat(); notifyJob?.cancel(); parseJob?.cancel()
+            }
+            // 링크만 해제 — connectedDevices 목록은 유지한다
+            val proto = protocolServices[address] ?: ids.firstNotNullOfOrNull { protocolServices[it] }
+            try { proto?.disconnect() } catch (e: Exception) { Log.w(TAG, "reconnect teardown failed: ${e.message}") }
+            ids.forEach { protocolServices.remove(it) }
+            protocolServices.remove(address)
+
+            // 3초 고정 간격으로 성공할 때까지(또는 수동 해제 전까지) 무한 반복.
+            while (isActive) {
+                delay(RECONNECT_INTERVAL_MS)
+                if (address !in reconnectJobs) break  // 수동 해제됨
+                Log.d(TAG, "Reconnect attempt for $address")
+                if (attemptReconnect(address)) {
+                    Log.d(TAG, "Reconnect succeeded for $address")
+                    break
+                }
+            }
+            reconnectJobs.remove(address)
+        }
+    }
+
+    /** 재연결 1회 시도: BLE 링크만 다시 연결하고(페어링 생략) 기존 기기 id에 새 세션을 매핑한다. */
+    private suspend fun attemptReconnect(address: String): Boolean {
+        val device = connectionService.getRemoteDevice(address) ?: return false
+        val proto = BleProtocolService(getApplication())
+        val ok = try { proto.connect(device) } catch (e: Exception) { Log.w(TAG, "reconnect connect failed: ${e.message}"); false }
+        if (!ok) { try { proto.disconnect() } catch (_: Exception) {}; return false }
+
+        val ids = _state.value.connectedDevices.map { it.id }.filter { physicalAddress(it) == address }
+        if (ids.isEmpty()) { try { proto.disconnect() } catch (_: Exception) {}; return false }
+
+        protocolServices[address] = proto
+        ids.forEach { protocolServices[it] = proto }
+        _state.update { it.copy(reconnectingIds = it.reconnectingIds - ids.toSet()) }
+
+        // 다시 끊기면 또 재연결
+        viewModelScope.launch {
+            proto.connectionState.collect { connected ->
+                if (!connected) beginReconnect(address)
+            }
+        }
+
+        // 보고 있던 기기였다면 실시간 파이프라인 재가동
+        if (_state.value.activeDeviceId in ids) {
+            activateDevice(_state.value.activeDeviceId)
+        }
+        startForegroundService()
+        return true
+    }
+
     fun disconnectDevice(id: String) {
         viewModelScope.launch {
+            // 수동 해제 시 진행 중인 재연결 루프도 취소한다
+            reconnectJobs.remove(physicalAddress(id))?.cancel()
+
             val s = _state.value
             // Find sibling virtual device (interface: _CH1 ??_CH2, density: _D1 ??_D2)
             val siblingId = when {
@@ -540,6 +619,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     connectedDevices = newDevices,
                     deviceReadings = newReadings,
                     deviceEchoReadings = newEchos,
+                    reconnectingIds = st.reconnectingIds - idsToRemove.toSet(),
                 )
 
                 if (wasFirmwareTarget) {
@@ -659,9 +739,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     missedHeartbeats++
                     if (missedHeartbeats >= MAX_MISSED_HEARTBEATS) {
                         val deadId = _state.value.activeDeviceId
-                        Log.w(TAG, "Heartbeat watchdog: $missedHeartbeats beats without RX, disconnecting $deadId")
+                        Log.w(TAG, "Heartbeat watchdog: $missedHeartbeats beats without RX → 재연결 시도 $deadId")
                         missedHeartbeats = 0
-                        if (deadId.isNotEmpty()) disconnectDevice(deadId)
+                        if (deadId.isNotEmpty()) beginReconnect(deadId)
                     }
                 }
                 if (rxMuted) {
@@ -1986,10 +2066,21 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     val isConnected: Boolean get() = _state.value.connectedDevices.isNotEmpty()
 
+    /** 재연결 중인 기기가 하나라도 있으면 true → TopBar 알약을 주황+깜빡임으로 표시. */
+    val isReconnecting: Boolean
+        get() = _state.value.connectedDevices.any { it.id in _state.value.reconnectingIds }
+
     val statusLabel: String
         get() {
-            val count = _state.value.connectedDevices.size
-            return if (count > 0) "$count Connected" else "Disconnected"
+            val s = _state.value
+            val reconnecting = s.connectedDevices.count { it.id in s.reconnectingIds }
+            val live = s.connectedDevices.count { it.id !in s.reconnectingIds }
+            return when {
+                reconnecting > 0 && live > 0 -> "$reconnecting Reconnecting · $live Connected"
+                reconnecting > 0 -> "$reconnecting Reconnecting"
+                live > 0 -> "$live Connected"
+                else -> "Disconnected"
+            }
         }
 
     val deviceLabelOrDefault: String

@@ -1,5 +1,10 @@
 package com.wws2.densitymeter.ui.component
 
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -13,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
@@ -31,6 +37,7 @@ fun TopBar(
     title: String,
     showBack: Boolean = false,
     rxBlink: Boolean = false,
+    isReconnecting: Boolean = false,
     aiActive: Boolean = false,
     onBackTap: () -> Unit = {},
     onBleTap: () -> Unit = {},
@@ -68,7 +75,7 @@ fun TopBar(
         Spacer(Modifier.width(8.dp))
         AiSparkleButton(active = aiActive, onTap = onChatTap)
         Spacer(Modifier.width(8.dp))
-        BlePillButton(isConnected = isConnected, label = statusLabel, rxBlink = rxBlink, onTap = onBleTap)
+        BlePillButton(isConnected = isConnected, label = statusLabel, rxBlink = rxBlink, isReconnecting = isReconnecting, onTap = onBleTap)
     }
 }
 
@@ -117,14 +124,33 @@ fun BlePillButton(
     isConnected: Boolean,
     label: String,
     rxBlink: Boolean = false,
+    isReconnecting: Boolean = false,
     onTap: () -> Unit = {},
 ) {
-    val bgColor = if (!isConnected) AppColors.PillDisconnected
-    else if (rxBlink) AppColors.Success.copy(alpha = 0.7f)
-    else AppColors.Success
+    // 재연결 중이면 주황 알약 + 점 깜빡임. (연결=초록, 해제=회색과 구분)
+    val blinkAlpha = if (isReconnecting) {
+        val transition = rememberInfiniteTransition(label = "reconnectBlink")
+        transition.animateFloat(
+            initialValue = 1f,
+            targetValue = 0.2f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(durationMillis = 600),
+                repeatMode = RepeatMode.Reverse,
+            ),
+            label = "reconnectDotAlpha",
+        ).value
+    } else 1f
 
-    val textColor = if (isConnected) AppColors.White else AppColors.GrayLabel
-    val dotColor = if (isConnected) AppColors.White else AppColors.GrayLabel
+    val bgColor = when {
+        isReconnecting -> AppColors.Reconnecting
+        !isConnected -> AppColors.PillDisconnected
+        rxBlink -> AppColors.Success.copy(alpha = 0.7f)
+        else -> AppColors.Success
+    }
+
+    val active = isConnected || isReconnecting
+    val textColor = if (active) AppColors.White else AppColors.GrayLabel
+    val dotColor = if (active) AppColors.White else AppColors.GrayLabel
 
     Row(
         modifier = Modifier
@@ -138,6 +164,7 @@ fun BlePillButton(
             Modifier
                 .size(8.dp)
                 .clip(CircleShape)
+                .alpha(blinkAlpha)
                 .background(dotColor)
         )
         Spacer(Modifier.width(6.dp))
