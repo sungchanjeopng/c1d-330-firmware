@@ -1467,6 +1467,12 @@ void DaBT_InItMain(void)
     buff_cnt = sprintf((char*)buff, "AT+PACKETMODE=OFF\r");
     BLE_SendATCmd(buff, buff_cnt, "+OK", 1000);
 
+    // TX 출력 파워를 최대(+4dBm)로 설정 → 통신거리 ↑.
+    // 기본값은 5(-4dBm)이며 7=+4dBm 으로 +8dB 높여 거리 약 2.5배 확보.
+    // Advertising 시작(AT+ADVON) 전에 설정해야 해당 파워로 광고가 시작된다.
+    buff_cnt = sprintf((char*)buff, "AT+TXPWR=7\r");
+    BLE_SendATCmd(buff, buff_cnt, "+OK", 1000);
+
     buff_cnt = sprintf((char*)buff, "AT+ADVON\r");
     BLE_SendATCmd(buff, buff_cnt, "+OK", 1000);
 
