@@ -23,6 +23,13 @@ import kotlin.math.sin
 import kotlin.math.cos
 
 private const val TAG = "MainVM"
+// Heartbeat 응답 워치독: heartbeat은 1초 주기이므로 연속 5회(~5초) 무응답이면 끊김으로 판단한다.
+// Android BLE supervision timeout(최대 ~20초)보다 훨씬 빠르게 "거리 멀어짐" 끊김을 감지한다.
+private const val MAX_MISSED_HEARTBEATS = 5
+// 펌웨어가 매 heartbeat마다 확실히 응답하는 page만 워치독 대상으로 삼는다.
+// Status(Main/Diag/Trend): 0x00/0x10, Echo(CH1/CH2·AVG): 0x01/0x05/0x11/0x15.
+// Calib(0x03)·Pairing(5)·Menu·Chatbot 등 무응답/미통신 화면은 제외 → 오탐 방지.
+private val WATCHDOG_PAGES = setOf(0x00, 0x10, 0x01, 0x05, 0x11, 0x15)
 
 enum class DeviceType { DENSITY, INTERFACE }
 enum class EchoMode { REAL, AVG }
@@ -147,6 +154,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private var heartbeatJob: Job? = null
+    // 연속으로 응답(RX)이 없는 워치독 대상 heartbeat 횟수. RX가 오면 0으로 리셋된다.
+    @Volatile private var missedHeartbeats = 0
     private var notifyJob: Job? = null
     private var parseJob: Job? = null
     private var uploadTimerJob: Job? = null
@@ -604,6 +613,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun startHeartbeat() {
         stopHeartbeat()
+        missedHeartbeats = 0  // 새 활성 기기 기준으로 워치독 초기화
         heartbeatJob = viewModelScope.launch {
             while (isActive) {
                 val s = _state.value
@@ -643,6 +653,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     delay(1000); continue
                 }
                 proto.sendHeartbeat(pageIndex)
+                // 응답 워치독: 펌웨어가 매초 응답하는 page를 보냈는데도 RX가
+                // MAX_MISSED_HEARTBEATS회 연속 없으면(=거리 멀어져 링크 끊김) 명시적으로 해제한다.
+                if (pageIndex in WATCHDOG_PAGES) {
+                    missedHeartbeats++
+                    if (missedHeartbeats >= MAX_MISSED_HEARTBEATS) {
+                        val deadId = _state.value.activeDeviceId
+                        Log.w(TAG, "Heartbeat watchdog: $missedHeartbeats beats without RX, disconnecting $deadId")
+                        missedHeartbeats = 0
+                        if (deadId.isNotEmpty()) disconnectDevice(deadId)
+                    }
+                }
                 if (rxMuted) {
                     rxBuf.clear()
                     rxMuted = false  // cmd ?????곕츥?????????轅붽틓????嚥???????
@@ -670,6 +691,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         // ???轅붽틓????嚥????????獄쏅챶留?? rxBuf???????쇰뮡????????????????욧펾??븐낯筌???얜????????곕츥????
         notifyJob = viewModelScope.launch {
             proto.notifications.collect { chunk ->
+                // 어떤 데이터든 수신되면 장비가 살아있다는 뜻 → 워치독 카운터 리셋
+                if (chunk.isNotEmpty()) missedHeartbeats = 0
                 val preSyncWaiter = uploadPreSyncDeferred
                 if (preSyncWaiter != null && !preSyncWaiter.isCompleted && chunk.isNotEmpty()) {
                     Log.d(TAG, "Upload pre-sync response observed in general listener")
