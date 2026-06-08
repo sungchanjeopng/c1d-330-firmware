@@ -112,6 +112,12 @@ data class MainUiState(
     // 안 빠짐) UI는 "Reconnecting…"으로 표시한다. 사용자가 수동(✕) 해제 전까지 무한 재시도.
     val reconnectingIds: Set<String> = emptySet(),
 
+    // Report (ENV130) — 기기 선택 → BLE 수집 → 리포트 표시
+    val reportStage: com.wws2.densitymeter.model.ReportStage = com.wws2.densitymeter.model.ReportStage.SELECT,
+    val reportTargetId: String = "",
+    val reportData: com.wws2.densitymeter.model.ReportData? = null,
+    val reportError: String? = null,
+
     // Device type (auto-detected from response LEN)
     val deviceType: DeviceType = DeviceType.DENSITY,
     // Interface meter reading (kept for Diag display)
@@ -309,6 +315,139 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun openCalib() {
         _state.update { it.copy(tabIndex = 4, subPage = "calib") }
+    }
+
+    // ───────── Report (ENV130) ─────────
+    fun openReport() {
+        _state.update {
+            it.copy(
+                tabIndex = 4, subPage = "report",
+                reportStage = com.wws2.densitymeter.model.ReportStage.SELECT,
+                reportTargetId = "", reportData = null, reportError = null,
+            )
+        }
+    }
+
+    fun backToReportSelect() {
+        _state.update {
+            it.copy(
+                reportStage = com.wws2.densitymeter.model.ReportStage.SELECT,
+                reportTargetId = "", reportData = null, reportError = null,
+            )
+        }
+    }
+
+    /**
+     * 선택한 채널에 대해 리포트를 생성한다.
+     * 캐시가 아니라 BLE로 직접 STATUS(측정+설정) → ECHO 실시간 → ECHO 평균을 수집한다.
+     * (파형화면을 한 번도 안 들어갔어도 채워짐)
+     */
+    fun selectReportDevice(id: String) {
+        _state.update {
+            it.copy(
+                reportTargetId = id,
+                reportStage = com.wws2.densitymeter.model.ReportStage.COLLECTING,
+                reportData = null, reportError = null,
+            )
+        }
+        viewModelScope.launch {
+            try {
+                activateDevice(id)
+                delay(400)
+                stopHeartbeat()  // 수집 동안 자동 heartbeat 정지 (echo 파싱 간섭 방지)
+
+                val proto = protocolServices[id] ?: protocolServices[physicalAddress(id)]
+                    ?: throw Exception("No connection")
+                val isCh2 = id.endsWith("_CH2")
+                val statusPage = if (isCh2) 0x10 else 0x00
+                val realPage = if (isCh2) 0x11 else 0x01
+                val avgPage = if (isCh2) 0x15 else 0x05
+
+                // ① STATUS (측정값 + 설정값 동시) — 몇 번 보내 최신값 확보
+                rxMuted = false
+                repeat(3) { proto.sendHeartbeat(statusPage); delay(350) }
+
+                // ② ECHO 실시간 → ③ ECHO 평균
+                val realEcho = requestEchoWaveform(proto, realPage)
+                val avgEcho = requestEchoWaveform(proto, avgPage)
+
+                val s = _state.value
+                val dev = s.connectedDevices.find { it.id == id }
+                val reading = s.deviceReadings[id]
+                val ts = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault())
+                    .format(java.util.Date())
+                val data = com.wws2.densitymeter.model.ReportData(
+                    deviceId = id,
+                    label = dev?.label ?: id,
+                    firmwareVersion = dev?.firmwareVersion ?: "",
+                    timestamp = ts,
+                    lightLevel = reading?.level ?: realEcho?.lightLevel ?: 0.0,
+                    heavyLevel = reading?.heavyLevel ?: realEcho?.heavyLevel ?: 0.0,
+                    temperatureC = s.temperatureC,
+                    currentMA = s.currentMA,
+                    freqMHz = s.freqMHz,
+                    offset = s.offset,
+                    emptyDistance = s.emptyDistance,
+                    deadZone = s.deadZone,
+                    set4mA = s.set4mA,
+                    set20mA = s.set20mA,
+                    damping = s.damping,
+                    realEcho = realEcho,
+                    avgEcho = avgEcho,
+                )
+                _state.update {
+                    it.copy(reportData = data, reportStage = com.wws2.densitymeter.model.ReportStage.DONE)
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Report collect failed: ${e.message}")
+                _state.update {
+                    it.copy(
+                        reportStage = com.wws2.densitymeter.model.ReportStage.ERROR,
+                        reportError = e.message ?: "Report failed",
+                    )
+                }
+            } finally {
+                startHeartbeat()  // 수집 끝나면 정상 heartbeat 복구
+            }
+        }
+    }
+
+    /** echo page를 보내고 새 interfaceEchoReading(instance 변경)을 timeout 동안 기다린다. */
+    private suspend fun requestEchoWaveform(
+        proto: BleProtocolService,
+        page: Int,
+        timeoutMs: Long = 4000,
+    ): com.wws2.densitymeter.model.InterfaceEchoReading? {
+        val before = _state.value.interfaceEchoReading
+        val start = System.currentTimeMillis()
+        while (System.currentTimeMillis() - start < timeoutMs) {
+            proto.sendHeartbeat(page)
+            delay(500)
+            val cur = _state.value.interfaceEchoReading
+            if (cur != null && cur !== before) return cur
+        }
+        return _state.value.interfaceEchoReading?.takeIf { it !== before }
+    }
+
+    /** 현재 리포트를 수정 가능한 HTML 파일로 만들어 공유 Intent 를 반환한다. */
+    fun exportReportHtml(): Intent? {
+        val data = _state.value.reportData ?: return null
+        val html = com.wws2.densitymeter.domain.ReportHtmlExporter.buildHtml(data)
+        val context = getApplication<Application>()
+        val dir = java.io.File(context.cacheDir, "report_export")
+        dir.mkdirs()
+        val safe = data.label.replace(Regex("[^A-Za-z0-9_-]"), "_")
+        val stamp = java.text.SimpleDateFormat("yyyyMMdd_HHmmss", java.util.Locale.getDefault()).format(java.util.Date())
+        val fileName = "Report_${safe}_$stamp.html"
+        val file = java.io.File(dir, fileName)
+        file.writeText(html)
+        val uri = androidx.core.content.FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
+        return Intent(Intent.ACTION_SEND).apply {
+            type = "text/html"
+            putExtra(Intent.EXTRA_STREAM, uri)
+            putExtra(Intent.EXTRA_SUBJECT, fileName)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
     }
 
     private fun appSettingCmd(baseCmd: Int): Int {
@@ -2098,6 +2237,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             if (s.subPage == "upload") return "Firmware Update"
             if (s.subPage == "chatbot") return "AI Chatbot"
             if (s.subPage == "calib") return "Calibration"
+            if (s.subPage == "report") return "Report"
             return when (s.tabIndex) {
                 0 -> "Main"; 1 -> "Echo"; 2 -> "Trend"; 3 -> "Parameter"; 4 -> "Menu"; else -> "Main"
             }
@@ -2123,6 +2263,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
             "chatbot" -> {
                 _state.update { it.copy(subPage = null) }
+            }
+            "report" -> {
+                // 리포트 결과 화면이면 기기 선택으로, 선택 화면이면 메뉴로
+                if (s.reportStage != com.wws2.densitymeter.model.ReportStage.SELECT) backToReportSelect()
+                else _state.update { it.copy(subPage = null) }
             }
         }
     }

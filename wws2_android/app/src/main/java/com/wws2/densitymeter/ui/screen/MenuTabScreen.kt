@@ -7,6 +7,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Assessment
 import androidx.compose.material.icons.filled.Bluetooth
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.CloudUpload
@@ -75,6 +76,14 @@ fun MenuTabScreen(vm: MainViewModel) {
             iconColor = AppColors.Primary,
             title = "Data Files",
             onTap = { vm.openDataFilesList() },
+        )
+        Spacer(Modifier.height(10.dp))
+        MenuCard(
+            icon = Icons.Default.Assessment,
+            iconBg = Color(0xFFEDE9FE),
+            iconColor = Color(0xFF7C3AED),
+            title = "Report",
+            onTap = { vm.openReport() },
         )
         Spacer(Modifier.height(10.dp))
         MenuCard(

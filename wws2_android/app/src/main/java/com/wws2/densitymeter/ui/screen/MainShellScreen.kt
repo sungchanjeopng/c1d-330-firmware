@@ -179,6 +179,14 @@ fun MainShellScreen(vm: MainViewModel = viewModel()) {
                             csvSaveLauncher.launch(pair.first)
                         }
                     })
+                    state.tabIndex == 4 && state.subPage == "report" -> ReportScreen(vm, onExportHtml = {
+                        val intent = vm.exportReportHtml()
+                        if (intent != null) {
+                            context.startActivity(Intent.createChooser(intent, "Share Report"))
+                        } else {
+                            Toast.makeText(context, "No report to export", Toast.LENGTH_SHORT).show()
+                        }
+                    })
                     state.tabIndex == 0 -> MainTabScreen(vm)
                     state.tabIndex == 1 -> EchoTabScreen(vm)
                     state.tabIndex == 2 -> TrendTabScreen(vm)
