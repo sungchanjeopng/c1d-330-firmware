@@ -33,7 +33,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 private const val TAG = "BleProtocol"
-const val PHY_MODE = "2m" // "coded" / "2m" / "1m"
+const val PHY_MODE = "1m" // "coded" / "2m" / "1m" — 1M: 2M보다 통신거리 김(감도 -93 vs -90dBm), 양방향 적용
 
 class BleProtocolService(private val context: Context) {
 

@@ -23,7 +23,7 @@ import kotlinx.coroutines.withTimeoutOrNull
 import java.util.UUID
 
 private const val TAG = "GattClient"
-const val PHY_MODE = "2m"
+const val PHY_MODE = "1m" // "coded" / "2m" / "1m" — 1M: 2M보다 통신거리 김, 양방향 적용
 
 /**
  * Low-level BLE GATT connection management.
