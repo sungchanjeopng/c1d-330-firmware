@@ -33,7 +33,7 @@ private val LightBlue = Color(0xFF3182F6)
 private val HeavyOrange = Color(0xFFFF8C00)
 
 @Composable
-fun ReportScreen(vm: MainViewModel, onExportHtml: () -> Unit) {
+fun ReportScreen(vm: MainViewModel, onExportPdf: () -> Unit) {
     val state by vm.state.collectAsStateWithLifecycle()
 
     Box(modifier = Modifier.fillMaxSize().background(AppColors.Background)) {
@@ -44,7 +44,7 @@ fun ReportScreen(vm: MainViewModel, onExportHtml: () -> Unit) {
             ReportStage.DONE -> {
                 val data = state.reportData
                 if (data == null) ReportError("No report data", onRetry = { vm.backToReportSelect() })
-                else ReportResult(data, onExportHtml = onExportHtml, onNew = { vm.backToReportSelect() })
+                else ReportResult(data, onExportPdf = onExportPdf, onNew = { vm.backToReportSelect() })
             }
         }
     }
@@ -88,7 +88,7 @@ private fun ReportDeviceSelect(vm: MainViewModel) {
                     Spacer(Modifier.width(14.dp))
                     Column(modifier = Modifier.weight(1f)) {
                         Text(device.label, fontSize = 17.sp, fontWeight = FontWeight.W700, color = AppColors.DarkText)
-                        Text("Interface Meter", fontSize = 12.sp, color = AppColors.WeakText)
+                        Text("Sludge Level Meter", fontSize = 12.sp, color = AppColors.WeakText)
                     }
                     Button(
                         onClick = { vm.selectReportDevice(device.id) },
@@ -135,7 +135,7 @@ private fun ReportError(message: String?, onRetry: () -> Unit) {
 
 // ───────────────────── 리포트 결과 ─────────────────────
 @Composable
-private fun ReportResult(data: ReportData, onExportHtml: () -> Unit, onNew: () -> Unit) {
+private fun ReportResult(data: ReportData, onExportPdf: () -> Unit, onNew: () -> Unit) {
     Column(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 16.dp),
@@ -156,27 +156,38 @@ private fun ReportResult(data: ReportData, onExportHtml: () -> Unit, onNew: () -
             }
             Spacer(Modifier.height(22.dp))
 
-            SectionLabel("Settings", ReportPurple)
-            Spacer(Modifier.height(10.dp))
             Card {
-                KvRow("Frequency", "%.0f kHz".format(data.freqMHz * 1000))
+                KvRow4("Echo Amp", data.echoAmp.toString(),
+                       "Frequency", "%.0f kHz".format(data.freqMHz * 1000))
                 Divider()
-                KvRow("Offset", "%.2f m".format(data.offset))
+                KvRow4("Offset", "%.2f m".format(data.offset),
+                       "Empty Distance", "%.2f m".format(data.emptyDistance))
                 Divider()
-                KvRow("Empty Distance", "%.2f m".format(data.emptyDistance))
+                KvRow4("Dead Zone", "%.2f m".format(data.deadZone),
+                       "Damping", data.damping.toString())
                 Divider()
-                KvRow("Dead Zone", "%.2f m".format(data.deadZone))
+                KvRow4("Current 4mA", "%.2f m".format(data.set4mA),
+                       "Current 20mA", "%.2f m".format(data.set20mA))
                 Divider()
-                KvRow("Current 4mA", "%.2f m".format(data.set4mA))
+                KvRow4("Temperature", "%.1f °C".format(data.temperatureC),
+                       "Current", "%.2f mA".format(data.currentMA))
                 Divider()
-                KvRow("Current 20mA", "%.2f m".format(data.set20mA))
-                Divider()
-                KvRow("Damping", data.damping.toString())
+                KvRow4("Relay", "0x%02X".format(data.relay), null, null)
             }
             Spacer(Modifier.height(22.dp))
 
-            SectionLabel("Waveform", LightBlue)
+            SectionLabel("Echo", LightBlue)
             Spacer(Modifier.height(10.dp))
+            val thrLightStr = if (data.thrLightMode == 1) "%.1f V".format(data.thrLightSet / 10.0)
+                              else "${data.thrLightSet} %"
+            val thrHeavyStr = if (data.thrHeavyMode == 1) "%.1f V".format(data.thrHeavySet / 10.0)
+                              else "${data.thrHeavySet} %"
+            Card {
+                KvRow("Thr.Light", thrLightStr)
+                Divider()
+                KvRow("Thr.Heavy", thrHeavyStr)
+            }
+            Spacer(Modifier.height(14.dp))
             WaveBlock("Real", LightBlue, data.realEcho)
             Spacer(Modifier.height(14.dp))
             WaveBlock("Average", HeavyOrange, data.avgEcho)
@@ -199,11 +210,11 @@ private fun ReportResult(data: ReportData, onExportHtml: () -> Unit, onNew: () -
                 shape = RoundedCornerShape(14.dp),
             ) { Text("New", color = AppColors.SubText, fontWeight = FontWeight.W700, fontSize = 16.sp) }
             Button(
-                onClick = onExportHtml,
+                onClick = onExportPdf,
                 modifier = Modifier.weight(2f).height(52.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = ReportPurple),
                 shape = RoundedCornerShape(14.dp),
-            ) { Text("Export HTML", color = AppColors.White, fontWeight = FontWeight.W800, fontSize = 16.sp) }
+            ) { Text("Export PDF", color = AppColors.White, fontWeight = FontWeight.W800, fontSize = 16.sp) }
         }
     }
 }
@@ -225,7 +236,7 @@ private fun HeaderCard(data: ReportData) {
                 Text(data.label, fontSize = 24.sp, fontWeight = FontWeight.W800, color = Color.White, letterSpacing = (-0.5).sp)
             }
             Spacer(Modifier.height(10.dp))
-            Text("Interface Meter  ·  FW ${data.firmwareVersion.ifEmpty { "—" }}", fontSize = 13.sp, color = Color.White.copy(alpha = 0.85f))
+            Text("Sludge Level Meter  ·  FW ${data.firmwareVersion.ifEmpty { "—" }}", fontSize = 13.sp, color = Color.White.copy(alpha = 0.85f))
             Text(data.timestamp, fontSize = 13.sp, color = Color.White.copy(alpha = 0.75f))
         }
     }
@@ -294,6 +305,50 @@ private fun Divider() {
 }
 
 @Composable
+private fun GroupHeader(title: String) {
+    Text(
+        title,
+        modifier = Modifier.padding(top = 14.dp, bottom = 4.dp),
+        fontSize = 11.sp,
+        fontWeight = FontWeight.W800,
+        color = AppColors.GrayLabel,
+        letterSpacing = 0.8.sp,
+    )
+}
+
+@Composable
+private fun TossGroupLabel(title: String) {
+    Text(
+        title,
+        modifier = Modifier.padding(start = 4.dp, bottom = 6.dp),
+        fontSize = 12.sp,
+        fontWeight = FontWeight.W700,
+        color = AppColors.GrayLabel,
+        letterSpacing = 0.3.sp,
+    )
+}
+
+@Composable
+private fun KvRow4(k1: String, v1: String, k2: String?, v2: String?) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 13.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(k1, modifier = Modifier.weight(1f), fontSize = 13.sp, color = AppColors.SubText)
+        Text(v1, modifier = Modifier.weight(1f), fontSize = 14.sp, fontWeight = FontWeight.W700, color = AppColors.DarkText,
+            textAlign = androidx.compose.ui.text.style.TextAlign.End)
+        Spacer(Modifier.width(16.dp))
+        if (k2 != null && v2 != null) {
+            Text(k2, modifier = Modifier.weight(1f), fontSize = 13.sp, color = AppColors.SubText)
+            Text(v2, modifier = Modifier.weight(1f), fontSize = 14.sp, fontWeight = FontWeight.W700, color = AppColors.DarkText,
+                textAlign = androidx.compose.ui.text.style.TextAlign.End)
+        } else {
+            Spacer(Modifier.weight(2f))
+        }
+    }
+}
+
+@Composable
 private fun KvRow(key: String, value: String) {
     Row(
         modifier = Modifier.fillMaxWidth().padding(vertical = 13.dp),
@@ -313,6 +368,6 @@ private fun WaveBlock(tag: String, accent: Color, reading: com.wws2.densitymeter
         ) { Text(tag, fontSize = 12.sp, fontWeight = FontWeight.W800, color = accent) }
         Spacer(Modifier.height(8.dp))
         // InterfaceEchoChart 자체가 흰 카드라 별도 래퍼 없이 그대로 사용
-        InterfaceEchoChart(reading = reading, modifier = Modifier.fillMaxWidth().height(190.dp))
+        InterfaceEchoChart(reading = reading, modifier = Modifier.fillMaxWidth().height(420.dp))
     }
 }

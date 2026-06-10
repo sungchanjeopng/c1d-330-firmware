@@ -21,12 +21,16 @@ object ReportHtmlExporter {
     private const val ADC_MAX = 4095f
 
     /** 인터페이스 파형(InterfaceEchoReading)을 Bitmap 으로 렌더. (InterfaceEchoChart 와 동일 형태) */
-    fun renderWaveformBitmap(reading: InterfaceEchoReading?, width: Int = 900, height: Int = 360): Bitmap {
+    fun renderWaveformBitmap(reading: InterfaceEchoReading?, width: Int = 900, height: Int = 400): Bitmap {
         val bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val c = Canvas(bmp)
         c.drawColor(Color.WHITE)
         val w = width.toFloat()
-        val h = height.toFloat()
+        val totalH = height.toFloat()
+        // Reserve bottom margin for x-axis labels (same layout idea as
+        // InterfaceEchoChart's Box(padding bottom = 28dp)).
+        val axisPad = 34f
+        val h = totalH - axisPad
         c.drawRect(1f, 1f, w - 1, h - 1, Paint().apply {
             color = Color.parseColor("#E0E0E0"); style = Paint.Style.STROKE; strokeWidth = 1f
         })
@@ -82,6 +86,26 @@ object ReportHtmlExporter {
         })
         if (reading.thrLightReal > 0) hdash(yOf(reading.thrLightReal), "#666666")
         if (reading.thrHeavyReal > 0) hdash(yOf(reading.thrHeavyReal), "#FF8C00")
+
+        // X-axis labels (same layout as InterfaceEchoChart):
+        // 10 ticks from Empty (left, 0.00m at right). x = w*(emptyM-v)/totalRangeM
+        val emptyM = empty * 0.01f
+        val totalRangeM = (n - 1) * 0.01f
+        if (emptyM > 0f && totalRangeM > 0f) {
+            val labelPaint = Paint().apply {
+                color = Color.parseColor("#8B95A1")
+                textSize = 18f
+                textAlign = Paint.Align.CENTER
+                isAntiAlias = true
+            }
+            for (i in 0..10) {
+                val v = emptyM - (emptyM / 10f) * i
+                val x = w * (emptyM - v) / totalRangeM
+                if (x < 0f || x > w) continue
+                val label = "%.2f".format(v)
+                c.drawText(label, x.coerceIn(20f, w - 20f), h + 22f, labelPaint)
+            }
+        }
         return bmp
     }
 
@@ -109,14 +133,33 @@ object ReportHtmlExporter {
             append(row("Temperature", "%.1f °C".format(data.temperatureC)))
             append(row("Current", "%.2f mA".format(data.currentMA)))
         }
+        val thrLightStr = if (data.thrLightMode == 1) "%.1f V".format(data.thrLightSet / 10.0)
+                          else "${data.thrLightSet} %"
+        val thrHeavyStr = if (data.thrHeavyMode == 1) "%.1f V".format(data.thrHeavySet / 10.0)
+                          else "${data.thrHeavySet} %"
+        fun row4(k1: String, v1: String, k2: String?, v2: String?): String {
+            val cell2 = if (k2 != null && v2 != null)
+                "<th>${esc(k2)}</th><td>${esc(v2)}</td>"
+            else
+                "<th></th><td></td>"
+            return "<tr><th>${esc(k1)}</th><td>${esc(v1)}</td>$cell2</tr>"
+        }
         val settings = buildString {
-            append(row("Frequency", "%.0f kHz".format(data.freqMHz * 1000)))
-            append(row("Offset", "%.2f m".format(data.offset)))
-            append(row("Empty Distance", "%.2f m".format(data.emptyDistance)))
-            append(row("Dead Zone", "%.2f m".format(data.deadZone)))
-            append(row("Current 4mA", "%.2f m".format(data.set4mA)))
-            append(row("Current 20mA", "%.2f m".format(data.set20mA)))
-            append(row("Damping", data.damping.toString()))
+            append(row4("Echo Amp", data.echoAmp.toString(),
+                       "Frequency", "%.0f kHz".format(data.freqMHz * 1000)))
+            append(row4("Offset", "%.2f m".format(data.offset),
+                       "Empty Distance", "%.2f m".format(data.emptyDistance)))
+            append(row4("Dead Zone", "%.2f m".format(data.deadZone),
+                       "Damping", data.damping.toString()))
+            append(row4("Current 4mA", "%.2f m".format(data.set4mA),
+                       "Current 20mA", "%.2f m".format(data.set20mA)))
+            append(row4("Temperature", "%.1f °C".format(data.temperatureC),
+                       "Current", "%.2f mA".format(data.currentMA)))
+            append(row4("Relay", "0x%02X".format(data.relay), null, null))
+        }
+        val echoSettings = buildString {
+            append(row("Thr.Light", thrLightStr))
+            append(row("Thr.Heavy", thrHeavyStr))
         }
 
         return """<!DOCTYPE html>
@@ -136,8 +179,12 @@ object ReportHtmlExporter {
   h2.s { border-left-color: #7C3AED; }
   table { border-collapse: collapse; width: 100%; font-size: 14px; }
   th, td { padding: 11px 14px; text-align: left; border-bottom: 1px solid #F2F4F6; }
-  th { color: #4E5968; font-weight: 600; width: 45%; background: #FAFBFC; }
+  th { color: #4E5968; font-weight: 600; background: #FAFBFC; }
   td { font-weight: 700; color: #191F28; }
+  table.kv2 th { width: 45%; }
+  table.kv4 th { width: 22%; }
+  table.kv4 td { width: 28%; }
+  tr.gh td { font-size: 11px; font-weight: 800; color: #8B95A1; letter-spacing: 0.8px; background: #FFFFFF; border-bottom: none; padding: 14px 14px 4px; text-transform: uppercase; }
   .badge { display: inline-block; font-size: 12px; font-weight: 800; padding: 4px 12px; border-radius: 999px; }
   .badge.real { color: #3182F6; background: rgba(49,130,246,0.12); }
   .badge.avg { color: #FF8C00; background: rgba(255,140,0,0.12); }
@@ -149,16 +196,17 @@ object ReportHtmlExporter {
   <div class="sheet">
     <div class="header">
       <div class="name"><span class="dot"></span>${esc(data.label)}</div>
-      <div class="sub">Interface Meter &nbsp;·&nbsp; FW ${esc(data.firmwareVersion.ifEmpty { "—" })}<br>${esc(data.timestamp)}</div>
+      <div class="sub">Sludge Level Meter &nbsp;·&nbsp; FW ${esc(data.firmwareVersion.ifEmpty { "—" })}<br>${esc(data.timestamp)}</div>
     </div>
     <div class="body">
       <h2>Measurement</h2>
-      <table>$measurement</table>
+      <table class="kv2">$measurement</table>
 
-      <h2 class="s">Settings</h2>
-      <table>$settings</table>
+      <table class="kv4">$settings</table>
 
-      <h2>Waveform</h2>
+      <h2>Echo</h2>
+      <table class="kv2">$echoSettings</table>
+      <div style="height:10px"></div>
       <span class="badge real">Real</span>
       <img class="wave" src="data:image/png;base64,$realImg" alt="Real waveform">
       <div style="height:14px"></div>

@@ -179,10 +179,11 @@ fun MainShellScreen(vm: MainViewModel = viewModel()) {
                             csvSaveLauncher.launch(pair.first)
                         }
                     })
-                    state.tabIndex == 4 && state.subPage == "report" -> ReportScreen(vm, onExportHtml = {
-                        val intent = vm.exportReportHtml()
-                        if (intent != null) {
-                            context.startActivity(Intent.createChooser(intent, "Share Report"))
+                    state.tabIndex == 4 && state.subPage == "report" -> ReportScreen(vm, onExportPdf = {
+                        val activity = context as? android.app.Activity
+                        val data = state.reportData
+                        if (activity != null && data != null) {
+                            com.wws2.densitymeter.domain.ReportPdfExporter.generateAndShare(activity, data)
                         } else {
                             Toast.makeText(context, "No report to export", Toast.LENGTH_SHORT).show()
                         }

@@ -390,8 +390,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     label = dev?.label ?: id,
                     firmwareVersion = dev?.firmwareVersion ?: "",
                     timestamp = ts,
-                    lightLevel = reading?.level ?: realEcho?.lightLevel ?: 0.0,
-                    heavyLevel = reading?.heavyLevel ?: realEcho?.heavyLevel ?: 0.0,
+                    // reading.level/heavyLevel은 raw cm 단위 (다른 화면에서도 * 0.01 후 m 단위로 표시).
+                    // realEcho.lightLevel/heavyLevel 은 이미 m 단위로 파싱된 값.
+                    lightLevel = reading?.let { it.level * 0.01 } ?: realEcho?.lightLevel ?: 0.0,
+                    heavyLevel = reading?.heavyLevel?.let { it * 0.01 } ?: realEcho?.heavyLevel ?: 0.0,
                     temperatureC = s.temperatureC,
                     currentMA = s.currentMA,
                     freqMHz = s.freqMHz,
@@ -401,6 +403,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     set4mA = s.set4mA,
                     set20mA = s.set20mA,
                     damping = s.damping,
+                    thrLightSet  = realEcho?.thrLightSet ?: avgEcho?.thrLightSet ?: 0,
+                    thrLightMode = realEcho?.thrLightMode ?: avgEcho?.thrLightMode ?: 0,
+                    thrHeavySet  = realEcho?.thrHeavySet ?: avgEcho?.thrHeavySet ?: 0,
+                    thrHeavyMode = realEcho?.thrHeavyMode ?: avgEcho?.thrHeavyMode ?: 0,
+                    echoAmp      = realEcho?.echoAmp ?: avgEcho?.echoAmp ?: 0,
+                    relay        = s.relay,
                     realEcho = realEcho,
                     avgEcho = avgEcho,
                 )

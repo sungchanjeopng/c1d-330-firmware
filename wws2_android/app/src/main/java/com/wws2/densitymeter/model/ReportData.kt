@@ -25,6 +25,13 @@ data class ReportData(
     val set4mA: Double,
     val set20mA: Double,
     val damping: Int,
+    // 임계값/게인/릴레이 (ECHO + STATUS)
+    val thrLightSet: Int,
+    val thrLightMode: Int,   // 0=Auto(%), 1=Manual(0.1V)
+    val thrHeavySet: Int,
+    val thrHeavyMode: Int,
+    val echoAmp: Int,
+    val relay: Int,
     // 파형
     val realEcho: InterfaceEchoReading?,
     val avgEcho: InterfaceEchoReading?,
