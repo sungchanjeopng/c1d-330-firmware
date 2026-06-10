@@ -26,6 +26,8 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import androidx.compose.foundation.border
 import com.wws2.densitymeter.model.InterfaceEchoReading
 import com.wws2.densitymeter.ui.component.DeviceStripBar
@@ -215,12 +217,15 @@ private fun InterfaceEchoInfoRow(ifReading: InterfaceEchoReading?, vm: MainViewM
         )
     }
     edit?.let { cfg ->
-        EchoEditDialog(cfg, onDismiss = { edit = null }) { value ->
-            vm.sendAppSetting(cfg.cmd, value)
-            edit = null
-        }
+        EchoEditDialog(
+            config = cfg,
+            onDismiss = { edit = null },
+            onApply = { value -> vm.sendAppSetting(cfg.cmd, value) },
+        )
     }
 }
+
+private enum class EchoSendingState { IDLE, SENDING, DONE, FAILED }
 
 @Composable
 private fun EditableEchoInfo(
@@ -268,11 +273,14 @@ private data class EchoEdit(
 )
 
 @Composable
-private fun EchoEditDialog(config: EchoEdit, onDismiss: () -> Unit, onApply: (Int) -> Unit) {
+private fun EchoEditDialog(config: EchoEdit, onDismiss: () -> Unit, onApply: suspend (Int) -> Boolean) {
     var value by remember(config) { mutableIntStateOf(config.value.coerceIn(config.min, config.max)) }
     var text by remember(config) { mutableStateOf(TextFieldValue(config.value.coerceIn(config.min, config.max).toString(), selection = TextRange(config.value.coerceIn(config.min, config.max).toString().length))) }
     val parsed = text.text.toIntOrNull()
     val validValue = parsed?.takeIf { it in config.min..config.max }
+
+    var sendingState by remember(config) { mutableStateOf(EchoSendingState.IDLE) }
+    val scope = rememberCoroutineScope()
 
     fun setValue(newValue: Int) {
         value = newValue.coerceIn(config.min, config.max)
@@ -282,7 +290,7 @@ private fun EchoEditDialog(config: EchoEdit, onDismiss: () -> Unit, onApply: (In
     // Design mirrors iOS EchoEditSheet (EchoTabScreen.swift:227-345): rounded
     // primary-tinted +/- tiles, centered value, rounded-border field (red when
     // invalid), full-width Cancel/Apply buttons.
-    Dialog(onDismissRequest = onDismiss) {
+    Dialog(onDismissRequest = { if (sendingState != EchoSendingState.SENDING) onDismiss() }) {
         Column(
             modifier = Modifier
                 .clip(RoundedCornerShape(16.dp))
@@ -334,25 +342,83 @@ private fun EchoEditDialog(config: EchoEdit, onDismiss: () -> Unit, onApply: (In
 
             Spacer(Modifier.height(18.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                DialogActionButton(
-                    text = "Cancel",
-                    background = AppColors.LightGray,
-                    contentColor = AppColors.DarkText,
-                    modifier = Modifier.weight(1f),
-                    onClick = onDismiss,
-                )
-                DialogActionButton(
-                    text = "Apply",
-                    background = if (validValue == null) AppColors.WeakText else AppColors.Primary,
-                    contentColor = AppColors.White,
-                    enabled = validValue != null,
-                    modifier = Modifier.weight(1f),
-                    onClick = { validValue?.let(onApply) },
-                )
+            when (sendingState) {
+                EchoSendingState.IDLE -> {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
+                        DialogActionButton(
+                            text = "Cancel",
+                            background = AppColors.LightGray,
+                            contentColor = AppColors.DarkText,
+                            modifier = Modifier.weight(1f),
+                            onClick = onDismiss,
+                        )
+                        DialogActionButton(
+                            text = "Apply",
+                            background = if (validValue == null) AppColors.WeakText else AppColors.Primary,
+                            contentColor = AppColors.White,
+                            enabled = validValue != null,
+                            modifier = Modifier.weight(1f),
+                            onClick = {
+                                validValue?.let { v ->
+                                    scope.launch {
+                                        sendingState = EchoSendingState.SENDING
+                                        val ok = onApply(v)
+                                        sendingState = if (ok) EchoSendingState.DONE else EchoSendingState.FAILED
+                                        if (ok) {
+                                            delay(800)
+                                            onDismiss()
+                                        }
+                                    }
+                                }
+                            },
+                        )
+                    }
+                }
+                EchoSendingState.SENDING -> {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            strokeWidth = 2.dp,
+                            color = AppColors.Primary,
+                        )
+                        Spacer(Modifier.width(12.dp))
+                        Text("Sending...", fontSize = 16.sp, fontWeight = FontWeight.W600, color = AppColors.DarkText)
+                    }
+                }
+                EchoSendingState.DONE -> {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                    ) {
+                        Text("✓", fontSize = 22.sp, fontWeight = FontWeight.W700, color = AppColors.Success)
+                        Spacer(Modifier.width(8.dp))
+                        Text("Success", fontSize = 16.sp, fontWeight = FontWeight.W600, color = AppColors.Success)
+                    }
+                }
+                EchoSendingState.FAILED -> {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Text("✗ Failed", fontSize = 16.sp, fontWeight = FontWeight.W700, color = androidx.compose.ui.graphics.Color(0xFFD0342C))
+                        Spacer(Modifier.height(12.dp))
+                        DialogActionButton(
+                            text = "Close",
+                            background = AppColors.LightGray,
+                            contentColor = AppColors.DarkText,
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = onDismiss,
+                        )
+                    }
+                }
             }
         }
     }

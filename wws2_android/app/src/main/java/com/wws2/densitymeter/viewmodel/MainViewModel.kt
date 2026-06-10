@@ -152,6 +152,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _snackbarMessage = MutableSharedFlow<String>(extraBufferCapacity = 4)
     val snackbarMessage: SharedFlow<String> = _snackbarMessage
 
+    // Heartbeat response ack — emit on every parsed response so queued
+    // setting writes can wait for an idle window before sending.
+    private val heartbeatAckFlow = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+
+    // Setting ACK from firmware: (cmd, result) where result=0 means applied OK,
+    // 1=range error, 3=unknown cmd. Emitted by tryParseFrame when a setting
+    // response frame is parsed.
+    private val settingAckFlow = MutableSharedFlow<Pair<Int, Int>>(extraBufferCapacity = 4)
+
     // PIN request flow for device pairing (full-screen)
     private var pendingPinAddress: String? = null
     private val _showPinForPairing = MutableStateFlow(false)
@@ -454,16 +463,45 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return if (_state.value.activeDeviceId.endsWith("_CH2")) baseCmd + 1000 else baseCmd
     }
 
-    fun sendAppSetting(baseCmd: Int, value: Int) {
-        val proto = activeProtocol
-        if (proto == null) {
-            _snackbarMessage.tryEmit("No active device.")
-            return
-        }
-        viewModelScope.launch {
-            val cmd = appSettingCmd(baseCmd)
-            val ok = proto.write(proto.buildSettingFrame(cmd, value), withoutResponse = false)
-            _snackbarMessage.tryEmit(if (ok) "Setting sent." else "Setting failed.")
+    suspend fun sendAppSetting(baseCmd: Int, value: Int): Boolean {
+        val proto = activeProtocol ?: return false
+        // Snapshot the relevant state field BEFORE writing so we can detect
+        // the firmware reporting back a different value in subsequent polls.
+        val before = readSettingFieldValue(baseCmd)
+        // Wait for the next heartbeat response to ensure firmware is in idle
+        // window (avoids race with in-flight waveform reply).
+        withTimeoutOrNull(1500) { heartbeatAckFlow.first() }
+        // Extra idle margin so the firmware fully finishes its post-response
+        // bookkeeping (LCD redraw, threshold recalc, etc.) before we write.
+        delay(150)
+        val cmd = appSettingCmd(baseCmd)
+        val sent = proto.write(proto.buildSettingFrame(cmd, value), withoutResponse = false)
+        if (!sent) return false
+        // Success = the corresponding polled field changes within 10s.
+        return withTimeoutOrNull(10000) {
+            _state
+                .map { readSettingFieldValue(baseCmd) }
+                .filter { it != before }
+                .first()
+            true
+        } ?: false
+    }
+
+    private fun readSettingFieldValue(baseCmd: Int): Any? {
+        val s = _state.value
+        val ifReading = s.interfaceEchoReading
+        return when (baseCmd) {
+            1 -> ifReading?.echoAmp
+            2, 4 -> ifReading?.thrLightSet
+            3, 5 -> ifReading?.thrHeavySet
+            6 -> s.freqMHz
+            7 -> s.offset
+            8 -> s.set4mA
+            9 -> s.set20mA
+            11 -> s.damping
+            12 -> s.emptyDistance
+            13 -> s.deadZone
+            else -> null
         }
     }
 
@@ -651,43 +689,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     /**
-     * 링크가 끊긴 기기를 목록에서 빼지 않고 "재연결 중(Reconnecting…)" 상태로 두고
-     * 백그라운드에서 3초 간격으로 무한 재연결을 시도한다. (성공 시 정상 복귀, 수동 ✕ 해야 완전 해제)
-     * 펌웨어는 PIN 인증(0xF0) 없이도 데이터 명령에 응답하므로, 재연결 시 페어링은 생략하고
-     * BLE 링크만 다시 연결한다.
+     * Reconnect feature is disabled — when the BLE link drops we just tear
+     * down the device entry immediately instead of looping retries. Callers
+     * still invoke beginReconnect from the same places (disconnect callback,
+     * heartbeat / response watchdogs) so the disconnect path stays single-sourced.
      */
     private fun beginReconnect(deviceId: String) {
         val address = physicalAddress(deviceId)
-        if (address in reconnectJobs) return
-        if (_state.value.reconnectingIds.any { physicalAddress(it) == address }) return
         val ids = _state.value.connectedDevices.map { it.id }.filter { physicalAddress(it) == address }
         if (ids.isEmpty()) return
-
-        _state.update { it.copy(reconnectingIds = it.reconnectingIds + ids) }
-
-        reconnectJobs[address] = viewModelScope.launch {
-            // 활성 기기였다면 실시간 파이프라인(heartbeat/notify/parse) 정지
-            if (_state.value.activeDeviceId in ids) {
-                stopHeartbeat(); notifyJob?.cancel(); parseJob?.cancel()
-            }
-            // 링크만 해제 — connectedDevices 목록은 유지한다
-            val proto = protocolServices[address] ?: ids.firstNotNullOfOrNull { protocolServices[it] }
-            try { proto?.disconnect() } catch (e: Exception) { Log.w(TAG, "reconnect teardown failed: ${e.message}") }
-            ids.forEach { protocolServices.remove(it) }
-            protocolServices.remove(address)
-
-            // 3초 고정 간격으로 성공할 때까지(또는 수동 해제 전까지) 무한 반복.
-            while (isActive) {
-                delay(RECONNECT_INTERVAL_MS)
-                if (address !in reconnectJobs) break  // 수동 해제됨
-                Log.d(TAG, "Reconnect attempt for $address")
-                if (attemptReconnect(address)) {
-                    Log.d(TAG, "Reconnect succeeded for $address")
-                    break
-                }
-            }
-            reconnectJobs.remove(address)
-        }
+        Log.w(TAG, "Link lost for $address → disconnecting (reconnect disabled)")
+        _bleError.value = BleError("Signal too weak. Connection closed.", address)
+        disconnectDevice(ids.first())
     }
 
     /** 재연결 1회 시도: BLE 링크만 다시 연결하고(페어링 생략) 기존 기기 id에 새 세션을 매핑한다. */
@@ -1059,6 +1072,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             if (parsed != null) {
                 Log.d(TAG, "[DBG] PARSED cmd=0x%04X dataSize=${parsed.data.size} totalLen=$totalLen".format(parsed.cmd))
                 rxBuf.subList(0, totalLen).clear()
+                heartbeatAckFlow.tryEmit(Unit)
             } else {
                 Log.w(TAG, "[DBG] CRC FAIL cmd=0x%04X, skip 1 byte".format(cmd))
                 rxBuf.removeAt(0)
@@ -1077,6 +1091,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             // ?????? CMD ???????癲??됀??????????????Β?レ름?????????
+
+            // Setting ACK: cmd 1..13 (CH1) or 1001..1013 (CH2), data is 2-byte result.
+            if ((parsed.cmd in 1..13 || parsed.cmd in 1001..1013) && parsed.data.size == 2) {
+                val result = ((parsed.data[0].toInt() and 0xFF) shl 8) or (parsed.data[1].toInt() and 0xFF)
+                settingAckFlow.tryEmit(parsed.cmd to result)
+                Log.d(TAG, "[DBG] SETTING ACK cmd=0x%04X result=%d".format(parsed.cmd, result))
+                continue
+            }
 
             // Status: CMD=0x0000 / CMD=0x0010
             if (parsed.cmd == 0x0000 || parsed.cmd == 0x0010) {
@@ -1331,6 +1353,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         val ifEcho = InterfaceEchoReading.fromBytes(ifEchoHeaderData + waveBytes) ?: return
         _state.update { st -> st.copy(interfaceEchoReading = ifEcho) }
         Log.d(TAG, "[IFECHO] OK cmd=0x%04X samples=%d".format(ifEchoCmd, ifEchoWave.size))
+        heartbeatAckFlow.tryEmit(Unit)
     }
 
     private fun tryParseTrend(proto: BleProtocolService) {

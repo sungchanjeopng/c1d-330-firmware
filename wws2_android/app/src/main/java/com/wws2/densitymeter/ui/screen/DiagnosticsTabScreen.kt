@@ -11,6 +11,8 @@ import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.HealthAndSafety
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -102,10 +104,7 @@ fun DiagnosticsTabScreen(vm: MainViewModel) {
         ConfigEditDialog(
             config = cfg,
             onDismiss = { edit = null },
-            onApply = { value ->
-                vm.sendAppSetting(cfg.cmd, value)
-                edit = null
-            },
+            onApply = { value -> vm.sendAppSetting(cfg.cmd, value) },
         )
     }
 }
@@ -166,8 +165,10 @@ private fun EditableDiagRow(label: String, value: String, onClick: () -> Unit) {
     }
 }
 
+private enum class DiagSendingState { IDLE, SENDING, DONE, FAILED }
+
 @Composable
-private fun ConfigEditDialog(config: ConfigEdit, onDismiss: () -> Unit, onApply: (Int) -> Unit) {
+private fun ConfigEditDialog(config: ConfigEdit, onDismiss: () -> Unit, onApply: suspend (Int) -> Boolean) {
     fun integerText(raw: Int): String {
         if (config.decimalScale <= 1) return raw.toString()
         val absRaw = kotlin.math.abs(raw)
@@ -194,6 +195,9 @@ private fun ConfigEditDialog(config: ConfigEdit, onDismiss: () -> Unit, onApply:
     val parsed = if (config.allowTextInput) parseRaw(intText.text, fracText.text) else value
     val validValue = parsed?.takeIf { it in config.min..config.max }
 
+    var sendingState by remember(config) { mutableStateOf(DiagSendingState.IDLE) }
+    val scope = rememberCoroutineScope()
+
     fun setValue(newValue: Int) {
         value = newValue.coerceIn(config.min, config.max)
         intText = TextFieldValue(integerText(value), selection = TextRange(integerText(value).length))
@@ -203,7 +207,7 @@ private fun ConfigEditDialog(config: ConfigEdit, onDismiss: () -> Unit, onApply:
     // Design mirrors iOS ConfigEditSheet (DiagnosticsTabScreen.swift:266-478):
     // rounded primary-tinted [-]/[+] tiles, centered value, rounded-border text
     // fields that turn red when invalid, and full-width Cancel/Apply buttons.
-    Dialog(onDismissRequest = onDismiss) {
+    Dialog(onDismissRequest = { if (sendingState != DiagSendingState.SENDING) onDismiss() }) {
         Column(
             modifier = Modifier
                 .clip(RoundedCornerShape(16.dp))
@@ -303,26 +307,83 @@ private fun ConfigEditDialog(config: ConfigEdit, onDismiss: () -> Unit, onApply:
 
             Spacer(Modifier.height(18.dp))
 
-            // Action buttons: Cancel / Apply (full width, mirrors iOS)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                DialogActionButton(
-                    text = "Cancel",
-                    background = AppColors.LightGray,
-                    contentColor = AppColors.DarkText,
-                    modifier = Modifier.weight(1f),
-                    onClick = onDismiss,
-                )
-                DialogActionButton(
-                    text = "Apply",
-                    background = if (validValue == null) AppColors.WeakText else AppColors.Primary,
-                    contentColor = AppColors.White,
-                    enabled = validValue != null,
-                    modifier = Modifier.weight(1f),
-                    onClick = { validValue?.let(onApply) },
-                )
+            when (sendingState) {
+                DiagSendingState.IDLE -> {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
+                        DialogActionButton(
+                            text = "Cancel",
+                            background = AppColors.LightGray,
+                            contentColor = AppColors.DarkText,
+                            modifier = Modifier.weight(1f),
+                            onClick = onDismiss,
+                        )
+                        DialogActionButton(
+                            text = "Apply",
+                            background = if (validValue == null) AppColors.WeakText else AppColors.Primary,
+                            contentColor = AppColors.White,
+                            enabled = validValue != null,
+                            modifier = Modifier.weight(1f),
+                            onClick = {
+                                validValue?.let { v ->
+                                    scope.launch {
+                                        sendingState = DiagSendingState.SENDING
+                                        val ok = onApply(v)
+                                        sendingState = if (ok) DiagSendingState.DONE else DiagSendingState.FAILED
+                                        if (ok) {
+                                            delay(800)
+                                            onDismiss()
+                                        }
+                                    }
+                                }
+                            },
+                        )
+                    }
+                }
+                DiagSendingState.SENDING -> {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            strokeWidth = 2.dp,
+                            color = AppColors.Primary,
+                        )
+                        Spacer(Modifier.width(12.dp))
+                        Text("Sending...", fontSize = 16.sp, fontWeight = FontWeight.W600, color = AppColors.DarkText)
+                    }
+                }
+                DiagSendingState.DONE -> {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                    ) {
+                        Text("✓", fontSize = 22.sp, fontWeight = FontWeight.W700, color = AppColors.Success)
+                        Spacer(Modifier.width(8.dp))
+                        Text("Success", fontSize = 16.sp, fontWeight = FontWeight.W600, color = AppColors.Success)
+                    }
+                }
+                DiagSendingState.FAILED -> {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Text("✗ Failed", fontSize = 16.sp, fontWeight = FontWeight.W700, color = androidx.compose.ui.graphics.Color(0xFFD0342C))
+                        Spacer(Modifier.height(12.dp))
+                        DialogActionButton(
+                            text = "Close",
+                            background = AppColors.LightGray,
+                            contentColor = AppColors.DarkText,
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = onDismiss,
+                        )
+                    }
+                }
             }
         }
     }
