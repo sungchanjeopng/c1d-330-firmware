@@ -403,6 +403,5 @@ private fun InterfaceStatusPanel(state: MainUiState) {
         val tUnit = TemperatureUnit.fromInt(state.tempUnit)
         DiagRow("Temperature", "${tUnit.format(state.temperatureC)} ${tUnit.unitStr}")
         DiagRow("Current", "%.2f mA".format(state.currentMA))
-        DiagRow("Relay", if (state.relay == 1) "Act" else "Stop")
     }
 }

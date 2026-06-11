@@ -48,6 +48,10 @@ class BleConnectionService(private val context: Context) {
 
         scanner = bluetoothAdapter?.bluetoothLeScanner ?: return
 
+        // Fresh scan = fresh list. Without this, devices that were powered
+        // off or moved away kept lingering in the pairing list forever.
+        _scannedDevices.value = emptyMap()
+
         val callback = object : ScanCallback() {
             override fun onScanResult(callbackType: Int, result: ScanResult) {
                 val device = result.device

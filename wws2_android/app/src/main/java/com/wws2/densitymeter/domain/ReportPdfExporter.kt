@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.pdf.PdfDocument
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
@@ -18,9 +19,17 @@ import java.util.Locale
 
 /**
  * Renders the report HTML to a PDF without going through the system print
- * dialog. WebView is measured/laid out off-screen, then drawn into a
- * multi-page PdfDocument (so long reports don't get clipped). The
- * finished file is handed off to the standard share sheet.
+ * dialog, then hands the file to the standard share sheet.
+ *
+ * Clipping pitfalls handled here (the last waveform used to get cut off):
+ *  1. The WebView is attached with a large fixed height instead of
+ *     WRAP_CONTENT, so chromium treats the whole document as viewport and
+ *     tile-renders everything up front (no lazy rendering of the bottom).
+ *  2. The page height takes max(measuredHeight, contentHeight * density)
+ *     because measure(UNSPECIFIED) can under-report while images are still
+ *     being laid out.
+ *  3. draw() runs on a second delay after the final layout pass so the
+ *     renderer has time to paint any newly exposed tiles.
  */
 object ReportPdfExporter {
 
@@ -29,7 +38,10 @@ object ReportPdfExporter {
     // A4 portrait at 150 DPI — wide enough to keep the desktop-ish layout
     // readable while staying well under typical PdfDocument page limits.
     private const val PAGE_WIDTH_PX = 1240
-    private const val PAGE_HEIGHT_PX = 1754
+
+    // Pre-render viewport height: must exceed any realistic report length so
+    // chromium renders all tiles before we capture.
+    private const val PRE_RENDER_HEIGHT_PX = 20000
 
     fun generateAndShare(activity: Activity, data: ReportData) {
         Log.d(TAG, "generateAndShare: start label=${data.label}")
@@ -44,55 +56,89 @@ object ReportPdfExporter {
         // Attach an invisible WebView to the activity content view. Without
         // being attached to a window, the WebView's chromium backend skips
         // rendering and Canvas draws produce a blank page.
-        val rootView = activity.findViewById<android.view.ViewGroup>(android.R.id.content)
+        val rootView = activity.findViewById<ViewGroup>(android.R.id.content)
         val webView = WebView(activity).apply {
             settings.defaultTextEncodingName = "UTF-8"
             settings.javaScriptEnabled = false
             setLayerType(View.LAYER_TYPE_SOFTWARE, null)
             alpha = 0f
         }
-        val lp = android.view.ViewGroup.LayoutParams(PAGE_WIDTH_PX, android.view.ViewGroup.LayoutParams.WRAP_CONTENT)
+        // Fix 1: large fixed height — the system layout pass would otherwise
+        // clamp the WebView viewport to the screen height and chromium would
+        // lazily skip rendering the bottom of the document (= clipped
+        // Average waveform).
+        val lp = ViewGroup.LayoutParams(PAGE_WIDTH_PX, PRE_RENDER_HEIGHT_PX)
         rootView.addView(webView, lp)
 
         webView.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView, url: String) {
                 Log.d(TAG, "onPageFinished, contentHeight=${view.contentHeight}")
                 // Give the engine a moment to settle (images, fonts).
-                view.postDelayed({
-                    renderWebViewToPdf(activity, view, pdfFile, fileName)
-                    rootView.removeView(view)
-                }, 800)
+                view.postDelayed({ measureAndRender(activity, view, rootView, pdfFile, fileName) }, 800)
             }
         }
         webView.loadDataWithBaseURL(null, html, "text/html", "UTF-8", null)
     }
 
-    private fun renderWebViewToPdf(activity: Activity, view: WebView, pdfFile: File, fileName: String) {
+    private fun measureAndRender(
+        activity: Activity,
+        view: WebView,
+        rootView: ViewGroup,
+        pdfFile: File,
+        fileName: String,
+    ) {
         try {
             val widthSpec = View.MeasureSpec.makeMeasureSpec(PAGE_WIDTH_PX, View.MeasureSpec.EXACTLY)
             val heightSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
             view.measure(widthSpec, heightSpec)
-            view.layout(0, 0, view.measuredWidth, view.measuredHeight)
 
-            val totalHeight = view.measuredHeight.coerceAtLeast(1)
-            Log.d(TAG, "renderWebViewToPdf: measuredH=$totalHeight (single page)")
+            // Fix 2: measure(UNSPECIFIED) can under-report while image layout
+            // is still settling. contentHeight (CSS px) * density is the
+            // renderer's own idea of the document height — take the max.
+            val contentPx = (view.contentHeight * view.resources.displayMetrics.density).toInt()
+            val totalHeight = maxOf(view.measuredHeight, contentPx).coerceAtLeast(1)
+            Log.d(TAG, "measureAndRender: measuredH=${view.measuredHeight} contentPx=$contentPx -> totalH=$totalHeight")
 
-            // Render the entire report on a single tall page so waveforms
-            // never get clipped at a page boundary.
-            val pdf = PdfDocument()
-            val pageInfo = PdfDocument.PageInfo.Builder(PAGE_WIDTH_PX, totalHeight, 1).create()
-            val page = pdf.startPage(pageInfo)
-            view.draw(page.canvas)
-            pdf.finishPage(page)
+            view.layout(0, 0, PAGE_WIDTH_PX, totalHeight)
 
-            FileOutputStream(pdfFile).use { fos -> pdf.writeTo(fos) }
-            pdf.close()
-
-            launchShareSheet(activity, pdfFile, fileName)
+            // Fix 3: give chromium time to paint tiles for any area exposed
+            // by the layout pass above before capturing.
+            view.postDelayed({
+                try {
+                    drawPdfAndShare(activity, view, totalHeight, pdfFile, fileName)
+                } catch (e: Exception) {
+                    Log.e(TAG, "PDF draw failed: ${e.message}", e)
+                    Toast.makeText(activity, "PDF export failed: ${e.message}", Toast.LENGTH_LONG).show()
+                } finally {
+                    rootView.removeView(view)
+                }
+            }, 400)
         } catch (e: Exception) {
-            Log.e(TAG, "PDF render failed: ${e.message}", e)
+            Log.e(TAG, "PDF measure failed: ${e.message}", e)
             Toast.makeText(activity, "PDF export failed: ${e.message}", Toast.LENGTH_LONG).show()
+            rootView.removeView(view)
         }
+    }
+
+    private fun drawPdfAndShare(
+        activity: Activity,
+        view: WebView,
+        totalHeight: Int,
+        pdfFile: File,
+        fileName: String,
+    ) {
+        // Render the entire report on a single tall page so waveforms never
+        // get clipped at a page boundary.
+        val pdf = PdfDocument()
+        val pageInfo = PdfDocument.PageInfo.Builder(PAGE_WIDTH_PX, totalHeight, 1).create()
+        val page = pdf.startPage(pageInfo)
+        view.draw(page.canvas)
+        pdf.finishPage(page)
+
+        FileOutputStream(pdfFile).use { fos -> pdf.writeTo(fos) }
+        pdf.close()
+
+        launchShareSheet(activity, pdfFile, fileName)
     }
 
     private fun launchShareSheet(activity: Activity, file: File, fileName: String) {

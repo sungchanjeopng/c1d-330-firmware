@@ -171,8 +171,6 @@ private fun ReportResult(data: ReportData, onExportPdf: () -> Unit, onNew: () ->
                 Divider()
                 KvRow4("Temperature", "%.1f °C".format(data.temperatureC),
                        "Current", "%.2f mA".format(data.currentMA))
-                Divider()
-                KvRow4("Relay", "0x%02X".format(data.relay), null, null)
             }
             Spacer(Modifier.height(22.dp))
 

@@ -155,7 +155,6 @@ object ReportHtmlExporter {
                        "Current 20mA", "%.2f m".format(data.set20mA)))
             append(row4("Temperature", "%.1f °C".format(data.temperatureC),
                        "Current", "%.2f mA".format(data.currentMA)))
-            append(row4("Relay", "0x%02X".format(data.relay), null, null))
         }
         val echoSettings = buildString {
             append(row("Thr.Light", thrLightStr))
