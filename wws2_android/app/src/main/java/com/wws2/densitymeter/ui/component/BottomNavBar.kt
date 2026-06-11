@@ -14,7 +14,15 @@ import androidx.compose.ui.unit.sp
 import com.wws2.densitymeter.ui.theme.AppColors
 import com.wws2.densitymeter.ui.theme.isWideLayout
 
-private val labels = listOf("Main", "Echo", "Trend", "Param", "Menu")
+// Tab indices are kept stable (Main=0, Echo=1, Param=3, Menu=4) so the
+// ViewModel's tabIndex-based logic (heartbeat page selection, etc.) stays
+// untouched; the Trend tab (index 2) is simply not offered any more.
+private val tabs = listOf(
+    "Main" to 0,
+    "Echo" to 1,
+    "Param" to 3,
+    "Menu" to 4,
+)
 
 @Composable
 fun BottomNavBar(
@@ -33,7 +41,7 @@ fun BottomNavBar(
                 .padding(horizontal = 6.dp)
                 .padding(top = if (wide) 8.dp else 6.dp, bottom = if (wide) 12.dp else 10.dp),
         ) {
-            labels.forEachIndexed { i, label ->
+            tabs.forEach { (label, i) ->
                 val active = i == currentIndex
                 Box(
                     modifier = Modifier
