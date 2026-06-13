@@ -71,8 +71,13 @@ private fun drawInterfaceEcho(scope: DrawScope, reading: InterfaceEchoReading?, 
     val deadzone = reading.deadzone
     val empty = reading.empty
 
-    fun xOf(idx: Int) = w * idx / (N - 1).toFloat()
-    fun xOfF(idx: Float) = w * idx / (N - 1).toFloat()
+    // Y축 라벨용 왼쪽 여백 (X축 하단 여백과 동일한 방식)
+    val yTickStyle = TextStyle(fontSize = 10.sp, fontWeight = FontWeight.W500, color = ColLabel)
+    val leftPad = textMeasurer.measure(AnnotatedString("3.0"), yTickStyle).size.width + 10f
+    val plotW = w - leftPad
+
+    fun xOf(idx: Int) = leftPad + plotW * idx / (N - 1).toFloat()
+    fun xOfF(idx: Float) = leftPad + plotW * idx / (N - 1).toFloat()
     fun yOf(v: Int) = h - (v.toFloat() / ADC_MAX).coerceIn(0f, 1f) * h
 
     // ③ 파형 3구간 (불투명 채움)
@@ -123,14 +128,14 @@ private fun drawInterfaceEcho(scope: DrawScope, reading: InterfaceEchoReading?, 
     // ⑦ THR Light 수평 점선 (진한 회색)
     if (reading.thrLightReal > 0) {
         val y = yOf(reading.thrLightReal)
-        scope.drawLine(ColThrLight, Offset(0f, y), Offset(w, y), strokeWidth = 2.5f,
+        scope.drawLine(ColThrLight, Offset(leftPad, y), Offset(w, y), strokeWidth = 2.5f,
             pathEffect = PathEffect.dashPathEffect(floatArrayOf(6f, 4f)))
     }
 
     // ⑧ THR Heavy 수평 점선 (진한 주황)
     if (reading.thrHeavyReal > 0) {
         val y = yOf(reading.thrHeavyReal)
-        scope.drawLine(ColThrHeavy, Offset(0f, y), Offset(w, y), strokeWidth = 2.5f,
+        scope.drawLine(ColThrHeavy, Offset(leftPad, y), Offset(w, y), strokeWidth = 2.5f,
             pathEffect = PathEffect.dashPathEffect(floatArrayOf(6f, 4f)))
     }
 
@@ -146,6 +151,18 @@ private fun drawInterfaceEcho(scope: DrawScope, reading: InterfaceEchoReading?, 
         scope.drawLine(ColThrHeavy, Offset(hX, 0f), Offset(hX, h), strokeWidth = 2.5f)
     }
 
+    // ⑩-1 Y축 눈금 3개 (1.0V/2.0V/3.0V) — ADC 0~4095 = 0~3.3V
+    val vUnit = textMeasurer.measure(AnnotatedString("V"), yTickStyle)
+    scope.drawText(vUnit, topLeft = Offset(leftPad - vUnit.size.width - 6f, 0f))
+    for (volt in intArrayOf(1, 2, 3)) {
+        val raw = (volt / 3.3f * ADC_MAX).toInt()
+        val y = yOf(raw)
+        scope.drawLine(ColLabel.copy(alpha = 0.25f), Offset(leftPad, y), Offset(w, y), strokeWidth = 1f)
+        val r = textMeasurer.measure(AnnotatedString("$volt.0"), yTickStyle)
+        val top = (y - r.size.height / 2f).coerceIn(0f, h - r.size.height)
+        scope.drawText(r, topLeft = Offset(leftPad - r.size.width - 6f, top))
+    }
+
     // ⑪ X축 라벨 10등분 (왼쪽=Empty, 오른쪽=0.00) — 파형과는 방향 반대(의도된 불일치)
     //    x = w * (emptyM - v) / totalRangeM, totalRangeM = (N-1)*0.01 (파형 전체 거리)
     //    v = emptyM → x=0 (왼쪽), v=0 → x ≈ w*emptyM/totalRangeM (오른쪽 근처)
@@ -153,13 +170,17 @@ private fun drawInterfaceEcho(scope: DrawScope, reading: InterfaceEchoReading?, 
     val emptyM = empty * 0.01f
     val totalRangeM = (N - 1) * 0.01f
     if (emptyM > 0 && totalRangeM > 0) {
+        val xLabelStyle = TextStyle(fontSize = 11.sp, fontWeight = FontWeight.W500, color = ColLabel)
+        val mUnit = textMeasurer.measure(AnnotatedString("m"), xLabelStyle)
+        scope.drawText(mUnit, topLeft = Offset(w - mUnit.size.width, h + 4f))
         for (i in 0..10) {
             val v = emptyM - (emptyM / 10f) * i
-            val x = w * (emptyM - v) / totalRangeM
-            if (x < 0f || x > w) continue
+            val x = leftPad + plotW * (emptyM - v) / totalRangeM
+            if (x < leftPad || x > w) continue
             val label = "%.2f".format(v)
-            val r = textMeasurer.measure(AnnotatedString(label), TextStyle(fontSize = 11.sp, fontWeight = FontWeight.W500, color = ColLabel))
-            scope.drawText(r, topLeft = Offset((x - r.size.width / 2f).coerceIn(0f, w - r.size.width), h + 4f))
+            val r = textMeasurer.measure(AnnotatedString(label), xLabelStyle)
+            val lx = (x - r.size.width / 2f).coerceIn(0f, w - mUnit.size.width - 6f - r.size.width)
+            scope.drawText(r, topLeft = Offset(lx, h + 4f))
         }
     }
 }

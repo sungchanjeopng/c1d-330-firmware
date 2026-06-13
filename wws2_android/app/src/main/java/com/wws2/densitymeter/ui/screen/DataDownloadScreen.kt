@@ -76,6 +76,19 @@ private fun ErrorStage(state: com.wws2.densitymeter.viewmodel.MainUiState, vm: M
 @Composable
 private fun ListStage(vm: MainViewModel, onPickCsv: () -> Unit) {
     val state by vm.state.collectAsStateWithLifecycle()
+    var titlePromptFor by remember { mutableStateOf<String?>(null) }
+
+    titlePromptFor?.let { deviceId ->
+        TitleInputDialog(
+            heading = "Download Title",
+            confirmText = "Download",
+            onDismiss = { titlePromptFor = null },
+            onConfirm = { title ->
+                titlePromptFor = null
+                vm.activateAndDownload(deviceId, title)
+            },
+        )
+    }
 
     Column(
         modifier = Modifier
@@ -99,7 +112,7 @@ private fun ListStage(vm: MainViewModel, onPickCsv: () -> Unit) {
                     }
                     Spacer(Modifier.height(10.dp))
                     Button(
-                        onClick = { vm.activateAndDownload(dev.id) },
+                        onClick = { titlePromptFor = dev.id },
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(containerColor = AppColors.Primary),
                         shape = RoundedCornerShape(14.dp),

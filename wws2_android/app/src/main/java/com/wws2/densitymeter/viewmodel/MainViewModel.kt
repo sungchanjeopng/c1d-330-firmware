@@ -346,12 +346,36 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    /** 저장된 스냅샷을 ReportResult 화면으로 복원. */
+    fun openReportSnapshot(file: java.io.File) {
+        val data = com.wws2.densitymeter.domain.ReportSnapshotStore.load(file)
+        if (data == null) {
+            _state.update { it.copy(reportError = "Failed to open saved report", reportStage = com.wws2.densitymeter.model.ReportStage.ERROR) }
+            return
+        }
+        currentReportSnapshotFile = file
+        _state.update { it.copy(reportData = data, reportStage = com.wws2.densitymeter.model.ReportStage.DONE) }
+    }
+
+    // 현재 표시 중인 리포트의 스냅샷 파일 (comment 수정 시 갱신 대상)
+    private var currentReportSnapshotFile: java.io.File? = null
+
+    /** 리포트 화면에서 의견 입력/수정 — state + 스냅샷 파일 동시 갱신. */
+    fun updateReportComment(comment: String) {
+        val data = _state.value.reportData ?: return
+        val updated = data.copy(comment = comment.trim())
+        _state.update { it.copy(reportData = updated) }
+        currentReportSnapshotFile?.let {
+            com.wws2.densitymeter.domain.ReportSnapshotStore.update(it, updated)
+        }
+    }
+
     /**
      * 선택한 채널에 대해 리포트를 생성한다.
      * 캐시가 아니라 BLE로 직접 STATUS(측정+설정) → ECHO 실시간 → ECHO 평균을 수집한다.
      * (파형화면을 한 번도 안 들어갔어도 채워짐)
      */
-    fun selectReportDevice(id: String) {
+    fun selectReportDevice(id: String, title: String = "") {
         _state.update {
             it.copy(
                 reportTargetId = id,
@@ -411,9 +435,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     relay        = s.relay,
                     realEcho = realEcho,
                     avgEcho = avgEcho,
+                    title = title.trim(),
                 )
                 _state.update {
                     it.copy(reportData = data, reportStage = com.wws2.densitymeter.model.ReportStage.DONE)
+                }
+                try {
+                    currentReportSnapshotFile = com.wws2.densitymeter.domain.ReportSnapshotStore.save(getApplication(), data)
+                } catch (e: Exception) {
+                    Log.e(TAG, "Report snapshot save failed: ${e.message}")
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Report collect failed: ${e.message}")
@@ -507,8 +537,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             8 -> s.set4mA
             9 -> s.set20mA
             11 -> s.damping
-            12 -> s.emptyDistance
-            13 -> s.deadZone
+            // Echo 탭은 Status가 아닌 파형만 폴링하므로 파형 헤더 값도 함께 감시
+            12 -> Pair(ifReading?.empty, s.emptyDistance)
+            13 -> Pair(ifReading?.deadzone, s.deadZone)
             else -> null
         }
     }
@@ -1916,7 +1947,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      * 2-단계 호출은 async/sync race 때문에 multi-device 에서 stale state 로
      * 다운로드가 시작되는 문제가 있었음.
      */
-    fun activateAndDownload(address: String) {
+    fun activateAndDownload(address: String, title: String = "") {
         viewModelScope.launch {
             if (_state.value.activeDeviceId != address) {
                 val existing = _state.value.connectedDevices.find { it.id == address }
@@ -1927,11 +1958,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     return@launch
                 }
             }
-            startDataDownload()
+            startDataDownload(title)
         }
     }
 
-    fun startDataDownload() {
+    fun startDataDownload(title: String = "") {
         val s = _state.value
         if (s.connectedDevices.isEmpty()) {
             _snackbarMessage.tryEmit("No BLE device connected.")
@@ -1945,7 +1976,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         trendIsInterface = (activeDev.deviceType == 1)
 
         downloadTimerJob?.cancel()
-        val label = s.activeDeviceLabel.ifEmpty { deviceLabelOrDefault }
+        val deviceLabel = s.activeDeviceLabel.ifEmpty { deviceLabelOrDefault }
+        val label = title.trim().replace(Regex("[\\\\/:*?\"<>|]"), "_").ifBlank { deviceLabel }
         val fileName = "${label}_${formatDateStamp(LocalDateTime.now())}.csv"
 
         // ??????硫멸킐???????(???????????黎앸럽????룸돥???????轅붽틓????嚥?????????????댁댉??????諛몃마???

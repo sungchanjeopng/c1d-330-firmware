@@ -31,7 +31,14 @@ object ReportHtmlExporter {
         // InterfaceEchoChart's Box(padding bottom = 28dp)).
         val axisPad = 34f
         val h = totalH - axisPad
-        c.drawRect(1f, 1f, w - 1, h - 1, Paint().apply {
+        val yLabelPaint = Paint().apply {
+            color = Color.parseColor("#8B95A1"); textSize = 16f
+            textAlign = Paint.Align.LEFT; isAntiAlias = true
+        }
+        // Y축 라벨용 왼쪽 여백 (X축 하단 여백과 동일한 방식)
+        val leftPad = yLabelPaint.measureText("3.0") + 12f
+        val plotW = w - leftPad
+        c.drawRect(leftPad, 1f, w - 1, h - 1, Paint().apply {
             color = Color.parseColor("#E0E0E0"); style = Paint.Style.STROKE; strokeWidth = 1f
         })
 
@@ -47,7 +54,7 @@ object ReportHtmlExporter {
         val n = wave.size
         val dz = reading.deadzone
         val empty = reading.empty
-        fun xOf(idx: Float) = w * idx / (n - 1).toFloat()
+        fun xOf(idx: Float) = leftPad + plotW * idx / (n - 1).toFloat()
         fun yOf(v: Int) = h - (v.toFloat() / ADC_MAX).coerceIn(0f, 1f) * h
 
         fun drawSeg(start: Int, end: Int, colorHex: String) {
@@ -81,11 +88,27 @@ object ReportHtmlExporter {
         if (reading.thrLightDist > 0) vline(xOf(reading.thrLightDist.toFloat()), "#666666")
         if (reading.thrHeavyDist > 0) vline(xOf(reading.thrHeavyDist.toFloat()), "#FF8C00")
 
-        fun hdash(y: Float, colorHex: String) = c.drawLine(0f, y, w, y, Paint().apply {
+        fun hdash(y: Float, colorHex: String) = c.drawLine(leftPad, y, w, y, Paint().apply {
             color = Color.parseColor(colorHex); strokeWidth = 2.5f; pathEffect = DashPathEffect(floatArrayOf(6f, 4f), 0f)
         })
         if (reading.thrLightReal > 0) hdash(yOf(reading.thrLightReal), "#666666")
         if (reading.thrHeavyReal > 0) hdash(yOf(reading.thrHeavyReal), "#FF8C00")
+
+        // Y-axis ticks: 1.0V / 2.0V / 3.0V (ADC 0~4095 = 0~3.3V)
+        run {
+            val guidePaint = Paint().apply {
+                color = Color.parseColor("#408B95A1"); strokeWidth = 1f
+            }
+            c.drawText("V", leftPad - yLabelPaint.measureText("V") - 6f, 16f, yLabelPaint)
+            for (volt in intArrayOf(1, 2, 3)) {
+                val raw = (volt / 3.3f * ADC_MAX).toInt()
+                val y = yOf(raw)
+                c.drawLine(leftPad, y, w, y, guidePaint)
+                val label = "$volt.0"
+                val tw = yLabelPaint.measureText(label)
+                c.drawText(label, leftPad - tw - 6f, (y + 6f).coerceIn(34f, h - 2f), yLabelPaint)
+            }
+        }
 
         // X-axis labels (same layout as InterfaceEchoChart):
         // 10 ticks from Empty (left, 0.00m at right). x = w*(emptyM-v)/totalRangeM
@@ -98,12 +121,15 @@ object ReportHtmlExporter {
                 textAlign = Paint.Align.CENTER
                 isAntiAlias = true
             }
+            val mw = labelPaint.measureText("m")
+            c.drawText("m", w - mw / 2f - 2f, h + 22f, labelPaint)
             for (i in 0..10) {
                 val v = emptyM - (emptyM / 10f) * i
-                val x = w * (emptyM - v) / totalRangeM
-                if (x < 0f || x > w) continue
+                val x = leftPad + plotW * (emptyM - v) / totalRangeM
+                if (x < leftPad || x > w) continue
                 val label = "%.2f".format(v)
-                c.drawText(label, x.coerceIn(20f, w - 20f), h + 22f, labelPaint)
+                val maxX = w - mw - 8f - labelPaint.measureText(label) / 2f
+                c.drawText(label, x.coerceIn(leftPad, maxX), h + 22f, labelPaint)
             }
         }
         return bmp
@@ -118,9 +144,23 @@ object ReportHtmlExporter {
     private fun esc(s: String): String =
         s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
+    /** 파형 2장(Real/Avg)의 base64 PNG. Word(MHTML) export에서 별도 파트로 분리할 때 사용. */
+    fun waveImagesBase64(data: ReportData): Pair<String, String> = Pair(
+        bitmapToBase64Png(renderWaveformBitmap(data.realEcho)),
+        bitmapToBase64Png(renderWaveformBitmap(data.avgEcho)),
+    )
+
     fun buildHtml(data: ReportData): String {
-        val realImg = bitmapToBase64Png(renderWaveformBitmap(data.realEcho))
-        val avgImg = bitmapToBase64Png(renderWaveformBitmap(data.avgEcho))
+        val (realB64, avgB64) = waveImagesBase64(data)
+        return buildHtml(data, "data:image/png;base64,$realB64", "data:image/png;base64,$avgB64")
+    }
+
+    /**
+     * @param forWord Word(MHTML)용 변형: Word가 div CSS background/gradient와
+     * CSS img width를 무시하므로 헤더는 table+bgcolor, 이미지는 width 속성,
+     * 코멘트 박스는 table 테두리로 대체한다.
+     */
+    fun buildHtml(data: ReportData, realSrc: String, avgSrc: String, forWord: Boolean = false): String {
 
         // 데이터 행은 <table> 로 — Word 로 열어도 편집 가능하게.
         fun row(k: String, v: String, vColor: String? = null): String {
@@ -147,19 +187,35 @@ object ReportHtmlExporter {
         val settings = buildString {
             append(row4("Echo Amp", data.echoAmp.toString(),
                        "Frequency", "%.0f kHz".format(data.freqMHz * 1000)))
+            append(row4("Thr.Light", thrLightStr,
+                       "Thr.Heavy", thrHeavyStr))
             append(row4("Offset", "%.2f m".format(data.offset),
-                       "Empty Distance", "%.2f m".format(data.emptyDistance)))
+                       "Empty", "%.2f m".format(data.emptyDistance)))
             append(row4("Dead Zone", "%.2f m".format(data.deadZone),
                        "Damping", data.damping.toString()))
-            append(row4("Current 4mA", "%.2f m".format(data.set4mA),
-                       "Current 20mA", "%.2f m".format(data.set20mA)))
-            append(row4("Temperature", "%.1f °C".format(data.temperatureC),
-                       "Current", "%.2f mA".format(data.currentMA)))
+            append(row4("Set 4mA", "%.2f m".format(data.set4mA),
+                       "Set 20mA", "%.2f m".format(data.set20mA)))
         }
-        val echoSettings = buildString {
-            append(row("Thr.Light", thrLightStr))
-            append(row("Thr.Heavy", thrHeavyStr))
-        }
+
+        val headerTitle = esc(data.title.ifBlank { data.label })
+        // Word는 div CSS background(gradient 포함)를 무시 → table+bgcolor로 대체
+        val header = if (forWord) """<table width="100%" cellpadding="0" cellspacing="0" style="border:none; border-collapse:collapse;"><tr>
+      <td bgcolor="#7C3AED" style="background:#7C3AED; padding:24px 28px; border:none;">
+        <span style="font-size:26px; font-weight:800; color:#FFFFFF;"><span style="color:#4ADE80;">&#9679;</span>&nbsp;$headerTitle</span><br>
+        <span style="font-size:13px; color:#EDE9FE;">ENV130</span><br>
+        <span style="font-size:13px; color:#EDE9FE;">${esc(data.timestamp)}</span>
+      </td>
+    </tr></table>"""
+        else """<div class="header">
+      <div class="name"><span class="dot"></span>$headerTitle</div>
+      <div class="sub">ENV130<br>${esc(data.timestamp)}</div>
+    </div>"""
+        // Word는 CSS width:100%를 무시하고 원본 px로 그림 → A4 안에 들어오게 width 속성 지정
+        val imgAttr = if (forWord) " width=\"620\"" else ""
+        val commentBox = if (forWord)
+            """<table width="100%" style="border-collapse:collapse;"><tr><td style="border:1.5px solid #C9CFD6; padding:14px; font-size:14px; height:60px; vertical-align:top;">${esc(data.comment)}</td></tr></table>"""
+        else
+            """<div class="comment">${esc(data.comment)}</div>"""
 
         return """<!DOCTYPE html>
 <html lang="en">
@@ -176,8 +232,8 @@ object ReportHtmlExporter {
   .body { padding: 24px 28px 30px; }
   h2 { font-size: 17px; font-weight: 800; color: #191F28; letter-spacing: -0.3px; margin: 26px 0 10px; padding-left: 10px; border-left: 4px solid #3182F6; }
   h2.s { border-left-color: #7C3AED; }
-  table { border-collapse: collapse; width: 100%; font-size: 14px; }
-  th, td { padding: 11px 14px; text-align: left; border-bottom: 1px solid #F2F4F6; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; border: 1.5px solid #C9CFD6; }
+  th, td { padding: 11px 14px; text-align: left; border: 1px solid #D8DDE3; }
   th { color: #4E5968; font-weight: 600; background: #FAFBFC; }
   td { font-weight: 700; color: #191F28; }
   table.kv2 th { width: 45%; }
@@ -188,29 +244,29 @@ object ReportHtmlExporter {
   .badge.real { color: #3182F6; background: rgba(49,130,246,0.12); }
   .badge.avg { color: #FF8C00; background: rgba(255,140,0,0.12); }
   img.wave { width: 100%; border: 1px solid #E8EBED; border-radius: 12px; margin-top: 8px; }
+  .comment { border: 1.5px solid #C9CFD6; min-height: 90px; padding: 14px; font-size: 14px; font-weight: 600; color: #191F28; white-space: pre-wrap; }
   @media print { body { background: #FFF; padding: 0; } .sheet { box-shadow: none; } }
 </style>
 </head>
 <body>
   <div class="sheet">
-    <div class="header">
-      <div class="name"><span class="dot"></span>${esc(data.label)}</div>
-      <div class="sub">Sludge Level Meter &nbsp;·&nbsp; FW ${esc(data.firmwareVersion.ifEmpty { "—" })}<br>${esc(data.timestamp)}</div>
-    </div>
+    $header
     <div class="body">
       <h2>Measurement</h2>
       <table class="kv2">$measurement</table>
 
+      <h2>Parameter</h2>
       <table class="kv4">$settings</table>
 
       <h2>Echo</h2>
-      <table class="kv2">$echoSettings</table>
-      <div style="height:10px"></div>
       <span class="badge real">Real</span>
-      <img class="wave" src="data:image/png;base64,$realImg" alt="Real waveform">
+      <img class="wave"$imgAttr src="$realSrc" alt="Real waveform">
       <div style="height:14px"></div>
       <span class="badge avg">Average</span>
-      <img class="wave" src="data:image/png;base64,$avgImg" alt="Average waveform">
+      <img class="wave"$imgAttr src="$avgSrc" alt="Average waveform">
+
+      <h2>Comment</h2>
+      $commentBox
     </div>
   </div>
 </body>

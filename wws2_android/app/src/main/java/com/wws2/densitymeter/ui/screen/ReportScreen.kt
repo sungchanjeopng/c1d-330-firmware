@@ -1,39 +1,74 @@
 package com.wws2.densitymeter.ui.screen
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.graphics.Bitmap
+import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.graphics.layer.drawLayer
+import androidx.compose.ui.graphics.rememberGraphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.wws2.densitymeter.domain.ReportSnapshotStore
+import com.wws2.densitymeter.ui.component.DialogActionButton
+import com.wws2.densitymeter.ui.component.TitleInputDialog
 import com.wws2.densitymeter.model.ReportData
 import com.wws2.densitymeter.model.ReportStage
 import com.wws2.densitymeter.ui.component.InterfaceEchoChart
 import com.wws2.densitymeter.ui.theme.AppColors
+import androidx.core.content.FileProvider
 import com.wws2.densitymeter.viewmodel.MainViewModel
+import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileOutputStream
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 private val ReportPurple = Color(0xFF7C3AED)
 private val LightBlue = Color(0xFF3182F6)
 private val HeavyOrange = Color(0xFFFF8C00)
 
 @Composable
-fun ReportScreen(vm: MainViewModel, onExportPdf: () -> Unit) {
+fun ReportScreen(vm: MainViewModel, onExportPdf: () -> Unit, onExportWord: () -> Unit, onExportImage: () -> Unit, onExportCsv: () -> Unit) {
     val state by vm.state.collectAsStateWithLifecycle()
 
     Box(modifier = Modifier.fillMaxSize().background(AppColors.Background)) {
@@ -44,7 +79,10 @@ fun ReportScreen(vm: MainViewModel, onExportPdf: () -> Unit) {
             ReportStage.DONE -> {
                 val data = state.reportData
                 if (data == null) ReportError("No report data", onRetry = { vm.backToReportSelect() })
-                else ReportResult(data, onExportPdf = onExportPdf, onNew = { vm.backToReportSelect() })
+                else ReportResult(data, onExportPdf = onExportPdf, onExportWord = onExportWord,
+                    onExportImage = onExportImage, onExportCsv = onExportCsv,
+                    onNew = { vm.backToReportSelect() },
+                    onSaveComment = { vm.updateReportComment(it) })
             }
         }
     }
@@ -55,6 +93,19 @@ fun ReportScreen(vm: MainViewModel, onExportPdf: () -> Unit) {
 private fun ReportDeviceSelect(vm: MainViewModel) {
     val state by vm.state.collectAsStateWithLifecycle()
     val devices = state.connectedDevices.filter { it.label.startsWith("ENV130") }
+    var titlePromptFor by remember { mutableStateOf<String?>(null) }
+
+    titlePromptFor?.let { deviceId ->
+        TitleInputDialog(
+            heading = "Report Title",
+            confirmText = "Create",
+            onDismiss = { titlePromptFor = null },
+            onConfirm = { title ->
+                titlePromptFor = null
+                vm.selectReportDevice(deviceId, title)
+            },
+        )
+    }
 
     Column(modifier = Modifier.fillMaxSize().padding(20.dp)) {
         Text("Report", fontSize = 26.sp, fontWeight = FontWeight.W800, color = AppColors.DarkText, letterSpacing = (-0.5).sp)
@@ -63,7 +114,7 @@ private fun ReportDeviceSelect(vm: MainViewModel) {
         Spacer(Modifier.height(20.dp))
 
         if (devices.isEmpty()) {
-            Box(modifier = Modifier.fillMaxWidth().padding(top = 60.dp), contentAlignment = Alignment.Center) {
+            Box(modifier = Modifier.fillMaxWidth().padding(top = 20.dp, bottom = 20.dp), contentAlignment = Alignment.Center) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text("📋", fontSize = 40.sp)
                     Spacer(Modifier.height(10.dp))
@@ -91,7 +142,7 @@ private fun ReportDeviceSelect(vm: MainViewModel) {
                         Text("Sludge Level Meter", fontSize = 12.sp, color = AppColors.WeakText)
                     }
                     Button(
-                        onClick = { vm.selectReportDevice(device.id) },
+                        onClick = { titlePromptFor = device.id },
                         colors = ButtonDefaults.buttonColors(containerColor = ReportPurple),
                         shape = RoundedCornerShape(12.dp),
                         contentPadding = PaddingValues(horizontal = 18.dp, vertical = 10.dp),
@@ -101,6 +152,65 @@ private fun ReportDeviceSelect(vm: MainViewModel) {
                 }
                 Spacer(Modifier.height(12.dp))
             }
+        }
+
+        SavedReportsSection(vm)
+    }
+}
+
+// ───────────────────── 저장된 리포트 목록 (스냅샷 → ReportResult 복원) ─────────────────────
+@Composable
+private fun ColumnScope.SavedReportsSection(vm: MainViewModel) {
+    val context = LocalContext.current
+    var savedReports by remember { mutableStateOf(ReportSnapshotStore.list(context)) }
+
+    if (savedReports.isEmpty()) return
+
+    Spacer(Modifier.height(16.dp))
+    Text("Saved Reports", fontSize = 17.sp, fontWeight = FontWeight.W800, color = AppColors.DarkText)
+    Spacer(Modifier.height(10.dp))
+    Column(
+        modifier = Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        savedReports.forEach { file ->
+            SavedReportRow(
+                file = file,
+                onOpen = { vm.openReportSnapshot(file) },
+                onDelete = {
+                    file.delete()
+                    savedReports = ReportSnapshotStore.list(context)
+                },
+            )
+        }
+        Spacer(Modifier.height(8.dp))
+    }
+}
+
+@Composable
+private fun SavedReportRow(file: File, onOpen: () -> Unit, onDelete: () -> Unit) {
+    val meta = remember(file) {
+        SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Date(file.lastModified()))
+    }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .shadow(2.dp, RoundedCornerShape(14.dp))
+            .clip(RoundedCornerShape(14.dp))
+            .background(AppColors.White)
+            .clickable(onClick = onOpen)
+            .padding(start = 14.dp, end = 4.dp, top = 10.dp, bottom = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text("📄", fontSize = 18.sp)
+        Spacer(Modifier.width(10.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(file.nameWithoutExtension, fontSize = 13.sp, fontWeight = FontWeight.W600, color = AppColors.DarkText,
+                maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(meta, fontSize = 11.sp, color = AppColors.WeakText)
+        }
+        IconButton(onClick = onDelete) {
+            Icon(Icons.Outlined.Delete, contentDescription = "Delete", tint = AppColors.WeakText, modifier = Modifier.size(18.dp))
         }
     }
 }
@@ -135,7 +245,8 @@ private fun ReportError(message: String?, onRetry: () -> Unit) {
 
 // ───────────────────── 리포트 결과 ─────────────────────
 @Composable
-private fun ReportResult(data: ReportData, onExportPdf: () -> Unit, onNew: () -> Unit) {
+private fun ReportResult(data: ReportData, onExportPdf: () -> Unit, onExportWord: () -> Unit, onExportImage: () -> Unit, onExportCsv: () -> Unit, onNew: () -> Unit, onSaveComment: (String) -> Unit) {
+    var showExportChoice by remember { mutableStateOf(false) }
     Column(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 16.dp),
@@ -145,50 +256,48 @@ private fun ReportResult(data: ReportData, onExportPdf: () -> Unit, onNew: () ->
 
             SectionLabel("Measurement", LightBlue)
             Spacer(Modifier.height(10.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                HeroStat("Light Level", "%.2f".format(data.lightLevel), "m", LightBlue, Modifier.weight(1f))
-                HeroStat("Heavy Level", "%.2f".format(data.heavyLevel), "m", HeavyOrange, Modifier.weight(1f))
-            }
-            Spacer(Modifier.height(12.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                MiniStat("Temperature", "%.1f °C".format(data.temperatureC), Modifier.weight(1f))
-                MiniStat("Current", "%.2f mA".format(data.currentMA), Modifier.weight(1f))
-            }
-            Spacer(Modifier.height(22.dp))
-
-            Card {
-                KvRow4("Echo Amp", data.echoAmp.toString(),
-                       "Frequency", "%.0f kHz".format(data.freqMHz * 1000))
-                Divider()
-                KvRow4("Offset", "%.2f m".format(data.offset),
-                       "Empty Distance", "%.2f m".format(data.emptyDistance))
-                Divider()
-                KvRow4("Dead Zone", "%.2f m".format(data.deadZone),
-                       "Damping", data.damping.toString())
-                Divider()
-                KvRow4("Current 4mA", "%.2f m".format(data.set4mA),
-                       "Current 20mA", "%.2f m".format(data.set20mA))
-                Divider()
-                KvRow4("Temperature", "%.1f °C".format(data.temperatureC),
-                       "Current", "%.2f mA".format(data.currentMA))
+            CopyableBlock("measurement") {
+                GridTable2(listOf(
+                    Triple("Light Level", "%.2f m".format(data.lightLevel), LightBlue),
+                    Triple("Heavy Level", "%.2f m".format(data.heavyLevel), HeavyOrange),
+                    Triple("Temperature", "%.1f °C".format(data.temperatureC), null),
+                    Triple("Current", "%.2f mA".format(data.currentMA), null),
+                ))
             }
             Spacer(Modifier.height(22.dp))
 
-            SectionLabel("Echo", LightBlue)
-            Spacer(Modifier.height(10.dp))
             val thrLightStr = if (data.thrLightMode == 1) "%.1f V".format(data.thrLightSet / 10.0)
                               else "${data.thrLightSet} %"
             val thrHeavyStr = if (data.thrHeavyMode == 1) "%.1f V".format(data.thrHeavySet / 10.0)
                               else "${data.thrHeavySet} %"
-            Card {
-                KvRow("Thr.Light", thrLightStr)
-                Divider()
-                KvRow("Thr.Heavy", thrHeavyStr)
+            SectionLabel("Parameter", LightBlue)
+            Spacer(Modifier.height(10.dp))
+            CopyableBlock("parameter") {
+                GridTable4(listOf(
+                    listOf("Echo Amp", data.echoAmp.toString(),
+                           "Frequency", "%.0f kHz".format(data.freqMHz * 1000)),
+                    listOf("Thr.Light", thrLightStr,
+                           "Thr.Heavy", thrHeavyStr),
+                    listOf("Offset", "%.2f m".format(data.offset),
+                           "Empty", "%.2f m".format(data.emptyDistance)),
+                    listOf("Dead Zone", "%.2f m".format(data.deadZone),
+                           "Damping", data.damping.toString()),
+                    listOf("Set 4mA", "%.2f m".format(data.set4mA),
+                           "Set 20mA", "%.2f m".format(data.set20mA)),
+                ))
             }
+            Spacer(Modifier.height(22.dp))
+
+            SectionLabel("Echo", LightBlue)
             Spacer(Modifier.height(14.dp))
-            WaveBlock("Real", LightBlue, data.realEcho)
+            CopyableBlock("real_wave") { WaveBlock("Real", LightBlue, data.realEcho) }
             Spacer(Modifier.height(14.dp))
-            WaveBlock("Average", HeavyOrange, data.avgEcho)
+            CopyableBlock("avg_wave") { WaveBlock("Average", HeavyOrange, data.avgEcho) }
+            Spacer(Modifier.height(22.dp))
+
+            SectionLabel("Comment", LightBlue)
+            Spacer(Modifier.height(10.dp))
+            CommentBox(comment = data.comment, onSave = onSaveComment)
             Spacer(Modifier.height(8.dp))
         }
 
@@ -208,11 +317,65 @@ private fun ReportResult(data: ReportData, onExportPdf: () -> Unit, onNew: () ->
                 shape = RoundedCornerShape(14.dp),
             ) { Text("New", color = AppColors.SubText, fontWeight = FontWeight.W700, fontSize = 16.sp) }
             Button(
-                onClick = onExportPdf,
+                onClick = { showExportChoice = true },
                 modifier = Modifier.weight(2f).height(52.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = ReportPurple),
                 shape = RoundedCornerShape(14.dp),
-            ) { Text("Export PDF", color = AppColors.White, fontWeight = FontWeight.W800, fontSize = 16.sp) }
+            ) { Text("Export", color = AppColors.White, fontWeight = FontWeight.W800, fontSize = 16.sp) }
+        }
+    }
+
+    if (showExportChoice) {
+        Dialog(onDismissRequest = { showExportChoice = false }) {
+            Column(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(AppColors.White)
+                    .padding(20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text("Export Report", fontSize = 20.sp, fontWeight = FontWeight.W700, color = AppColors.DarkText)
+                Spacer(Modifier.height(18.dp))
+                DialogActionButton(
+                    text = "PDF",
+                    background = ReportPurple,
+                    contentColor = AppColors.White,
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { showExportChoice = false; onExportPdf() },
+                )
+                Spacer(Modifier.height(10.dp))
+                DialogActionButton(
+                    text = "Word (.doc)",
+                    background = AppColors.Primary,
+                    contentColor = AppColors.White,
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { showExportChoice = false; onExportWord() },
+                )
+                Spacer(Modifier.height(10.dp))
+                DialogActionButton(
+                    text = "Image (.jpg)",
+                    background = HeavyOrange,
+                    contentColor = AppColors.White,
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { showExportChoice = false; onExportImage() },
+                )
+                Spacer(Modifier.height(10.dp))
+                DialogActionButton(
+                    text = "CSV (.csv)",
+                    background = AppColors.Success,
+                    contentColor = AppColors.White,
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { showExportChoice = false; onExportCsv() },
+                )
+                Spacer(Modifier.height(10.dp))
+                DialogActionButton(
+                    text = "Cancel",
+                    background = AppColors.LightGray,
+                    contentColor = AppColors.DarkText,
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { showExportChoice = false },
+                )
+            }
         }
     }
 }
@@ -231,10 +394,10 @@ private fun HeaderCard(data: ReportData) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(Modifier.size(10.dp).clip(CircleShape).background(Color(0xFF4ADE80)))
                 Spacer(Modifier.width(8.dp))
-                Text(data.label, fontSize = 24.sp, fontWeight = FontWeight.W800, color = Color.White, letterSpacing = (-0.5).sp)
+                Text(data.title.ifBlank { data.label }, fontSize = 24.sp, fontWeight = FontWeight.W800, color = Color.White, letterSpacing = (-0.5).sp)
             }
             Spacer(Modifier.height(10.dp))
-            Text("Sludge Level Meter  ·  FW ${data.firmwareVersion.ifEmpty { "—" }}", fontSize = 13.sp, color = Color.White.copy(alpha = 0.85f))
+            Text("ENV130", fontSize = 13.sp, color = Color.White.copy(alpha = 0.85f))
             Text(data.timestamp, fontSize = 13.sp, color = Color.White.copy(alpha = 0.75f))
         }
     }
@@ -249,112 +412,168 @@ private fun SectionLabel(title: String, accent: Color) {
     }
 }
 
+// 꾹 누르면 해당 블록을 이미지로 캡처해 클립보드에 복사 (카톡 등에 붙여넣기)
 @Composable
-private fun HeroStat(label: String, value: String, unit: String, color: Color, modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier
-            .shadow(3.dp, RoundedCornerShape(18.dp))
-            .clip(RoundedCornerShape(18.dp))
-            .background(AppColors.White)
-            .padding(horizontal = 16.dp, vertical = 18.dp),
-    ) {
-        Text(label, fontSize = 13.sp, fontWeight = FontWeight.W700, color = color)
-        Spacer(Modifier.height(8.dp))
-        Row(verticalAlignment = Alignment.Bottom) {
-            Text(value, fontSize = 30.sp, fontWeight = FontWeight.W800, color = AppColors.DarkText, letterSpacing = (-1).sp)
-            Spacer(Modifier.width(3.dp))
-            Text(unit, fontSize = 15.sp, fontWeight = FontWeight.W700, color = AppColors.GrayLabel, modifier = Modifier.padding(bottom = 4.dp))
-        }
-    }
+private fun CopyableBlock(label: String, content: @Composable () -> Unit) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val graphicsLayer = rememberGraphicsLayer()
+    Box(
+        modifier = Modifier
+            .drawWithContent {
+                graphicsLayer.record { this@drawWithContent.drawContent() }
+                drawLayer(graphicsLayer)
+            }
+            .pointerInput(Unit) {
+                detectTapGestures(onLongPress = {
+                    scope.launch {
+                        try {
+                            val bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap()
+                            copyBitmapToClipboard(context, bitmap, label)
+                            Toast.makeText(context, "Copied to clipboard", Toast.LENGTH_SHORT).show()
+                        } catch (e: Exception) {
+                            Toast.makeText(context, "Copy failed: ${e.message}", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                })
+            },
+    ) { content() }
+}
+
+private fun copyBitmapToClipboard(context: Context, bitmap: Bitmap, label: String) {
+    val dir = File(context.cacheDir, "report_export").apply { mkdirs() }
+    val file = File(dir, "copy_${label}_${System.currentTimeMillis()}.png")
+    FileOutputStream(file).use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
+    val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
+    val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    cm.setPrimaryClip(ClipData.newUri(context.contentResolver, label, uri))
 }
 
 @Composable
-private fun MiniStat(label: String, value: String, modifier: Modifier = Modifier) {
-    Row(
-        modifier = modifier
-            .shadow(2.dp, RoundedCornerShape(16.dp))
-            .clip(RoundedCornerShape(16.dp))
-            .background(AppColors.White)
-            .padding(horizontal = 16.dp, vertical = 16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(label, fontSize = 13.sp, color = AppColors.SubText)
-        Text(value, fontSize = 16.sp, fontWeight = FontWeight.W800, color = AppColors.DarkText)
-    }
-}
-
-@Composable
-private fun Card(content: @Composable ColumnScope.() -> Unit) {
-    Column(
+private fun CommentBox(comment: String, onSave: (String) -> Unit) {
+    var editing by remember { mutableStateOf(false) }
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .shadow(3.dp, RoundedCornerShape(18.dp))
-            .clip(RoundedCornerShape(18.dp))
             .background(AppColors.White)
-            .padding(horizontal = 18.dp, vertical = 6.dp),
-        content = content,
-    )
-}
-
-@Composable
-private fun Divider() {
-    Box(Modifier.fillMaxWidth().height(1.dp).background(AppColors.Background))
-}
-
-@Composable
-private fun GroupHeader(title: String) {
-    Text(
-        title,
-        modifier = Modifier.padding(top = 14.dp, bottom = 4.dp),
-        fontSize = 11.sp,
-        fontWeight = FontWeight.W800,
-        color = AppColors.GrayLabel,
-        letterSpacing = 0.8.sp,
-    )
-}
-
-@Composable
-private fun TossGroupLabel(title: String) {
-    Text(
-        title,
-        modifier = Modifier.padding(start = 4.dp, bottom = 6.dp),
-        fontSize = 12.sp,
-        fontWeight = FontWeight.W700,
-        color = AppColors.GrayLabel,
-        letterSpacing = 0.3.sp,
-    )
-}
-
-@Composable
-private fun KvRow4(k1: String, v1: String, k2: String?, v2: String?) {
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 13.dp),
-        verticalAlignment = Alignment.CenterVertically,
+            .border(1.5.dp, TableBorderCol)
+            .clickable { editing = true }
+            .padding(14.dp)
+            .heightIn(min = 80.dp),
     ) {
-        Text(k1, modifier = Modifier.weight(1f), fontSize = 13.sp, color = AppColors.SubText)
-        Text(v1, modifier = Modifier.weight(1f), fontSize = 14.sp, fontWeight = FontWeight.W700, color = AppColors.DarkText,
-            textAlign = androidx.compose.ui.text.style.TextAlign.End)
-        Spacer(Modifier.width(16.dp))
-        if (k2 != null && v2 != null) {
-            Text(k2, modifier = Modifier.weight(1f), fontSize = 13.sp, color = AppColors.SubText)
-            Text(v2, modifier = Modifier.weight(1f), fontSize = 14.sp, fontWeight = FontWeight.W700, color = AppColors.DarkText,
-                textAlign = androidx.compose.ui.text.style.TextAlign.End)
+        if (comment.isBlank()) {
+            Text("Tap to write a comment", fontSize = 14.sp, color = AppColors.WeakText)
         } else {
-            Spacer(Modifier.weight(2f))
+            Text(comment, fontSize = 14.sp, fontWeight = FontWeight.W600, color = AppColors.DarkText, lineHeight = 21.sp)
+        }
+    }
+    if (editing) {
+        CommentEditDialog(
+            initial = comment,
+            onDismiss = { editing = false },
+            onSave = { editing = false; onSave(it) },
+        )
+    }
+}
+
+@Composable
+private fun CommentEditDialog(initial: String, onDismiss: () -> Unit, onSave: (String) -> Unit) {
+    var text by remember { mutableStateOf(initial) }
+    Dialog(onDismissRequest = onDismiss) {
+        Column(
+            modifier = Modifier
+                .clip(RoundedCornerShape(16.dp))
+                .background(AppColors.White)
+                .padding(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text("Comment", fontSize = 20.sp, fontWeight = FontWeight.W700, color = AppColors.DarkText)
+            Spacer(Modifier.height(16.dp))
+            OutlinedTextField(
+                value = text,
+                onValueChange = { text = it },
+                modifier = Modifier.fillMaxWidth().height(160.dp),
+                shape = RoundedCornerShape(8.dp),
+            )
+            Spacer(Modifier.height(16.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                DialogActionButton(
+                    text = "Cancel",
+                    background = AppColors.LightGray,
+                    contentColor = AppColors.DarkText,
+                    modifier = Modifier.weight(1f),
+                    onClick = onDismiss,
+                )
+                DialogActionButton(
+                    text = "Save",
+                    background = AppColors.Primary,
+                    contentColor = AppColors.White,
+                    modifier = Modifier.weight(1f),
+                    onClick = { onSave(text.trim()) },
+                )
+            }
+        }
+    }
+}
+
+// PDF 표와 동일한 격자 스타일 (ReportHtmlExporter CSS 미러)
+private val TableBorderCol = Color(0xFFC9CFD6)
+private val TableLineCol = Color(0xFFD8DDE3)
+private val ThBgCol = Color(0xFFFAFBFC)
+private val ThTextCol = Color(0xFF4E5968)
+
+@Composable
+private fun RowScope.TableTh(text: String, weight: Float) {
+    Box(
+        modifier = Modifier
+            .weight(weight)
+            .fillMaxHeight()
+            .background(ThBgCol)
+            .border(0.5.dp, TableLineCol)
+            .padding(horizontal = 12.dp, vertical = 11.dp),
+        contentAlignment = Alignment.CenterStart,
+    ) { Text(text, fontSize = 13.sp, fontWeight = FontWeight.W600, color = ThTextCol) }
+}
+
+@Composable
+private fun RowScope.TableTd(text: String, weight: Float, color: Color = AppColors.DarkText) {
+    Box(
+        modifier = Modifier
+            .weight(weight)
+            .fillMaxHeight()
+            .background(AppColors.White)
+            .border(0.5.dp, TableLineCol)
+            .padding(horizontal = 12.dp, vertical = 11.dp),
+        contentAlignment = Alignment.CenterStart,
+    ) { Text(text, fontSize = 14.sp, fontWeight = FontWeight.W700, color = color) }
+}
+
+@Composable
+private fun GridTable2(rows: List<Triple<String, String, Color?>>) {
+    Column(Modifier.fillMaxWidth().border(1.5.dp, TableBorderCol)) {
+        rows.forEach { (k, v, c) ->
+            Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
+                TableTh(k, 0.45f)
+                TableTd(v, 0.55f, c ?: AppColors.DarkText)
+            }
         }
     }
 }
 
 @Composable
-private fun KvRow(key: String, value: String) {
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 13.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(key, fontSize = 14.sp, color = AppColors.SubText)
-        Text(value, fontSize = 15.sp, fontWeight = FontWeight.W700, color = AppColors.DarkText)
+private fun GridTable4(rows: List<List<String>>) {
+    Column(Modifier.fillMaxWidth().border(1.5.dp, TableBorderCol)) {
+        rows.forEach { r ->
+            Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
+                TableTh(r[0], 0.22f)
+                TableTd(r[1], 0.28f)
+                TableTh(r[2], 0.22f)
+                TableTd(r[3], 0.28f)
+            }
+        }
     }
 }
 

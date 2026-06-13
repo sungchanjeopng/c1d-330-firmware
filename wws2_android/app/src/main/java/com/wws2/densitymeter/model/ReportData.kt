@@ -35,4 +35,8 @@ data class ReportData(
     // 파형
     val realEcho: InterfaceEchoReading?,
     val avgEcho: InterfaceEchoReading?,
+    // 사용자 입력 제목 (파일명/리스트 표시용, 비우면 label 사용)
+    val title: String = "",
+    // 점검자 의견 (리포트 화면에서 입력, 스냅샷/PDF에 포함)
+    val comment: String = "",
 )

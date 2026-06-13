@@ -187,6 +187,31 @@ fun MainShellScreen(vm: MainViewModel = viewModel()) {
                         } else {
                             Toast.makeText(context, "No report to export", Toast.LENGTH_SHORT).show()
                         }
+                    }, onExportWord = {
+                        val activity = context as? android.app.Activity
+                        val data = state.reportData
+                        if (activity != null && data != null) {
+                            com.wws2.densitymeter.domain.ReportWordExporter.generateAndShare(activity, data)
+                        } else {
+                            Toast.makeText(context, "No report to export", Toast.LENGTH_SHORT).show()
+                        }
+                    }, onExportImage = {
+                        val activity = context as? android.app.Activity
+                        val data = state.reportData
+                        if (activity != null && data != null) {
+                            com.wws2.densitymeter.domain.ReportPdfExporter.generateAndShare(
+                                activity, data, com.wws2.densitymeter.domain.ReportPdfExporter.Format.JPEG)
+                        } else {
+                            Toast.makeText(context, "No report to export", Toast.LENGTH_SHORT).show()
+                        }
+                    }, onExportCsv = {
+                        val activity = context as? android.app.Activity
+                        val data = state.reportData
+                        if (activity != null && data != null) {
+                            com.wws2.densitymeter.domain.ReportCsvExporter.generateAndShare(activity, data)
+                        } else {
+                            Toast.makeText(context, "No report to export", Toast.LENGTH_SHORT).show()
+                        }
                     })
                     state.tabIndex == 0 -> MainTabScreen(vm)
                     state.tabIndex == 1 -> EchoTabScreen(vm)

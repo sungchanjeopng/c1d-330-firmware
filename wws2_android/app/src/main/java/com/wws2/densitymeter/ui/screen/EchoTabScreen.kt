@@ -3,10 +3,13 @@ package com.wws2.densitymeter.ui.screen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.ShowChart
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.*
@@ -15,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.TextRange
@@ -45,6 +49,7 @@ import com.wws2.densitymeter.model.DensityUnit
 import com.wws2.densitymeter.viewmodel.MainViewModel
 
 private val OrangeColor = androidx.compose.ui.graphics.Color(0xFFFFA500)
+private val DzEmptyColor = androidx.compose.ui.graphics.Color(0xFF3182F6)
 
 @Composable
 fun EchoTabScreen(vm: MainViewModel) {
@@ -177,16 +182,21 @@ private fun EchoModeToggle(currentMode: EchoMode, onModeChange: (EchoMode) -> Un
 @Composable
 private fun InterfaceEchoInfoRow(ifReading: InterfaceEchoReading?, vm: MainViewModel) {
     var edit by remember { mutableStateOf<EchoEdit?>(null) }
+    // 항목 5개라 좁음 → 좌우 스크롤. 양끝 페이드+화살표로 스크롤 가능함을 표시
+    val rowScroll = rememberScrollState()
+    Box(modifier = Modifier.fillMaxWidth()) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier
+            .fillMaxWidth()
+            .horizontalScroll(rowScroll)
+            .padding(horizontal = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(20.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         EditableEchoInfo(
             text = "Thr.Light  ${ifReading?.let { if (it.thrLightMode == 1) "%.1fV".format(it.thrLightSet / 10.0) else "${it.thrLightSet}%" } ?: "--"}",
             color = AppColors.GrayLabel,
             textAlign = TextAlign.Start,
-            modifier = Modifier.weight(1f),
             onClick = {
                 if (ifReading != null) {
                     edit = if (ifReading.thrLightMode == 1) EchoEdit("Thr.Light Manual", 4, ifReading.thrLightSet, 0, 32, 1) { "%.1fV".format(it / 10.0) }
@@ -197,8 +207,7 @@ private fun InterfaceEchoInfoRow(ifReading: InterfaceEchoReading?, vm: MainViewM
         EditableEchoInfo(
             text = "Thr.Heavy  ${ifReading?.let { if (it.thrHeavyMode == 1) "%.1fV".format(it.thrHeavySet / 10.0) else "${it.thrHeavySet}%" } ?: "--"}",
             color = OrangeColor,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.Start,
             onClick = {
                 if (ifReading != null) {
                     edit = if (ifReading.thrHeavyMode == 1) EchoEdit("Thr.Heavy Manual", 5, ifReading.thrHeavySet, 0, 32, 1) { "%.1fV".format(it / 10.0) }
@@ -209,12 +218,72 @@ private fun InterfaceEchoInfoRow(ifReading: InterfaceEchoReading?, vm: MainViewM
         EditableEchoInfo(
             text = "Echo Amp  ${ifReading?.echoAmp?.toString() ?: "--"}",
             color = AppColors.Primary,
-            textAlign = TextAlign.End,
-            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.Start,
             onClick = {
                 edit = EchoEdit("Echo Amp", 1, ifReading?.echoAmp ?: 15, 1, 50, 1) { it.toString() }
             },
         )
+        EditableEchoInfo(
+            text = "Empty  ${ifReading?.let { "%.2fm".format(it.empty * 0.01) } ?: "--"}",
+            color = DzEmptyColor,
+            textAlign = TextAlign.Start,
+            onClick = {
+                if (ifReading != null) {
+                    edit = EchoEdit("Empty", 12, ifReading.empty, 1, 1000, 1, decimalScale = 100) { "%.2f m".format(it / 100.0) }
+                }
+            },
+        )
+        EditableEchoInfo(
+            text = "Dead Zone  ${ifReading?.let { "%.2fm".format(it.deadzone * 0.01) } ?: "--"}",
+            color = DzEmptyColor,
+            textAlign = TextAlign.Start,
+            onClick = {
+                if (ifReading != null) {
+                    edit = EchoEdit("Dead Zone", 13, ifReading.deadzone, 35, 1000, 1, decimalScale = 100) { "%.2f m".format(it / 100.0) }
+                }
+            },
+        )
+    }
+    if (rowScroll.canScrollBackward) {
+        Row(
+            modifier = Modifier.matchParentSize(),
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Box(
+                Modifier.fillMaxHeight().background(AppColors.Background),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = null,
+                    modifier = Modifier.size(18.dp), tint = AppColors.GrayLabel)
+            }
+            Box(
+                Modifier.width(24.dp).fillMaxHeight().background(
+                    Brush.horizontalGradient(listOf(AppColors.Background, AppColors.Background.copy(alpha = 0f)))
+                )
+            )
+        }
+    }
+    if (rowScroll.canScrollForward) {
+        Row(
+            modifier = Modifier.matchParentSize(),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Box(
+                Modifier.width(24.dp).fillMaxHeight().background(
+                    Brush.horizontalGradient(listOf(AppColors.Background.copy(alpha = 0f), AppColors.Background))
+                )
+            )
+            Box(
+                Modifier.fillMaxHeight().background(AppColors.Background),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null,
+                    modifier = Modifier.size(18.dp), tint = AppColors.GrayLabel)
+            }
+        }
+    }
     }
     edit?.let { cfg ->
         EchoEditDialog(
@@ -269,14 +338,37 @@ private data class EchoEdit(
     val min: Int,
     val max: Int,
     val step: Int,
+    val decimalScale: Int = 1,
     val formatter: (Int) -> String,
 )
 
 @Composable
 private fun EchoEditDialog(config: EchoEdit, onDismiss: () -> Unit, onApply: suspend (Int) -> Boolean) {
+    // 소수 입력 지원 (decimalScale=100이면 raw 1000 → "10" + "00") — ConfigEditDialog 미러
+    fun integerText(raw: Int): String {
+        if (config.decimalScale <= 1) return raw.toString()
+        val absRaw = kotlin.math.abs(raw)
+        val sign = if (raw < 0) "-" else ""
+        return sign + (absRaw / config.decimalScale).toString()
+    }
+    fun fractionText(raw: Int): String {
+        val absRaw = kotlin.math.abs(raw)
+        return (absRaw % config.decimalScale).toString().padStart(2, '0')
+    }
+    fun parseRaw(intInput: String, fracInput: String): Int? {
+        if (config.decimalScale <= 1) return intInput.toIntOrNull()
+        val intPart = intInput.toIntOrNull() ?: return null
+        val fracPart = fracInput.toIntOrNull() ?: return null
+        if (fracPart !in 0 until config.decimalScale) return null
+        val negative = intInput.trim().startsWith("-")
+        val rawAbs = kotlin.math.abs(intPart) * config.decimalScale + fracPart
+        return if (negative) -rawAbs else rawAbs
+    }
+
     var value by remember(config) { mutableIntStateOf(config.value.coerceIn(config.min, config.max)) }
-    var text by remember(config) { mutableStateOf(TextFieldValue(config.value.coerceIn(config.min, config.max).toString(), selection = TextRange(config.value.coerceIn(config.min, config.max).toString().length))) }
-    val parsed = text.text.toIntOrNull()
+    var intText by remember(config) { mutableStateOf(TextFieldValue(integerText(config.value.coerceIn(config.min, config.max)), selection = TextRange(integerText(config.value.coerceIn(config.min, config.max)).length))) }
+    var fracText by remember(config) { mutableStateOf(TextFieldValue(fractionText(config.value.coerceIn(config.min, config.max)), selection = TextRange(fractionText(config.value.coerceIn(config.min, config.max)).length))) }
+    val parsed = parseRaw(intText.text, fracText.text)
     val validValue = parsed?.takeIf { it in config.min..config.max }
 
     var sendingState by remember(config) { mutableStateOf(EchoSendingState.IDLE) }
@@ -284,7 +376,8 @@ private fun EchoEditDialog(config: EchoEdit, onDismiss: () -> Unit, onApply: sus
 
     fun setValue(newValue: Int) {
         value = newValue.coerceIn(config.min, config.max)
-        text = TextFieldValue(value.toString(), selection = TextRange(value.toString().length))
+        intText = TextFieldValue(integerText(value), selection = TextRange(integerText(value).length))
+        fracText = TextFieldValue(fractionText(value), selection = TextRange(fractionText(value).length))
     }
 
     // Design mirrors iOS EchoEditSheet (EchoTabScreen.swift:227-345): rounded
@@ -324,21 +417,67 @@ private fun EchoEditDialog(config: EchoEdit, onDismiss: () -> Unit, onApply: sus
 
             Spacer(Modifier.height(18.dp))
 
-            OutlinedTextField(
-                value = text,
-                onValueChange = { input ->
-                    val filtered = input.text.filterIndexed { index, ch -> ch.isDigit() || (ch == '-' && index == 0 && config.min < 0) }
-                    text = TextFieldValue(filtered, selection = TextRange(filtered.length))
-                },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                shape = RoundedCornerShape(8.dp),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                label = { Text("Value") },
-                supportingText = { Text("Range ${config.min} ~ ${config.max} / ${validValue?.let(config.formatter) ?: "Invalid"}") },
-                colors = OutlinedTextFieldDefaults.colors(cursorColor = androidx.compose.ui.graphics.Color.Transparent),
-                isError = validValue == null,
-            )
+            if (config.decimalScale > 1) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.Bottom,
+                ) {
+                    OutlinedTextField(
+                        value = intText,
+                        onValueChange = { input ->
+                            val filtered = input.text.filterIndexed { index, ch -> ch.isDigit() || (ch == '-' && index == 0 && config.min < 0) }
+                            intText = TextFieldValue(filtered, selection = TextRange(filtered.length))
+                        },
+                        modifier = Modifier.width(100.dp),
+                        singleLine = true,
+                        shape = RoundedCornerShape(8.dp),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.End, fontSize = 20.sp),
+                        colors = OutlinedTextFieldDefaults.colors(cursorColor = androidx.compose.ui.graphics.Color.Transparent),
+                        isError = validValue == null,
+                    )
+                    Text(
+                        ".",
+                        modifier = Modifier.padding(start = 6.dp, end = 6.dp, bottom = 8.dp),
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.W700,
+                        color = AppColors.DarkText,
+                    )
+                    OutlinedTextField(
+                        value = fracText,
+                        onValueChange = { input ->
+                            val filtered = input.text.filter { it.isDigit() }.take(2)
+                            fracText = TextFieldValue(filtered, selection = TextRange(filtered.length))
+                        },
+                        modifier = Modifier.width(80.dp),
+                        singleLine = true,
+                        shape = RoundedCornerShape(8.dp),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Start, fontSize = 20.sp),
+                        colors = OutlinedTextFieldDefaults.colors(cursorColor = androidx.compose.ui.graphics.Color.Transparent),
+                        isError = validValue == null,
+                    )
+                }
+                Spacer(Modifier.height(4.dp))
+                Text("Range ${config.formatter(config.min)} ~ ${config.formatter(config.max)}", fontSize = 12.sp, color = AppColors.GrayLabel)
+            } else {
+                OutlinedTextField(
+                    value = intText,
+                    onValueChange = { input ->
+                        val filtered = input.text.filterIndexed { index, ch -> ch.isDigit() || (ch == '-' && index == 0 && config.min < 0) }
+                        intText = TextFieldValue(filtered, selection = TextRange(filtered.length))
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    shape = RoundedCornerShape(8.dp),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    label = { Text("Value") },
+                    supportingText = { Text("Range ${config.min} ~ ${config.max} / ${validValue?.let(config.formatter) ?: "Invalid"}") },
+                    colors = OutlinedTextFieldDefaults.colors(cursorColor = androidx.compose.ui.graphics.Color.Transparent),
+                    isError = validValue == null,
+                )
+            }
 
             Spacer(Modifier.height(18.dp))
 
