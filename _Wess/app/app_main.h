@@ -84,7 +84,18 @@ typedef struct {
 //------------------------------------------------------------------------------------------------------------------------------
 //  Macros
 //------------------------------------------------------------------------------------------------------------------------------
-#define _APP_VERISON		"v1.1.0"
+//  Firmware version — the numeric components below are the single source of
+//  truth. The string form (_APP_VERISON), the on-screen version, and the BLE
+//  device-info payload are all derived from these, so they can never drift.
+//  NOTE: BLE firmware-version reporting was introduced in v1.1.2. A device
+//        that does not report a version is therefore v1.1.1 or older.
+#define _APP_VER_MAJOR		1
+#define _APP_VER_MINOR		1
+#define _APP_VER_PATCH		2
+
+#define _APP_VER_STR2(x)	#x
+#define _APP_VER_STR(x)		_APP_VER_STR2(x)
+#define _APP_VERISON		"v" _APP_VER_STR(_APP_VER_MAJOR) "." _APP_VER_STR(_APP_VER_MINOR) "." _APP_VER_STR(_APP_VER_PATCH)
 
 extern U16 aaaa;
 

@@ -2105,20 +2105,20 @@ void DaCOM_ProcMain(void)
 
 
 //------------------------------------------------------------------------------------------------------------------------------
-//  BLE Send Device Info - Pairing Protocol (5 bytes payload, LEN=0x05)
+//  BLE Send Device Info - Pairing success response (PIN OK)
 //------------------------------------------------------------------------------------------------------------------------------
-//  Payload Structure (5 bytes):
-//    [site_name_HI(1B)][site_name_LO(1B)][fwVersion(3B)]
+//  Frame: [SOF(02)] [CMD(00 F0)] [result(00 00)] [fwVersion(3B)] [CRC(2B)] = 10 bytes
 //
-//  site_name_HI: ASCII 'A'~'Z' (?쒗뭹援щ텇)
-//  site_name_LO: 0x01~0x99 (?レ옄, BCD)
-//  fwVersion: major(1B).minor(1B).patch(1B)
-//
-//  Frame: [SOF(1)][LEN(2)][DATA(5)][CRC(2)] = 10 bytes
+//    result    : 0x0000 = PIN OK (kept identical to the legacy response so old
+//                apps still recognise success by these two bytes alone)
+//    fwVersion : major(1B) . minor(1B) . patch(1B)  -> appended in v1.1.2.
+//                Old firmware omitted these 3 bytes (7-byte frame); apps that
+//                see no version bytes treat the device as v1.1.1 or older.
+//    CRC is computed over every byte preceding it, so the longer frame stays
+//    backward/forward compatible with the length-agnostic CRC check.
 //------------------------------------------------------------------------------------------------------------------------------
 void DaBT_SendDeviceInfo(void)
 {
-    // PIN ?깃났: [02] [00 F0] [00 00] [CRC] = 7B
     U08 buff[10] = {0, };
     U16 buff_cnt = 0;
     U16 crc16;
@@ -2126,8 +2126,12 @@ void DaBT_SendDeviceInfo(void)
     buff[buff_cnt++] = 0x02;
     buff[buff_cnt++] = 0x00;
     buff[buff_cnt++] = 0xF0;
-    buff[buff_cnt++] = 0x00;
-    buff[buff_cnt++] = 0x00;
+    buff[buff_cnt++] = 0x00;   // result HI
+    buff[buff_cnt++] = 0x00;   // result LO  (0x0000 = PIN OK)
+
+    buff[buff_cnt++] = (U08)_APP_VER_MAJOR;
+    buff[buff_cnt++] = (U08)_APP_VER_MINOR;
+    buff[buff_cnt++] = (U08)_APP_VER_PATCH;
 
     crc16 = Mdb_GetCrc16(&buff[0], buff_cnt);
     buff[buff_cnt++] = (U08)(crc16 & 0xFF);
