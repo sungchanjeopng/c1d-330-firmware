@@ -62,10 +62,14 @@ fun PairingScreen(vm: MainViewModel) {
     fun requestPermissionsAndScan() {
         val permissions = mutableListOf<String>()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            // Android 12+: BLUETOOTH_SCAN is declared neverForLocation, so no
+            // location permission/service is needed.
             permissions.add(Manifest.permission.BLUETOOTH_SCAN)
             permissions.add(Manifest.permission.BLUETOOTH_CONNECT)
+        } else {
+            // Android 11 and below still require location for BLE scanning.
+            permissions.add(Manifest.permission.ACCESS_FINE_LOCATION)
         }
-        permissions.add(Manifest.permission.ACCESS_FINE_LOCATION)
 
         val allGranted = permissions.all {
             ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED

@@ -42,6 +42,9 @@ fun MenuTabScreen(vm: MainViewModel) {
     val context = LocalContext.current
     val devices = state.connectedDevices
     val isInterface = state.deviceType == DeviceType.INTERFACE
+    // Firmware version of the active device. Blank for pre-v1.1.2 firmware
+    // (which does not report a version) or when nothing is connected.
+    val activeFwVersion = devices.find { it.id == state.activeDeviceId }?.firmwareVersion.orEmpty()
 
     Column(
         modifier = Modifier
@@ -104,6 +107,11 @@ fun MenuTabScreen(vm: MainViewModel) {
             )
         }
         Spacer(Modifier.height(20.dp))
+        if (activeFwVersion.isNotBlank()) {
+            Text("Firmware Version $activeFwVersion", fontSize = 13.sp, color = AppColors.WeakText,
+                modifier = Modifier.align(Alignment.CenterHorizontally))
+            Spacer(Modifier.height(4.dp))
+        }
         Text("App Version 1.0.0", fontSize = 13.sp, color = AppColors.WeakText,
             modifier = Modifier.align(Alignment.CenterHorizontally))
     }

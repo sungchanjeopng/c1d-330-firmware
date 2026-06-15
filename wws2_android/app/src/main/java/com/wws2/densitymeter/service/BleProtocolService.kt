@@ -78,7 +78,9 @@ class BleProtocolService(private val context: Context) {
         val siteNameLo: Int,
         val ch2SiteNameHi: Char = '\u0000',
         val ch2SiteNameLo: Int = 0,
-        val fwVersion: FwVersion,
+        // null when the device did not report a version (firmware older than
+        // v1.1.2, where BLE version reporting was introduced).
+        val fwVersion: FwVersion?,
     )
 
     sealed class PairingResult {
@@ -107,18 +109,26 @@ class BleProtocolService(private val context: Context) {
         val cmd = ((frame[1].toInt() and 0xFF) shl 8) or (frame[2].toInt() and 0xFF)
         if (cmd != 0x00F0) return null
 
-        val crcExpected = crc16Modbus(frame.copyOfRange(0, 5))
-        val crcReceived = (frame[5].toInt() and 0xFF) or ((frame[6].toInt() and 0xFF) shl 8)
+        // CRC is the trailing 2 bytes over everything before it, so this copes
+        // with both the legacy 7-byte response and the 10-byte response that
+        // carries the firmware version (v1.1.2+).
+        val payloadEnd = frame.size - 2
+        val crcExpected = crc16Modbus(frame.copyOfRange(0, payloadEnd))
+        val crcReceived = (frame[payloadEnd].toInt() and 0xFF) or ((frame[payloadEnd + 1].toInt() and 0xFF) shl 8)
         if (crcExpected != crcReceived) return null
 
         val result = ((frame[3].toInt() and 0xFF) shl 8) or (frame[4].toInt() and 0xFF)
-        return if (result == 0x0000) {
-            Log.d(TAG, "Pairing PIN OK")
-            PairingResult.Success(DeviceInfo('?', 0, fwVersion = FwVersion(0, 0, 0)))
-        } else {
+        if (result != 0x0000) {
             Log.w(TAG, "Pairing PIN failed")
-            PairingResult.PinFailed
+            return PairingResult.PinFailed
         }
+        // Firmware version (major, minor, patch) trails the result word from
+        // v1.1.2 on. When absent the device predates it and fwVersion stays null.
+        val fwVersion = if (payloadEnd >= 8) {
+            FwVersion(frame[5].toInt() and 0xFF, frame[6].toInt() and 0xFF, frame[7].toInt() and 0xFF)
+        } else null
+        Log.d(TAG, "Pairing PIN OK, fw=${fwVersion ?: "(pre-1.1.2)"}")
+        return PairingResult.Success(DeviceInfo('?', 0, fwVersion = fwVersion))
     }
 
     fun crc16Modbus(data: ByteArray): Int {

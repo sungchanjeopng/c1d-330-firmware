@@ -1,0 +1,46 @@
+# Local build verification for the GitHub snapshot (no USB-host / FATFS).
+# Sources and includes are discovered from the actual tree so this stays
+# correct regardless of which optional modules the snapshot ships.
+TARGET = c1d-330
+BUILD_DIR = build_hermes
+CC = arm-none-eabi-gcc
+AS = arm-none-eabi-gcc
+OBJCOPY = arm-none-eabi-objcopy
+SIZE = arm-none-eabi-size
+
+C_SOURCES = $(shell find Core/Src Drivers/STM32F7xx_HAL_Driver/Src _Wess -name '*.c')
+ASM_SOURCES = Core/Startup/startup_stm32f769iitx.s
+OBJECTS = $(addprefix $(BUILD_DIR)/,$(C_SOURCES:.c=.o)) $(addprefix $(BUILD_DIR)/,$(ASM_SOURCES:.s=.o))
+
+CPU = -mcpu=cortex-m7 -mthumb -mfpu=fpv5-d16 -mfloat-abi=hard
+DEFS = -DUSE_HAL_DRIVER -DSTM32F769xx
+INCLUDES = -ICore/Inc -IDrivers/CMSIS/Device/ST/STM32F7xx/Include -IDrivers/CMSIS/Include -IDrivers/STM32F7xx_HAL_Driver/Inc -IDrivers/STM32F7xx_HAL_Driver/Inc/Legacy $(shell find _Wess -type d | sed 's/^/-I/')
+CFLAGS = $(CPU) $(DEFS) $(INCLUDES) -Og -g3 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP
+ASFLAGS = $(CPU) $(DEFS) $(INCLUDES) -x assembler-with-cpp -MMD -MP
+LDSCRIPT = STM32F769IITX_FLASH.ld
+LDFLAGS = $(CPU) -T$(LDSCRIPT) --specs=nosys.specs -Wl,-Map=$(BUILD_DIR)/$(TARGET).map -Wl,--gc-sections -static --specs=nano.specs -Wl,--start-group -lc -lm -Wl,--end-group
+
+all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
+	$(SIZE) $(BUILD_DIR)/$(TARGET).elf
+
+$(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) $(LDSCRIPT)
+	$(CC) $(OBJECTS) $(LDFLAGS) -o $@
+
+$(BUILD_DIR)/%.o: %.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(BUILD_DIR)/%.o: %.s
+	@mkdir -p $(dir $@)
+	$(AS) $(ASFLAGS) -c $< -o $@
+
+$(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf
+	$(OBJCOPY) -O ihex $< $@
+
+$(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf
+	$(OBJCOPY) -O binary $< $@
+
+clean:
+	rm -rf $(BUILD_DIR)
+
+-include $(OBJECTS:.o=.d)

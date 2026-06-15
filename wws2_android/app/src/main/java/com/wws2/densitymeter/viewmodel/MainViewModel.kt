@@ -612,6 +612,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
                 // ?????? Pairing Protocol: PIN ??汝뷴젆?琉????+ ?????????곌떽?댁젢???饔낅떽????????????椰???(0xF0) ??????
                 var fwVersion = ""
+                var pairedOk = false
                 var isInterface = false
                 var siteName = ""
                 delay(300)  // BLE notification ????μ떜媛?걫????????
@@ -630,7 +631,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     }
                     is BleProtocolService.PairingResult.Success -> {
                         val deviceInfo = pairingResult.deviceInfo
-                        fwVersion = deviceInfo.fwVersion.toString()
+                        pairedOk = true
+                        // Pre-v1.1.2 firmware reports no version -> leave blank (don't show).
+                        fwVersion = deviceInfo.fwVersion?.toString() ?: ""
                         val hi = deviceInfo.siteNameHi
                         val lo = deviceInfo.siteNameLo
                         siteName = if (hi in 'A'..'Z' && lo in 0..99)
@@ -649,7 +652,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 isInterface = upper.startsWith("W3") || upper.contains("WE13") || upper.contains("ENV130")
 
                 // ???轅붽틓????????긺춯癒?뼔?????????獄쏅챶留?????BLE ?????????FW ???????fallback
-                if (fwVersion.isEmpty()) {
+                // Only fall back to BLE-name parsing when pairing did NOT yield a
+                // device info (timeout). If pairing succeeded but the firmware is
+                // pre-v1.1.2 (no version), leave it blank so nothing is shown.
+                if (fwVersion.isEmpty() && !pairedOk) {
                     fwVersion = extractFirmwareVersion(bleName)
                 }
 
@@ -2180,8 +2186,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                             buf.subList(0, idx).clear()
                             if (buf.size < 7) break
                         }
-                        val frame = ByteArray(7) { buf[it] }
-                        val parsed = protocol.parsePairingResponse(frame)
+                        // Pairing response is 7 bytes (legacy) or 10 bytes
+                        // (v1.1.2+, with firmware version appended). Try the
+                        // longer frame first so the version bytes are included;
+                        // CRC validation rejects the wrong length.
+                        var parsed = if (buf.size >= 10)
+                            protocol.parsePairingResponse(ByteArray(10) { buf[it] }) else null
+                        if (parsed == null)
+                            parsed = protocol.parsePairingResponse(ByteArray(7) { buf[it] })
                         if (parsed != null && !result.isCompleted) {
                             result.complete(parsed)
                             break
