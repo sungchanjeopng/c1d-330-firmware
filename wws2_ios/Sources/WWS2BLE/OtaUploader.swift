@@ -42,9 +42,93 @@ public final class OtaUploader {
 
     public nonisolated static let bootloaderTrimOffset = 0x8000
 
+    public enum FirmwareImageKind: String, Sendable, Equatable {
+        case combinedBootloaderAndApp
+    }
+
+    public enum FirmwareImageValidation: Sendable, Equatable {
+        case valid(payload: [UInt8], kind: FirmwareImageKind)
+        case invalid(message: String)
+    }
+
+    public nonisolated static func preparePayloadForUpload(_ bytes: [UInt8]) -> FirmwareImageValidation {
+        guard bytes.count >= bootloaderTrimOffset + 8 else {
+            return .invalid(message: "Invalid OTA file: select a combined bootloader+application BIN.")
+        }
+
+        switch vectorKind(at: 0, in: bytes) {
+        case .validBootloader:
+            break
+        case .validApp:
+            return .invalid(message: "Application-only BIN detected. Select the combined bootloader+application BIN for OTA.")
+        case .bank2Linked:
+            return .invalid(message: "Invalid OTA file: image appears linked for Bank2 (0x08100000). Select the combined bootloader+application BIN.")
+        case .invalid:
+            return .invalid(message: "Invalid OTA file: bootloader vector table was not found at file offset 0x0000.")
+        }
+
+        switch vectorKind(at: bootloaderTrimOffset, in: bytes) {
+        case .validApp:
+            return .valid(payload: Array(bytes.dropFirst(bootloaderTrimOffset)), kind: .combinedBootloaderAndApp)
+        case .validBootloader:
+            return .invalid(message: "Invalid OTA file: second image at offset 0x8000 is not an application image.")
+        case .bank2Linked:
+            return .invalid(message: "Invalid OTA file: image at offset 0x8000 appears linked for Bank2 (0x08100000), not App flash (0x08008000).")
+        case .invalid:
+            return .invalid(message: "Invalid OTA file: application vector table was not found at file offset 0x8000.")
+        }
+    }
+
+    /// Backward-compatible wrapper. New code should use `preparePayloadForUpload`
+    /// and surface the validation error to the user.
     public nonisolated static func payloadForUpload(_ bytes: [UInt8]) -> [UInt8] {
-        guard bytes.count > bootloaderTrimOffset else { return bytes }
-        return Array(bytes.dropFirst(bootloaderTrimOffset))
+        switch preparePayloadForUpload(bytes) {
+        case .valid(payload: let payload, kind: _): return payload
+        case .invalid: return []
+        }
+    }
+
+    private enum VectorKind {
+        case validApp
+        case validBootloader
+        case bank2Linked
+        case invalid
+    }
+
+    private nonisolated static func vectorKind(at offset: Int, in bytes: [UInt8]) -> VectorKind {
+        guard let msp = readU32LE(bytes, offset),
+              let reset = readU32LE(bytes, offset + 4),
+              isValidMsp(msp),
+              isThumbAddress(reset)
+        else { return .invalid }
+
+        let resetAddress = reset & 0xFFFF_FFFE
+        if resetAddress >= 0x0800_0000 && resetAddress < 0x0800_8000 {
+            return .validBootloader
+        }
+        if resetAddress >= 0x0800_8000 && resetAddress < 0x0810_0000 {
+            return .validApp
+        }
+        if resetAddress >= 0x0810_0000 && resetAddress < 0x0820_0000 {
+            return .bank2Linked
+        }
+        return .invalid
+    }
+
+    private nonisolated static func readU32LE(_ bytes: [UInt8], _ offset: Int) -> UInt32? {
+        guard offset >= 0, offset + 4 <= bytes.count else { return nil }
+        return UInt32(bytes[offset])
+            | (UInt32(bytes[offset + 1]) << 8)
+            | (UInt32(bytes[offset + 2]) << 16)
+            | (UInt32(bytes[offset + 3]) << 24)
+    }
+
+    private nonisolated static func isValidMsp(_ value: UInt32) -> Bool {
+        value >= 0x2000_0000 && value <= 0x2008_0000 && (value & 0x3) == 0
+    }
+
+    private nonisolated static func isThumbAddress(_ value: UInt32) -> Bool {
+        (value & 0x1) == 1
     }
 
     private let gatt: GattClient

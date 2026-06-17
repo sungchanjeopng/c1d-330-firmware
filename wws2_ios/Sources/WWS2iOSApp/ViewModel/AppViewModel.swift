@@ -1043,22 +1043,32 @@ public final class AppViewModel: ObservableObject {
         pickedFirmwareBytes = nil
     }
 
-    public func setPickedFile(name: String, size: Int, bytes: [UInt8]) {
-        state.pickedFileName = name
-        state.pickedFileSize = size
-        state.uploadDone = false
-        state.uploadProgress = 0.0
-        state.uploadElapsed = 0
-        pickedFirmwareBytes = bytes
+    public func setPickedFile(name: String, size: Int, bytes: [UInt8]) -> String? {
+        switch OtaUploader.preparePayloadForUpload(bytes) {
+        case .valid(payload: let payload, kind: _):
+            state.pickedFileName = name
+            state.pickedFileSize = size
+            state.uploadDone = false
+            state.uploadProgress = 0.0
+            state.uploadElapsed = 0
+            pickedFirmwareBytes = payload
+            return nil
+        case .invalid(message: let message):
+            state.pickedFileName = nil
+            state.pickedFileSize = nil
+            state.uploadDone = false
+            state.uploadProgress = 0.0
+            state.uploadElapsed = 0
+            pickedFirmwareBytes = nil
+            return message
+        }
     }
 
     /// Begin an OTA upload against the picked firmware target device.
     public func startUpload() {
         guard let bytes = pickedFirmwareBytes,
               let gatt = gattClients[state.firmwareTargetDeviceId] else { return }
-        // Android parity/bootloader offset: trim the 0x8000 bootloader
-        // region before passing firmware bytes into OTA payload upload.
-        let uploadBytes = OtaUploader.payloadForUpload(bytes)
+        let uploadBytes = bytes
 
         state.isUploading = true
         state.uploadProgress = 0.0

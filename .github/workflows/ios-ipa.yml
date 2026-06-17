@@ -1,0 +1,72 @@
+name: Build iOS IPA
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'wws2_ios/**'
+      - '.github/workflows/ios-ipa.yml'
+  workflow_dispatch:
+
+jobs:
+  build-ipa:
+    name: Build unsigned WESSWARE IPA
+    runs-on: macos-15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        working-directory: wws2_ios
+        run: xcodegen generate
+
+      - name: Build app for device without signing
+        working-directory: wws2_ios
+        run: |
+          set -euo pipefail
+          xcodebuild \
+            -project WESSWARE.xcodeproj \
+            -scheme WESSWARE \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath build/DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            build
+
+      - name: Package unsigned IPA
+        working-directory: wws2_ios
+        run: |
+          set -euo pipefail
+          APP_PATH="$(find build/DerivedData/Build/Products/Release-iphoneos -maxdepth 1 -name 'WESSWARE.app' -type d | head -n 1)"
+          if [ -z "$APP_PATH" ]; then
+            echo "WESSWARE.app not found"
+            find build/DerivedData/Build/Products -maxdepth 3 -print
+            exit 1
+          fi
+          rm -rf build/ipa Payload
+          mkdir -p build/ipa Payload
+          cp -R "$APP_PATH" Payload/WESSWARE.app
+          /usr/bin/zip -qry build/ipa/WESSWARE.ipa Payload
+          rm -rf Payload
+          shasum -a 256 build/ipa/WESSWARE.ipa | tee build/ipa/WESSWARE.ipa.sha256
+          ls -lh build/ipa
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: WESSWARE-Device-ipa
+          path: |
+            wws2_ios/build/ipa/WESSWARE.ipa
+            wws2_ios/build/ipa/WESSWARE.ipa.sha256
+          if-no-files-found: error

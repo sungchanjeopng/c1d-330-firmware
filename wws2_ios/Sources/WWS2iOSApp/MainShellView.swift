@@ -148,7 +148,9 @@ public struct MainShellView: View {
             fileImportError = FileImportError(message: "Unable to read firmware file: \(url.lastPathComponent)")
             return
         }
-        vm.setPickedFile(name: url.lastPathComponent, size: data.count, bytes: Array(data))
+        if let error = vm.setPickedFile(name: url.lastPathComponent, size: data.count, bytes: Array(data)) {
+            fileImportError = FileImportError(message: error)
+        }
     }
 
     private func handleCsvImport(_ result: Result<[URL], Error>) {
