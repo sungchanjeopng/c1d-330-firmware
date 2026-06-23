@@ -1473,6 +1473,12 @@ void DaBT_InItMain(void)
     buff_cnt = sprintf((char*)buff, "AT+TXPWR=7\r");
     BLE_SendATCmd(buff, buff_cnt, "+OK", 1000);
 
+    // Advertising interval 단축(기본 1280ms → 100ms) → 스캐너가 광고를 더 자주 만남.
+    // 페어링 스캔 시 발견 속도/거리 개선(약신호에서 광고 놓칠 확률 ↓). Range 20~2560ms.
+    // ADVON 전에 설정해야 적용된다.
+    buff_cnt = sprintf((char*)buff, "AT+ADVINTERVAL=100\r");
+    BLE_SendATCmd(buff, buff_cnt, "+OK", 1000);
+
     buff_cnt = sprintf((char*)buff, "AT+ADVON\r");
     BLE_SendATCmd(buff, buff_cnt, "+OK", 1000);
 

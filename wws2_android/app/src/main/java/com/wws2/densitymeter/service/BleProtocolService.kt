@@ -20,7 +20,10 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -54,6 +57,13 @@ class BleProtocolService(private val context: Context) {
 
     private val _connectionState = MutableSharedFlow<Boolean>(extraBufferCapacity = 4)
     val connectionState: SharedFlow<Boolean> = _connectionState
+
+    // 연결 중 실시간 RSSI (readRemoteRssi 주기 폴링 결과). 스캔 RSSI와 달리 연결 후에도 갱신됨.
+    private val _rssi = MutableSharedFlow<Int>(extraBufferCapacity = 8)
+    val rssi: SharedFlow<Int> = _rssi
+
+    private val rssiScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    @Volatile private var rssiJob: Job? = null
 
     val isConnected: Boolean get() = gatt != null && writeChar != null
 
@@ -264,8 +274,10 @@ class BleProtocolService(private val context: Context) {
                     Log.d(TAG, "Connected, discovering services...")
                     g.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH)
                     g.requestMtu(247)
+                    startRssiPolling()
                 } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                     Log.d(TAG, "Disconnected, status=$status")
+                    stopRssiPolling()
                     // GATT client 인터페이스 누수 방지: gatt 참조를 null로 만들기 전에 반드시 close()
                     try { g.close() } catch (e: Exception) { Log.w(TAG, "close on disconnect failed: ${e.message}") }
                     gatt = null
@@ -351,6 +363,10 @@ class BleProtocolService(private val context: Context) {
                 writeDeferred?.complete(status)
             }
 
+            override fun onReadRemoteRssi(g: BluetoothGatt, rssi: Int, status: Int) {
+                if (status == BluetoothGatt.GATT_SUCCESS) _rssi.tryEmit(rssi)
+            }
+
             @Suppress("DEPRECATION")
             override fun onCharacteristicChanged(
                 g: BluetoothGatt,
@@ -371,6 +387,22 @@ class BleProtocolService(private val context: Context) {
 
         gatt = device.connectGatt(context, false, callback, BluetoothDevice.TRANSPORT_LE)
         withTimeoutOrNull(10_000L) { result.await() } ?: false
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun startRssiPolling() {
+        rssiJob?.cancel()
+        rssiJob = rssiScope.launch {
+            while (isActive) {
+                try { gatt?.readRemoteRssi() } catch (e: Exception) { Log.w(TAG, "readRemoteRssi failed: ${e.message}") }
+                delay(1500)
+            }
+        }
+    }
+
+    private fun stopRssiPolling() {
+        rssiJob?.cancel()
+        rssiJob = null
     }
 
     @SuppressLint("MissingPermission")
@@ -649,6 +681,7 @@ class BleProtocolService(private val context: Context) {
             Log.w(TAG, "disconnect cleanup failed: ${e.message}")
         }
 
+        stopRssiPolling()
         gatt = null
         writeChar = null
         notifyChar = null

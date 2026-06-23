@@ -69,6 +69,7 @@ fun StatRow(items: List<Triple<String, String, androidx.compose.ui.graphics.Colo
 fun DeviceCard(
     name: String,
     signalLevel: Int,
+    rssi: Int? = null,
     isConnected: Boolean = false,
     isConnecting: Boolean = false,
     isSelected: Boolean = false,
@@ -102,7 +103,13 @@ fun DeviceCard(
         Column(modifier = Modifier.weight(1f)) {
             Text(name, fontSize = 19.sp, fontWeight = FontWeight.W600, color = AppColors.DarkText, maxLines = 1, overflow = TextOverflow.Ellipsis)
             Spacer(Modifier.height(6.dp))
-            SignalBars(level = signalLevel)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                SignalBars(level = signalLevel)
+                if (rssi != null) {
+                    Spacer(Modifier.width(8.dp))
+                    Text("$rssi dBm", fontSize = 14.sp, fontWeight = FontWeight.W600, color = AppColors.GrayLabel)
+                }
+            }
         }
         Spacer(Modifier.width(10.dp))
         if (isConnecting) {

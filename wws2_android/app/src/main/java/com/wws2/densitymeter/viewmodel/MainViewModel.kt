@@ -111,6 +111,8 @@ data class MainUiState(
     // 링크가 끊겨 자동 재연결 중인 기기들. connectedDevices에는 그대로 남아 있고(목록에서
     // 안 빠짐) UI는 "Reconnecting…"으로 표시한다. 사용자가 수동(✕) 해제 전까지 무한 재시도.
     val reconnectingIds: Set<String> = emptySet(),
+    // 연결 중 실시간 RSSI (deviceId → dBm). readRemoteRssi 1.5초 폴링 결과. 스캔 RSSI와 별개.
+    val connectedRssi: Map<String, Int> = emptyMap(),
 
     // Report (ENV130) — 기기 선택 → BLE 수집 → 리포트 표시
     val reportStage: com.wws2.densitymeter.model.ReportStage = com.wws2.densitymeter.model.ReportStage.SELECT,
@@ -718,6 +720,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                             Log.w(TAG, "BLE disconnected: $address → 재연결 시도")
                             beginReconnect(address)
                         }
+                    }
+                }
+
+                // 연결 중 실시간 RSSI를 같은 물리 기기에 매핑된 모든 deviceId에 반영
+                viewModelScope.launch {
+                    proto.rssi.collect { r ->
+                        val ids = _state.value.connectedDevices.map { it.id }.filter { physicalAddress(it) == address }
+                        _state.update { st -> st.copy(connectedRssi = st.connectedRssi + ids.associateWith { r }) }
                     }
                 }
 

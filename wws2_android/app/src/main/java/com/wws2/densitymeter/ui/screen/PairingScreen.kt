@@ -212,6 +212,7 @@ fun PairingScreen(vm: MainViewModel) {
                         DeviceCard(
                             name = device.label,
                             signalLevel = vm.connectionService.signalLevel(scan?.rssi ?: -70),
+                            rssi = state.connectedRssi[device.id] ?: scan?.rssi,
                             isConnected = true,
                             isSelected = device.id == state.activeDeviceId,
                             onTap = { vm.requestConnectDevice(device.id) },
@@ -230,6 +231,7 @@ fun PairingScreen(vm: MainViewModel) {
                         DeviceCard(
                             name = device.name,
                             signalLevel = vm.connectionService.signalLevel(device.rssi),
+                            rssi = device.rssi,
                             isConnecting = state.connectingIds.contains(device.address),
                             onTap = { vm.requestConnectDevice(device.address) },
                         )
@@ -252,6 +254,7 @@ fun PairingScreen(vm: MainViewModel) {
                         DeviceCard(
                             name = device.label,
                             signalLevel = vm.connectionService.signalLevel(scan?.rssi ?: -70),
+                            rssi = state.connectedRssi[device.id] ?: scan?.rssi,
                             isConnected = true,
                             isSelected = device.id == state.activeDeviceId,
                             onTap = { vm.requestConnectDevice(device.id) },
@@ -270,6 +273,7 @@ fun PairingScreen(vm: MainViewModel) {
                         DeviceCard(
                             name = device.name,
                             signalLevel = vm.connectionService.signalLevel(device.rssi),
+                            rssi = device.rssi,
                             isConnecting = state.connectingIds.contains(device.address),
                             onTap = { vm.requestConnectDevice(device.address) },
                         )
