@@ -19,6 +19,7 @@ private fun String.isWesswareAdvert(): Boolean {
     if (isBlank()) return false
     val lower = lowercase()
     return lower.startsWith("w3") || lower.startsWith("w2")
+            || lower.contains("w3c1d") || lower.contains("w3") || lower.contains("w2")
             || lower.contains("we13") || lower.contains("we23")
             || lower.contains("env") || lower.contains("chipsen")
 }
@@ -70,7 +71,9 @@ class BleScanner(private val context: Context) {
                     ?.joinToString(separator = " ") { it.uuid.toString() }
                     ?: ""
 
-                val matchSource = listOf(advName, manufacturerText, serviceText)
+                // Manufacturer data is preferred because Local Name may arrive via scan response
+                // and is the first field to disappear at long range.
+                val matchSource = listOf(manufacturerText, advName, serviceText)
                     .firstOrNull { it.isWesswareAdvert() }
                     ?: return
                 val name = advName.ifBlank { manufacturerText.ifBlank { matchSource } }
@@ -108,6 +111,7 @@ class BleScanner(private val context: Context) {
                         name = displayName,
                         rawName = name,
                         rssi = result.rssi,
+                        advData = manufacturerText,
                         ch1SiteName = ch1Site,
                         ch2SiteName = ch2Site,
                     ))

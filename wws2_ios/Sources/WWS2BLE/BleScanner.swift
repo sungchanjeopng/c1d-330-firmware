@@ -21,6 +21,9 @@ private extension String {
         let lower = lowercased()
         return lower.hasPrefix("w3")
             || lower.hasPrefix("w2")
+            || lower.contains("w3c1d")
+            || lower.contains("w3")
+            || lower.contains("w2")
             || lower.contains("we13")
             || lower.contains("we23")
             || lower.contains("env")
@@ -206,7 +209,9 @@ extension BleScanner: CBCentralManagerDelegate {
             .joined(separator: " ")
             ?? ""
 
-        guard let matchSource = [advName, manufacturerText, serviceText]
+        // Manufacturer data is preferred because Local Name may arrive via scan response
+        // and is the first field to disappear at long range.
+        guard let matchSource = [manufacturerText, advName, serviceText]
             .first(where: { $0.isWesswareAdvert }) else { return }
         let raw = advName.isEmpty ? (manufacturerText.isEmpty ? matchSource : manufacturerText) : advName
         let lower = matchSource.lowercased()
@@ -246,6 +251,7 @@ extension BleScanner: CBCentralManagerDelegate {
             name: displayName,
             rawName: raw,
             rssi: RSSI.intValue,
+            advData: manufacturerText,
             ch1SiteName: ch1,
             ch2SiteName: ch2
         )
