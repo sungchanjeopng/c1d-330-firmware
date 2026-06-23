@@ -15,6 +15,21 @@ import java.util.Collections
 
 private const val TAG = "BleScanner"
 
+private fun String.isWesswareAdvert(): Boolean {
+    if (isBlank()) return false
+    val lower = lowercase()
+    return lower.startsWith("w3") || lower.startsWith("w2")
+            || lower.contains("we13") || lower.contains("we23")
+            || lower.contains("env") || lower.contains("chipsen")
+}
+
+private fun ByteArray.toPrintableAscii(): String {
+    return map { byte -> byte.toInt() and 0xff }
+        .filter { it in 0x20..0x7e }
+        .map { it.toChar() }
+        .joinToString(separator = "")
+}
+
 /**
  * BLE device discovery and scanning.
  * Filters for WESSWARE devices (W2/W3/ENV/CHIPSEN).
@@ -44,15 +59,25 @@ class BleScanner(private val context: Context) {
         val callback = object : ScanCallback() {
             override fun onScanResult(callbackType: Int, result: ScanResult) {
                 val device = result.device
-                val name = result.scanRecord?.deviceName ?: device.name ?: ""
-                if (name.isBlank()) return
-                val lower = name.lowercase()
-                if (!(lower.startsWith("w3") || lower.startsWith("w2")
-                            || lower.contains("we13") || lower.contains("we23")
-                            || lower.contains("env") || lower.contains("chipsen"))) return
+                val scanRecord = result.scanRecord
+                val advName = scanRecord?.deviceName ?: device.name ?: ""
+                val manufacturerText = scanRecord?.manufacturerSpecificData?.let { sparse ->
+                    (0 until sparse.size()).asSequence()
+                        .mapNotNull { idx -> sparse.valueAt(idx)?.toPrintableAscii() }
+                        .firstOrNull { it.isWesswareAdvert() }
+                } ?: ""
+                val serviceText = scanRecord?.serviceUuids
+                    ?.joinToString(separator = " ") { it.uuid.toString() }
+                    ?: ""
+
+                val matchSource = listOf(advName, manufacturerText, serviceText)
+                    .firstOrNull { it.isWesswareAdvert() }
+                    ?: return
+                val name = advName.ifBlank { manufacturerText.ifBlank { matchSource } }
+                val lower = matchSource.lowercase()
 
                 val address = device.address
-                Log.d(TAG, "SCAN: name=$name, addr=$address")
+                Log.d(TAG, "SCAN: name=$name, manuf=$manufacturerText, addr=$address, rssi=${result.rssi}")
 
                 val isInterface = lower.startsWith("w3") || lower.contains("we13") || lower.contains("env130")
                 val productName = if (isInterface) "ENV130" else "ENV230"
@@ -60,8 +85,7 @@ class BleScanner(private val context: Context) {
                 var ch1Site = ""
                 var ch2Site = ""
                 val stripped = when {
-                    lower.startsWith("w3") -> name.substring(2)
-                    lower.startsWith("w2") -> name.substring(2)
+                    lower.startsWith("w3") || lower.startsWith("w2") -> matchSource.drop(2)
                     else -> ""
                 }
                 if (stripped.length >= 6) {

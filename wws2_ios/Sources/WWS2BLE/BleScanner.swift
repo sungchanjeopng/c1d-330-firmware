@@ -15,6 +15,28 @@ import WWS2Core
 import os
 #endif
 
+private extension String {
+    var isWesswareAdvert: Bool {
+        if isEmpty { return false }
+        let lower = lowercased()
+        return lower.hasPrefix("w3")
+            || lower.hasPrefix("w2")
+            || lower.contains("we13")
+            || lower.contains("we23")
+            || lower.contains("env")
+            || lower.contains("chipsen")
+    }
+
+    static func printableAscii(from data: Data) -> String? {
+        let scalars = data.compactMap { byte -> UnicodeScalar? in
+            guard byte >= 0x20, byte <= 0x7e else { return nil }
+            return UnicodeScalar(Int(byte))
+        }
+        guard !scalars.isEmpty else { return nil }
+        return String(String.UnicodeScalarView(scalars))
+    }
+}
+
 /// Receives connect/disconnect events from the scanner-owned CBCentralManager.
 /// CoreBluetooth supports only one central delegate, so GattClient instances
 /// register here instead of trying to become CBCentralManagerDelegate too.
@@ -173,19 +195,21 @@ extension BleScanner: CBCentralManagerDelegate {
         advertisementData: [String: Any],
         rssi RSSI: NSNumber
     ) {
-        let advName: String? = (advertisementData[CBAdvertisementDataLocalNameKey] as? String)
+        let advName: String = (advertisementData[CBAdvertisementDataLocalNameKey] as? String)
             ?? peripheral.name
+            ?? ""
+        let manufacturerText: String = (advertisementData[CBAdvertisementDataManufacturerDataKey] as? Data)
+            .flatMap { String.printableAscii(from: $0) }
+            ?? ""
+        let serviceText: String = (advertisementData[CBAdvertisementDataServiceUUIDsKey] as? [CBUUID])?
+            .map { $0.uuidString }
+            .joined(separator: " ")
+            ?? ""
 
-        guard let raw = advName, !raw.isEmpty else { return }
-        let lower = raw.lowercased()
-
-        let matches = lower.hasPrefix("w3")
-            || lower.hasPrefix("w2")
-            || lower.contains("we13")
-            || lower.contains("we23")
-            || lower.contains("env")
-            || lower.contains("chipsen")
-        guard matches else { return }
+        guard let matchSource = [advName, manufacturerText, serviceText]
+            .first(where: { $0.isWesswareAdvert }) else { return }
+        let raw = advName.isEmpty ? (manufacturerText.isEmpty ? matchSource : manufacturerText) : advName
+        let lower = matchSource.lowercased()
 
         let isInterface = lower.hasPrefix("w3")
             || lower.contains("we13")
@@ -194,7 +218,7 @@ extension BleScanner: CBCentralManagerDelegate {
 
         let stripped: String = {
             if lower.hasPrefix("w3") || lower.hasPrefix("w2") {
-                return String(raw.dropFirst(2))
+                return String(matchSource.dropFirst(2))
             }
             return ""
         }()
