@@ -66,7 +66,7 @@ void DpIfnLvl_StrChnl(void)
 
 	U08 type = MnFTR_PrGet_SsChn();
 
-	if(type == MnFTR_SS_SINGLE)	
+	if(type == MnFTR_SS_SINGLE)
 		return;
 
 
@@ -75,15 +75,15 @@ void DpIfnLvl_StrChnl(void)
 		case MnSYS_LANG_ENG:
 			_SPRINTF(pSt0, _sCH_1);
 			DpFIG_DrwRect(DpFRT_LVL_CHNL_X0, DpFRT_LVL_CHNL_Y0, DpFRT_LVL_CHNL_WD, DpFRT_LVL_CHNL_HT, _cBGD_SCRN, DpFIG_FILL);	// Clear
-			DpSTR_GuiLeft(DpFRT_LVL_CHNL_X0, DpFRT_LVL_CHNL_Y0, _cSD_WHITE, _cBGD_SCRN, _fE22HsN, pSt0);	
-			_SPRINTF(pSt0, _sCH_2); 
+			DpSTR_GuiLeft(DpFRT_LVL_CHNL_X0, DpFRT_LVL_CHNL_Y0, _cSD_WHITE, _cBGD_SCRN, _fE22HsN, pSt0);
+			_SPRINTF(pSt0, _sCH_2);
 			DpFIG_DrwRect(DpFRT_LVL_CHNL_X1, DpFRT_LVL_CHNL_Y0, DpFRT_LVL_CHNL_WD, DpFRT_LVL_CHNL_HT, _cBGD_SCRN, DpFIG_FILL);	// Clear
 			DpSTR_GuiLeft(DpFRT_LVL_CHNL_X1, DpFRT_LVL_CHNL_Y0, _cSD_WHITE, _cBGD_SCRN, _fE22HsN, pSt0);
 			break;
 		case MnSYS_LANG_KOR:
 			DpSTR_GuiList(TEXT_LIST_CH_1);
 			DpFIG_DrwRect(DpFRT_LVL_CHNL_X0, DpFRT_LVL_CHNL_Y0, DpFRT_LVL_CHNL_WD, DpFRT_LVL_CHNL_HT, _cBGD_SCRN, DpFIG_FILL);	// Clear
-			DpSTR_GuiLeft_KOR(DpFRT_LVL_CHNL_X0, DpFRT_LVL_CHNL_Y0, _cSD_WHITE, _cBGD_SCRN, _fE22HsBKOR, gDpStr.Text_list);	
+			DpSTR_GuiLeft_KOR(DpFRT_LVL_CHNL_X0, DpFRT_LVL_CHNL_Y0, _cSD_WHITE, _cBGD_SCRN, _fE22HsBKOR, gDpStr.Text_list);
 
 		#if 0
 			_SPRINTF(pSt0, "1");
@@ -91,29 +91,29 @@ void DpIfnLvl_StrChnl(void)
 		#endif
 			DpSTR_GuiList(TEXT_LIST_CH_2);
 			DpFIG_DrwRect(DpFRT_LVL_CHNL_X1, DpFRT_LVL_CHNL_Y0, DpFRT_LVL_CHNL_WD, DpFRT_LVL_CHNL_HT, _cBGD_SCRN, DpFIG_FILL);	// Clear
-			DpSTR_GuiLeft_KOR(DpFRT_LVL_CHNL_X1, DpFRT_LVL_CHNL_Y0, _cSD_WHITE, _cBGD_SCRN, _fE22HsBKOR, gDpStr.Text_list);	
+			DpSTR_GuiLeft_KOR(DpFRT_LVL_CHNL_X1, DpFRT_LVL_CHNL_Y0, _cSD_WHITE, _cBGD_SCRN, _fE22HsBKOR, gDpStr.Text_list);
 
 		#if 0
 			_SPRINTF(pSt0, "2");
-			DpSTR_GuiLeft(DpFRT_LVL_CHNL_X1+70, DpFRT_LVL_CHNL_Y0, _cSD_WHITE, _cBGD_SCRN, _fE22HsN, pSt0);		
+			DpSTR_GuiLeft(DpFRT_LVL_CHNL_X1+70, DpFRT_LVL_CHNL_Y0, _cSD_WHITE, _cBGD_SCRN, _fE22HsN, pSt0);
 		#endif
 			break;
 	}
 
 
 	//DpFIG_DrwRect(DpFRT_LVL_CHNL_X0, DpFRT_LVL_CHNL_Y0, DpFRT_LVL_CHNL_WD, DpFRT_LVL_CHNL_HT, _cBGD_SCRN, DpFIG_FILL);	// Clear
-	site_name = MnSYS_PrGet_site_name(APP_CH_1);	
+	site_name = MnSYS_PrGet_site_name(APP_CH_1);
 
 	_SPRINTF(pSt0, "(%c%d%d)",site_name/100,(site_name%100)/10,(site_name%100)%10);
-	
+
 	DpFIG_DrwRect(DpFRT_LVL_CHNL_X0+90, DpFRT_LVL_CHNL_Y0, DpFRT_LVL_CHNL_WD, DpFRT_LVL_CHNL_HT, _cBGD_SCRN, DpFIG_FILL);	// Clear
 	DpSTR_GuiLeft(DpFRT_LVL_CHNL_X0+90, DpFRT_LVL_CHNL_Y0, _cSD_WHITE, _cBGD_SCRN, _fE22HsN, pSt0);
 
-	site_name = MnSYS_PrGet_site_name(APP_CH_2);	
-	
+	site_name = MnSYS_PrGet_site_name(APP_CH_2);
+
 	_SPRINTF(pSt0, "(%c%d%d)",site_name/100,(site_name%100)/10,(site_name%100)%10);
 	DpFIG_DrwRect(DpFRT_LVL_CHNL_X1+90, DpFRT_LVL_CHNL_Y0, DpFRT_LVL_CHNL_WD, DpFRT_LVL_CHNL_HT, _cBGD_SCRN, DpFIG_FILL);	// Clear
-	DpSTR_GuiLeft(DpFRT_LVL_CHNL_X1+90, DpFRT_LVL_CHNL_Y0, _cSD_WHITE, _cBGD_SCRN, _fE22HsN, pSt0);	
+	DpSTR_GuiLeft(DpFRT_LVL_CHNL_X1+90, DpFRT_LVL_CHNL_Y0, _cSD_WHITE, _cBGD_SCRN, _fE22HsN, pSt0);
 
 }
 
@@ -121,8 +121,8 @@ void DpIfnLvl_StrChnl(void)
 void DpInfUdt_LstTitle(U08 iFn)
 {
 	U16 x0_tt = ScPRM_ST_X0_TTL;
-	U16 x1_tt = ScPRM_ST_X1_TTL;		
-	U16 y0 = ScINF_ST_Y0_TTL + (ScPRM_LIN_HT * iFn);		
+	U16 x1_tt = ScPRM_ST_X1_TTL;
+	U16 y0 = ScINF_ST_Y0_TTL + (ScPRM_LIN_HT * iFn);
 	U08 lang = MnSYS_PrGetBase_Item(MnSYS_OPT_LANG);
 
 	U08 type = MnFTR_PrGet_SsChn();
@@ -135,32 +135,32 @@ void DpInfUdt_LstTitle(U08 iFn)
 			{
 				case ScINF_OPT_SINGLE_FREQ:
 					_SPRINTF(lDpInf.pStr, _siNF_FREQ);
-					break;			
+					break;
 				case ScINF_OPT_SINGLE_OFFSET:
 					_SPRINTF(lDpInf.pStr, _siNF_Offset);
-					break;	
+					break;
 				case ScINF_OPT_SINGLE_4_20mA:
 					_SPRINTF(lDpInf.pStr, _sINF_4_20mA);
-					break;	
+					break;
 				case ScINF_OPT_SINGLE_TVG:
 					_SPRINTF(lDpInf.pStr, _sINF_TVG);
-					break;				
+					break;
 				case ScINF_OPT_SINGLE_DAMP:
 					_SPRINTF(lDpInf.pStr, _sINF_DAMP);
-					break;				
+					break;
 			}
-			
+
 			switch(iFn)
 			{
-				case ScINF_OPT_SINGLE_FREQ: 	
+				case ScINF_OPT_SINGLE_FREQ:
 				case ScINF_OPT_SINGLE_OFFSET:
 				case ScINF_OPT_SINGLE_4_20mA:
 				case ScINF_OPT_SINGLE_TVG:
 				case ScINF_OPT_SINGLE_DAMP:
 					DpSTR_GuiLeft(x0_tt, y0, _cINF_ST_TITLE, _cBGD_SCRN, _fE17HsB, lDpInf.pStr);
-					if(type == MnFTR_SS_DUAL)	
+					if(type == MnFTR_SS_DUAL)
 						DpSTR_GuiLeft(x1_tt, y0, _cINF_ST_TITLE, _cBGD_SCRN, _fE17HsB, lDpInf.pStr);
-					break;				
+					break;
 			}
 			break;
 		case MnSYS_LANG_KOR:
@@ -169,43 +169,43 @@ void DpInfUdt_LstTitle(U08 iFn)
 				case ScINF_OPT_SINGLE_FREQ:
 					_SPRINTF(lDpInf.pStr, "(Hz)");
 					DpSTR_GuiLeft(x0_tt+90, y0, _cINF_ST_TITLE, _cBGD_SCRN, _fE22HsB, lDpInf.pStr);
-					if(type == MnFTR_SS_DUAL)	
+					if(type == MnFTR_SS_DUAL)
 						DpSTR_GuiLeft(x1_tt+90, y0, _cINF_ST_TITLE, _cBGD_SCRN, _fE22HsB, lDpInf.pStr);
 					DpSTR_GuiList(TEXT_LIST_FREQ);
-					break;			
+					break;
 				case ScINF_OPT_SINGLE_OFFSET:
 					_SPRINTF(lDpInf.pStr, "(m)");
 					DpSTR_GuiLeft(x0_tt+120, y0, _cINF_ST_TITLE, _cBGD_SCRN, _fE22HsB, lDpInf.pStr);
-					if(type == MnFTR_SS_DUAL)	
-						DpSTR_GuiLeft(x1_tt+120, y0, _cINF_ST_TITLE, _cBGD_SCRN, _fE22HsB, lDpInf.pStr);					
+					if(type == MnFTR_SS_DUAL)
+						DpSTR_GuiLeft(x1_tt+120, y0, _cINF_ST_TITLE, _cBGD_SCRN, _fE22HsB, lDpInf.pStr);
 					DpSTR_GuiList(TEXT_LIST_OFFSET);
-					break;	
+					break;
 				case ScINF_OPT_SINGLE_4_20mA:
 					_SPRINTF(lDpInf.pStr, _sINF_4_20mA);
-					break;	
+					break;
 				case ScINF_OPT_SINGLE_TVG:
 					_SPRINTF(lDpInf.pStr, _sINF_TVG);
-					break;				
+					break;
 				case ScINF_OPT_SINGLE_DAMP:
 					DpSTR_GuiList(TEXT_LIST_DAMPING);
-					break;				
+					break;
 			}
-			
+
 			switch(iFn)
 			{
 				case ScINF_OPT_SINGLE_4_20mA:
 				case ScINF_OPT_SINGLE_TVG:
 					DpSTR_GuiLeft(x0_tt, y0, _cINF_ST_TITLE, _cBGD_SCRN, _fE22HsB, lDpInf.pStr);
-					if(type == MnFTR_SS_DUAL)	
+					if(type == MnFTR_SS_DUAL)
 						DpSTR_GuiLeft(x1_tt, y0, _cINF_ST_TITLE, _cBGD_SCRN, _fE22HsB, lDpInf.pStr);
 					break;
-				case ScINF_OPT_SINGLE_FREQ: 	
+				case ScINF_OPT_SINGLE_FREQ:
 				case ScINF_OPT_SINGLE_OFFSET:
 				case ScINF_OPT_SINGLE_DAMP:
 					DpSTR_GuiLeft_KOR(x0_tt, y0, _cINF_ST_TITLE, _cBGD_SCRN, _fE22HsBKOR, gDpStr.Text_list);
-					if(type == MnFTR_SS_DUAL)	
+					if(type == MnFTR_SS_DUAL)
 						DpSTR_GuiLeft_KOR(x1_tt, y0, _cINF_ST_TITLE, _cBGD_SCRN, _fE22HsBKOR, gDpStr.Text_list);
-					break;				
+					break;
 			}
 			break;
 	}
@@ -223,7 +223,7 @@ void DpInfUdt_LstValue(U08 iFn)
 	U08 type = MnFTR_PrGet_SsChn();
 
 
-	
+
 	if(iFn >= ScINF_OPT_SINGLE_FREQ)
 	{
 		x0[APP_CH_1] = ScPRM_ST_X0_VAL-30;
@@ -237,22 +237,23 @@ void DpInfUdt_LstValue(U08 iFn)
 		switch(iFn)
 		{
 			case ScINF_OPT_SINGLE_FREQ:
-				switch(MnMSR_CalGet_Ch_Value(i, MnMS1_OPT_SINGLE_FREQ))	
+				switch(MnMSR_CalGet_Ch_Value(i, MnMS1_OPT_SINGLE_FREQ))
 				{
 					case MnMS1_FREQ_130K:	_SPRINTF(lDpInf.pStr,": 130K");		break;
 					case MnMS1_FREQ_160K:	_SPRINTF(lDpInf.pStr,": 160K");		break;
 					case MnMS1_FREQ_270K:	_SPRINTF(lDpInf.pStr,": 270K");		break;
 					case MnMS1_FREQ_380K:	_SPRINTF(lDpInf.pStr,": 380K");		break;
+					case MnMS1_FREQ_415K:	_SPRINTF(lDpInf.pStr,": 415K");		break;
 					default:
 						break;
 				}
 				DpSTR_GuiLeft(x0[i], y0, col, _cBGD_SCRN, _fE22HsB, lDpInf.pStr);
 				break;
 			case ScINF_OPT_SINGLE_OFFSET:
-				val = MnMSR_CalGet_Ch_Value(i, MnMS1_OPT_SINGLE_OFFSET);	
+				val = MnMSR_CalGet_Ch_Value(i, MnMS1_OPT_SINGLE_OFFSET);
 				if(val>=0)	_SPRINTF(lDpInf.pStr, ": %01d.%02d", (U16)(abs(val)/100), (U16)(abs(val)%100));
 				else		_SPRINTF(lDpInf.pStr, ": -%01d.%02d", (U16)(abs(val)/100), (U16)(abs(val)%100));
-				
+
 				DpSTR_GuiLeft(x0[i], y0, col, _cBGD_SCRN, _fE22HsB, lDpInf.pStr);
 				break;
 			case ScINF_OPT_SINGLE_4_20mA:
@@ -261,17 +262,17 @@ void DpInfUdt_LstValue(U08 iFn)
 
 				_SPRINTF(lDpInf.pStr, ": %2d.%02d / %2d.%02d", (U16)(val/100), (U16)(val%100) , (U16)(val2/100), (U16)(val2%100));
 				DpSTR_GuiLeft(x0[i], y0, col, _cBGD_SCRN, _fE22HsB, lDpInf.pStr);
-				break;	
+				break;
 			case ScINF_OPT_SINGLE_TVG:
 				val = MnEGN_PrGet_CH_Item(i, MnEGN_OPT_SINGLE_TVG);
 				_SPRINTF(lDpInf.pStr, ": %d", val);
 				DpSTR_GuiLeft(x0[i], y0, col, _cBGD_SCRN, _fE22HsB, lDpInf.pStr);
-				break;			
+				break;
 			case ScINF_OPT_SINGLE_DAMP:
 				val = MnMSR_CalGet_Ch_Value(i, MnMS1_OPT_SINGLE_DAMPING);
 				_SPRINTF(lDpInf.pStr, ": %d", val);
 				DpSTR_GuiLeft(x0[i], y0, col, _cBGD_SCRN, _fE22HsB, lDpInf.pStr);
-				break;				
+				break;
 		}
 	}
 }
@@ -342,7 +343,7 @@ void DpIF2_ValIntro(void)
 
 	U08 iFn = ScIF1_GetIdxFunc();
 	U08 iCh = ScINF_PrGet_Chnnl();
-	
+
 	// Pop-Up Window
 	DpPOP_DrwIntro();
 
@@ -450,7 +451,7 @@ void DpIF0_FncStdBy(void)
 #if 0
 	if(ScHYB_PrGet_Unit_() == ScHYB_UNIT_FEET)
 		val = (U16)MsCAL_Meter2Feet(val);
-		
+
 	if(val >= 1000)		_SPRINTF(lDpInf.pStr, "%2d.%02d", val/100, val%100);
 	else				_SPRINTF(lDpInf.pStr, "%1d.%02d", val/100, val%100);
 

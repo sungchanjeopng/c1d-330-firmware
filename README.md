@@ -11,3 +11,5 @@ Excluded from this repository:
 - local temporary/backup files
 
 Build artifacts should be generated locally from STM32CubeIDE / the generated `Debug` makefile.
+
+Intentionally published release artifacts may be committed under `artifacts/<version>/` with SHA256 and vector-table verification notes.

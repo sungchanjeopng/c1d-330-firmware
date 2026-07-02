@@ -59,12 +59,12 @@ void ScEc2Evt_KeyFunc(U08 evt)
 			if(ScECH_GetType()==ScECO_TYPE_AVG)
 				break;
 
-			
+
 			lScEc2.stt = SCRN_S1_STDBY;
 			lScEc2.updn_mod = SCRN_L2_UPDN_DIG;
 			DpEC2_ValUpdat();
 
-			DpSCR_UpdtBttn(SCRN_L2_VALU);			
+			DpSCR_UpdtBttn(SCRN_L2_VALU);
 			return;
 		case SCRN_L2_UPDN_DIG:
 			if(ScECH_GetType()==ScECO_TYPE_SAVE_ECHO)
@@ -76,7 +76,7 @@ void ScEc2Evt_KeyFunc(U08 evt)
 			}
 			break;
 	}
-	
+
 	lScEc2.stt = SCRN_S0_INTRO;
 	DpEC0_FncIntro();
 	ScECH_SetLayer(SCRN_L1_LIST);
@@ -86,7 +86,7 @@ void ScEc2Evt_KeyPrev(U08 evt)
 {
 	U08 iFn = ScEC1_GetIdxFunc();
 	U08 ch = ScECH_PrGet_Chnnl();
-	U16 dead = MnMSR_BaseGet_Ch_Value(ch, MnMS0_OPT_SINGLE_DEADZONE);	
+	U16 dead = MnMSR_BaseGet_Ch_Value(ch, MnMS0_OPT_SINGLE_DEADZONE);
 
 	DpSTR_DebugExp(1, 1, "[ScEC2] PREV (Value--)");
 	INPU_ClrKeyEvt(evt);
@@ -101,12 +101,12 @@ void ScEc2Evt_KeyPrev(U08 evt)
 			{	// Page #1
 				case ScECO_REAL_ECHO_AMP:	if(--lScEc2.val < MnMS1_ECHO_AMP_MIN)	lScEc2.val = MnMS1_ECHO_AMP_MAX;		break;
 				case ScECO_REAL_MEAS_RESET:	lScEc2.val=!lScEc2.val;															break;
-				case ScECO_REAL_FREQ:		if(--lScEc2.val < MnMS1_FREQ_MIN)		lScEc2.val = MnMS1_FREQ_MAX;			break;
-				case ScECO_REAL_EMPTY:	
-				case ScECO_REAL_DEADZONE:	
+				case ScECO_REAL_FREQ:		lScEc2.val = MnMSR_GetPrevFreq((U08)lScEc2.val);		break;
+				case ScECO_REAL_EMPTY:
+				case ScECO_REAL_DEADZONE:
 					if(lScEc2.updn_mod==SCRN_L2_UPDN_DIG)
 					{
-						if(++lScEc2.updn_dig>3) 
+						if(++lScEc2.updn_dig>3)
 							lScEc2.updn_dig  = 0;
 					}
 					else if(lScEc2.updn_mod==SCRN_L2_UPDN_DIG_VALUE)
@@ -117,7 +117,7 @@ void ScEc2Evt_KeyPrev(U08 evt)
 							case 2: if((lScEc2.val<100) && (lScEc2.val>0)) lScEc2.val*=-1;	else lScEc2.val-=100;	break;
 							case 1: if((lScEc2.val<10) && (lScEc2.val>0)) lScEc2.val*=-1;	else lScEc2.val-=10;		break;
 							case 0: lScEc2.val-=1;		break;
-							default:	break;				
+							default:	break;
 						}
 						if(lScEc2.val<1)	lScEc2.val= 1;
 					}
@@ -132,12 +132,12 @@ void ScEc2Evt_KeyPrev(U08 evt)
 				case ScECO_AVG_THR_LIGHT:
 					switch(MnMSR_CalGet_Ch_Value(ScECH_PrGet_Chnnl(), MnMS1_OPT_CH1_THR_LIGHT))
 					{
-						case MnMS1_THRESHOLD_AUTO:		
+						case MnMS1_THRESHOLD_AUTO:
 							lScEc2.val-=1;
-							if(lScEc2.val < MnMS1_THR_VAL_AUTO_MIN)	lScEc2.val = MnMS1_THR_VAL_AUTO_MAX;		
+							if(lScEc2.val < MnMS1_THR_VAL_AUTO_MIN)	lScEc2.val = MnMS1_THR_VAL_AUTO_MAX;
 							break;
 						case MnMS1_THRESHOLD_MANUAL:
-							if(--lScEc2.val < MnMS1_THR_VAL_MANUAL_MIN)	lScEc2.val = MnMS1_THR_VAL_MANUAL_MAX;		
+							if(--lScEc2.val < MnMS1_THR_VAL_MANUAL_MIN)	lScEc2.val = MnMS1_THR_VAL_MANUAL_MAX;
 							break;
 						default:
 							break;
@@ -146,12 +146,12 @@ void ScEc2Evt_KeyPrev(U08 evt)
 				case ScECO_AVG_THR_HEAVY:
 					switch(MnMSR_CalGet_Ch_Value(ScECH_PrGet_Chnnl(), MnMS1_OPT_CH1_THR_HEAVY))
 					{
-						case MnMS1_THRESHOLD_AUTO:		
+						case MnMS1_THRESHOLD_AUTO:
 							lScEc2.val-=1;
-							if(lScEc2.val < MnMS1_THR_VAL_AUTO_MIN) lScEc2.val = MnMS1_THR_VAL_AUTO_MAX;		
+							if(lScEc2.val < MnMS1_THR_VAL_AUTO_MIN) lScEc2.val = MnMS1_THR_VAL_AUTO_MAX;
 							break;
 						case MnMS1_THRESHOLD_MANUAL:
-							if(--lScEc2.val < MnMS1_THR_VAL_MANUAL_MIN) lScEc2.val = MnMS1_THR_VAL_MANUAL_MAX;		
+							if(--lScEc2.val < MnMS1_THR_VAL_MANUAL_MIN) lScEc2.val = MnMS1_THR_VAL_MANUAL_MAX;
 							break;
 						default:
 							break;
@@ -174,7 +174,7 @@ void ScEc2Evt_KeyPrev(U08 evt)
 								case KEY_EVT_LONG:		lScEc2.val-=10; break;
 								default:				lScEc2.val-=1;	break;
 							}
-							if(lScEc2.val < dead)	
+							if(lScEc2.val < dead)
 								lScEc2.val = dead;
 							break;
 					}
@@ -185,7 +185,7 @@ void ScEc2Evt_KeyPrev(U08 evt)
 		case ScECO_TYPE_SAVE_ECHO:
 			if(lScEc2.updn_mod==SCRN_L2_UPDN_DIG)
 			{
-				if(--lScEc2.updn_dig<ScECO_TIME_YY) 
+				if(--lScEc2.updn_dig<ScECO_TIME_YY)
 					lScEc2.updn_dig  = ScECO_TIME_MN;
 			}
 			else if (lScEc2.updn_mod==SCRN_L2_UPDN_DIG_VALUE)
@@ -213,8 +213,8 @@ void ScEc2Evt_KeyNext(U08 evt)
 	U08 iFn = ScEC1_GetIdxFunc();
 	U08 ch = ScECH_PrGet_Chnnl();
 	U16 empty = MnMSR_BaseGet_Ch_Value(ch, MnMS0_OPT_SINGLE_EMPTY);
-	U16 dead = MnMSR_BaseGet_Ch_Value(ch, MnMS0_OPT_SINGLE_DEADZONE);	
-	
+	U16 dead = MnMSR_BaseGet_Ch_Value(ch, MnMS0_OPT_SINGLE_DEADZONE);
+
 	DpSTR_DebugExp(1, 1, "[ScEC2] NEXT (Value++)");
 	INPU_ClrKeyEvt(evt);
 
@@ -227,12 +227,12 @@ void ScEc2Evt_KeyNext(U08 evt)
 				{	// Page #1
 					case ScECO_REAL_ECHO_AMP:	if(++lScEc2.val > MnMS1_ECHO_AMP_MAX)	lScEc2.val = MnMS1_ECHO_AMP_MIN;		break;
 					case ScECO_REAL_MEAS_RESET: lScEc2.val=!lScEc2.val; 														break;
-					case ScECO_REAL_FREQ:		if(++lScEc2.val > MnMS1_FREQ_MAX)		lScEc2.val = MnMS1_FREQ_MIN;			break;
-					case ScECO_REAL_EMPTY:	
-					case ScECO_REAL_DEADZONE:	
+					case ScECO_REAL_FREQ:		lScEc2.val = MnMSR_GetNextFreq((U08)lScEc2.val);		break;
+					case ScECO_REAL_EMPTY:
+					case ScECO_REAL_DEADZONE:
 						if(lScEc2.updn_mod==SCRN_L2_UPDN_DIG)
 						{
-							if(--lScEc2.updn_dig<0) 
+							if(--lScEc2.updn_dig<0)
 								lScEc2.updn_dig  = 3;
 						}
 						else if(lScEc2.updn_mod==SCRN_L2_UPDN_DIG_VALUE)
@@ -243,7 +243,7 @@ void ScEc2Evt_KeyNext(U08 evt)
 								case 2: if((lScEc2.val>-100) && (lScEc2.val<0)) lScEc2.val*=-1; 	else lScEc2.val+=100;	break;
 								case 1: if((lScEc2.val>-10) && (lScEc2.val<0)) lScEc2.val*=-1;		else lScEc2.val+=10;	break;
 								case 0: lScEc2.val+=1;		break;
-								default:	break;				
+								default:	break;
 							}
 							if(lScEc2.val>1000)	lScEc2.val= 1000;
 						}
@@ -258,12 +258,12 @@ void ScEc2Evt_KeyNext(U08 evt)
 					case ScECO_AVG_THR_LIGHT:
 						switch(MnMSR_CalGet_Ch_Value(ScECH_PrGet_Chnnl(), MnMS1_OPT_SINGLE_THR_LIGHT))
 						{
-							case MnMS1_THRESHOLD_AUTO:		
+							case MnMS1_THRESHOLD_AUTO:
 								lScEc2.val+=1;
-								if(lScEc2.val > MnMS1_THR_VAL_AUTO_MAX) lScEc2.val = MnMS1_THR_VAL_AUTO_MIN;		
+								if(lScEc2.val > MnMS1_THR_VAL_AUTO_MAX) lScEc2.val = MnMS1_THR_VAL_AUTO_MIN;
 								break;
 							case MnMS1_THRESHOLD_MANUAL:
-								if(++lScEc2.val > MnMS1_THR_VAL_MANUAL_MAX) lScEc2.val = MnMS1_THR_VAL_MANUAL_MIN;		
+								if(++lScEc2.val > MnMS1_THR_VAL_MANUAL_MAX) lScEc2.val = MnMS1_THR_VAL_MANUAL_MIN;
 								break;
 							default:
 								break;
@@ -272,24 +272,24 @@ void ScEc2Evt_KeyNext(U08 evt)
 					case ScECO_AVG_THR_HEAVY:
 						switch(MnMSR_CalGet_Ch_Value(ScECH_PrGet_Chnnl(), MnMS1_OPT_SINGLE_THR_HEAVY))
 						{
-							case MnMS1_THRESHOLD_AUTO:		
+							case MnMS1_THRESHOLD_AUTO:
 								lScEc2.val+=1;
-								if(lScEc2.val > MnMS1_THR_VAL_AUTO_MAX) lScEc2.val = MnMS1_THR_VAL_AUTO_MIN;		
+								if(lScEc2.val > MnMS1_THR_VAL_AUTO_MAX) lScEc2.val = MnMS1_THR_VAL_AUTO_MIN;
 								break;
 							case MnMS1_THRESHOLD_MANUAL:
-								if(++lScEc2.val > empty) lScEc2.val = dead;		
+								if(++lScEc2.val > empty) lScEc2.val = dead;
 								break;
 							default:
 								break;
 						}
 						break;
 				case ScECO_AVG_ASF_LIGHT:
-				case ScECO_AVG_ASF_HEAVY:	
+				case ScECO_AVG_ASF_HEAVY:
 						switch(lScEc2.updn_mod)
 						{
 							case SCRN_L2_UPDN_DIG_VALUE:
 								lScEc2.val+=13.5;
-								if(lScEc2.val > 9999) lScEc2.val = 9999;	
+								if(lScEc2.val > 9999) lScEc2.val = 9999;
 								MsCAL_SetVl_ASF_R(ch,lScEc2.val);
 								break;
 							case SCRN_L2_UPDN_DIG:
@@ -299,7 +299,7 @@ void ScEc2Evt_KeyNext(U08 evt)
 									case KEY_EVT_LONG:		lScEc2.val+=10;	break;
 									default:				lScEc2.val+=1;	break;
 								}
-								if(lScEc2.val > empty)	
+								if(lScEc2.val > empty)
 									lScEc2.val = empty;
 								break;
 						}
@@ -310,7 +310,7 @@ void ScEc2Evt_KeyNext(U08 evt)
 			case ScECO_TYPE_SAVE_ECHO:
 				if(lScEc2.updn_mod==SCRN_L2_UPDN_DIG)
 				{
-					if(++lScEc2.updn_dig>ScECO_TIME_MN) 
+					if(++lScEc2.updn_dig>ScECO_TIME_MN)
 						lScEc2.updn_dig  = ScECO_TIME_YY;
 				}
 				else if (lScEc2.updn_mod==SCRN_L2_UPDN_DIG_VALUE)
@@ -354,14 +354,14 @@ void ScEc2Evt_KeyEnter(U08 evt)
 			lScEc2.stt = SCRN_S1_STDBY;
 			lScEc2.updn_mod = SCRN_L2_UPDN_DIG;
 			DpEC2_ValUpdat();
-			DpSCR_UpdtBttn(SCRN_L2_VALU);			
+			DpSCR_UpdtBttn(SCRN_L2_VALU);
 			return;
 			case SCRN_L2_UPDN_DIG:
 				if(ScECH_GetType()==ScECO_TYPE_AVG)
 				{
 					lScEc2.val = MsCAL_GetVl_ASF_R(iCh);
 					DpEC2_SkipGraphOnce();
-				}			
+				}
 				else if(ScECH_GetType()==ScECO_TYPE_SAVE_ECHO)
 				{
 					lScEc2.val = ScECH_PrGet_Value(iCh,lScEc2.updn_dig);
@@ -370,7 +370,7 @@ void ScEc2Evt_KeyEnter(U08 evt)
 			lScEc2.stt = SCRN_S1_STDBY;
 			lScEc2.updn_mod = SCRN_L2_UPDN_DIG_VALUE;
 			DpSCR_UpdtBttn(SCRN_L2_VALU);
-			return; 
+			return;
 	}
 
 
@@ -408,10 +408,10 @@ void ScEc2Stt_S0Intro(U08 evt)
 			switch(iFn)
 			{	// Page #0
 				case ScECO_REAL_EMPTY:
-				case ScECO_REAL_DEADZONE:	
+				case ScECO_REAL_DEADZONE:
 					lScEc2.updn_mod = SCRN_L2_UPDN_DIG;
 					break;
-				case ScECO_REAL_ECHO_AMP:		
+				case ScECO_REAL_ECHO_AMP:
 				default:
 					break;
 			}
@@ -426,7 +426,7 @@ void ScEc2Stt_S0Intro(U08 evt)
 				case ScECO_AVG_ASF_HEAVY:
 					lScEc2.updn_mod = SCRN_L2_UPDN_DIG;
 					MsCAL_SetVl_ASF_H(iCh,0);
-					MsCAL_SetVl_ASF_R(iCh,0);		
+					MsCAL_SetVl_ASF_R(iCh,0);
 					break;
 				default:
 					break;
@@ -438,13 +438,13 @@ void ScEc2Stt_S0Intro(U08 evt)
 			lScEc2.val = ScECH_PrGet_Value(iCh,lScEc2.updn_dig);
 			DpEchoPOP_EchoSaveOption();
 			DpSCR_UpdtBttn(SCRN_L2_VALU);
-			lScEc2.stt = SCRN_S1_STDBY;		
+			lScEc2.stt = SCRN_S1_STDBY;
 			return;
-		default:				
+		default:
 			break;
 	}
 
-	DpSTR_DebugExp_2(1, "[ScEC2] Evt - NONE"); 
+	DpSTR_DebugExp_2(1, "[ScEC2] Evt - NONE");
 
 	lScEc2.val = ScECH_PrGet_Value(iCh,iFn);
 	DpEC2_ValIntro();

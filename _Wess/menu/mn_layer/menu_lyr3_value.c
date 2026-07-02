@@ -78,31 +78,31 @@ void MnL3Itr_Sc0Meas(U08 iSb, U08 iIt)
 	{
 		switch(iSb)
 		{
-			case MnMSR_SUB_BASE:		
+			case MnMSR_SUB_BASE:
 				lMnLy3.val = MnMSR_BaseGet_Value(iIt);
 				if(lMnLy3.updn_mod == MENU_V3_UPDN_DIG_VALUE)	break;
 				switch(iIt)
 				{
 					case MnMS0_OPT_UNIT: 					lMnLy3.min = MnMS0_UNIT_MIN;		lMnLy3.max = MnMS0_UNIT_MAX;			break;
-					case MnMS0_OPT_CH1_OPERATION: 			
+					case MnMS0_OPT_CH1_OPERATION:
 					case MnMS0_OPT_CH2_OPERATION:			lMnLy3.min = MnMS0_OPERATION_MIN;	lMnLy3.max = MnMS0_OPERATION_MAX;		break;
-					case MnMS0_OPT_CH1_EMPTY:				
+					case MnMS0_OPT_CH1_EMPTY:
 					case MnMS0_OPT_CH2_EMPTY:				lMnLy3.min = MnMS0_EMPTY_MIN;		lMnLy3.max = MnMS0_EMPTY_MAX;			lMnLy3.updn_mod = MENU_V3_UPDN_DIG;	break;
-					case MnMS0_OPT_CH1_DEADZONE: 			
+					case MnMS0_OPT_CH1_DEADZONE:
 					case MnMS0_OPT_CH2_DEADZONE:			lMnLy3.min = MnMS0_DEADZONE_MIN;	lMnLy3.max = MnMS0_DEADZONE_MAX;		lMnLy3.updn_mod = MENU_V3_UPDN_DIG;	break;
-					case MnMS0_OPT_CH1_MEASURE_CYCLE: 		
+					case MnMS0_OPT_CH1_MEASURE_CYCLE:
 					case MnMS0_OPT_CH2_MEASURE_CYCLE:		lMnLy3.min = MnMS0_MSR_CYC_MIN;		lMnLy3.max = MnMS0_MSR_CYC_MAX;			lMnLy3.updn_mod = MENU_V3_UPDN_DIG;	break;
-					case MnMS0_OPT_CH1_MEASURE_RESET:		
-					case MnMS0_OPT_CH2_MEASURE_RESET:		lMnLy3.min = MnMS0_MSR_RESET_MIN;	lMnLy3.max = MnMS0_MSR_RESET_MAX;		break;			
+					case MnMS0_OPT_CH1_MEASURE_RESET:
+					case MnMS0_OPT_CH2_MEASURE_RESET:		lMnLy3.min = MnMS0_MSR_RESET_MIN;	lMnLy3.max = MnMS0_MSR_RESET_MAX;		break;
 					default:																											break;
 				}
 				break;
-			case MnMSR_SUB_CAL:		
+			case MnMSR_SUB_CAL:
 				lMnLy3.val = MnMSR_CalGet_Value(iIt);
 				if(lMnLy3.updn_mod == MENU_V3_UPDN_DIG_VALUE)	break;
 				switch(iIt)
 				{
-					case MnMS1_OPT_CH1_FREQ:			
+					case MnMS1_OPT_CH1_FREQ:
 					case MnMS1_OPT_CH2_FREQ:				lMnLy3.min = MnMS1_FREQ_MIN;		lMnLy3.max = MnMS1_FREQ_MAX;			break;
 					case MnMS1_OPT_CH1_AUTO_CAL:
 					case MnMS1_OPT_CH2_AUTO_CAL:			lMnLy3.min = MnMS1_AUTO_CAL_MIN;	lMnLy3.max = MnMS1_AUTO_CAL_MAX;
@@ -116,7 +116,7 @@ void MnL3Itr_Sc0Meas(U08 iSb, U08 iIt)
 					case MnMS1_OPT_CH1_THR_LIGHT:
 					case MnMS1_OPT_CH2_THR_LIGHT:			lMnLy3.min = MnMS1_THRESHOLD_MIN;	lMnLy3.max = MnMS1_THRESHOLD_MAX;		break;
 					case MnMS1_OPT_CH1_ASF_LIGHT:
-					case MnMS1_OPT_CH1_ASF_HEAVY:					
+					case MnMS1_OPT_CH1_ASF_HEAVY:
 					case MnMS1_OPT_CH2_ASF_LIGHT:
 					case MnMS1_OPT_CH2_ASF_HEAVY:			lMnLy3.min = MnMS1_ASF_MIN;			lMnLy3.max = MnMS1_ASF_MAX;				lMnLy3.updn_mod = MENU_V3_UPDN_DIG;	break;
 					case MnMS1_OPT_CH1_DAMPING:
@@ -126,38 +126,38 @@ void MnL3Itr_Sc0Meas(U08 iSb, U08 iIt)
 				}
 				break;
 			default:										lMnLy3.val = MENU_VAL_INVALID;				break;
-		}	
+		}
 	}
 	else if(MnFTR_PrGet_SsChn()==MnFTR_SS_SINGLE)
 	{
 		switch(iSb)
 		{
-			case MnMSR_SUB_BASE:		
+			case MnMSR_SUB_BASE:
 				lMnLy3.val = MnMSR_BaseGet_Ch_Value(APP_CH_1,iIt);
 				if(lMnLy3.updn_mod == MENU_V3_UPDN_DIG_VALUE)	break;
 				switch(iIt)
 				{
-					case MnMS0_OPT_SINGLE_UNIT: 				lMnLy3.min = MnMS0_UNIT_MIN;		lMnLy3.max = MnMS0_UNIT_MAX;			break;			
-					case MnMS0_OPT_SINGLE_OPERATION:			lMnLy3.min = MnMS0_OPERATION_MIN;	lMnLy3.max = MnMS0_OPERATION_MAX;		break;		
-					case MnMS0_OPT_SINGLE_EMPTY:				lMnLy3.min = MnMS0_EMPTY_MIN;		lMnLy3.max = MnMS0_EMPTY_MAX;			lMnLy3.updn_mod = MENU_V3_UPDN_DIG;	break;		
-					case MnMS0_OPT_SINGLE_DEADZONE:				lMnLy3.min = MnMS0_DEADZONE_MIN;	lMnLy3.max = MnMS0_DEADZONE_MAX;		lMnLy3.updn_mod = MENU_V3_UPDN_DIG;	break; 		
+					case MnMS0_OPT_SINGLE_UNIT: 				lMnLy3.min = MnMS0_UNIT_MIN;		lMnLy3.max = MnMS0_UNIT_MAX;			break;
+					case MnMS0_OPT_SINGLE_OPERATION:			lMnLy3.min = MnMS0_OPERATION_MIN;	lMnLy3.max = MnMS0_OPERATION_MAX;		break;
+					case MnMS0_OPT_SINGLE_EMPTY:				lMnLy3.min = MnMS0_EMPTY_MIN;		lMnLy3.max = MnMS0_EMPTY_MAX;			lMnLy3.updn_mod = MENU_V3_UPDN_DIG;	break;
+					case MnMS0_OPT_SINGLE_DEADZONE:				lMnLy3.min = MnMS0_DEADZONE_MIN;	lMnLy3.max = MnMS0_DEADZONE_MAX;		lMnLy3.updn_mod = MENU_V3_UPDN_DIG;	break;
 					case MnMS0_OPT_SINGLE_MEASURE_CYCLE:		lMnLy3.min = MnMS0_MSR_CYC_MIN;		lMnLy3.max = MnMS0_MSR_CYC_MAX;			lMnLy3.updn_mod = MENU_V3_UPDN_DIG;	break;
-					case MnMS0_OPT_SINGLE_MEASURE_RESET:		lMnLy3.min = MnMS0_MSR_RESET_MIN;	lMnLy3.max = MnMS0_MSR_RESET_MAX;		break;			
+					case MnMS0_OPT_SINGLE_MEASURE_RESET:		lMnLy3.min = MnMS0_MSR_RESET_MIN;	lMnLy3.max = MnMS0_MSR_RESET_MAX;		break;
 					default:																												break;
 				}
 				break;
-			case MnMSR_SUB_CAL:		
+			case MnMSR_SUB_CAL:
 				lMnLy3.val = MnMSR_CalGet_Ch_Value(APP_CH_1,iIt);
 				if(lMnLy3.updn_mod == MENU_V3_UPDN_DIG_VALUE)	break;
 				switch(iIt)
-				{		
+				{
 					case MnMS1_OPT_SINGLE_FREQ:					lMnLy3.min = MnMS1_FREQ_MIN;		lMnLy3.max = MnMS1_FREQ_MAX;			break;
 					case MnMS1_OPT_SINGLE_AUTO_CAL:				lMnLy3.min = MnMS1_AUTO_CAL_MIN;	lMnLy3.max = MnMS1_AUTO_CAL_MAX;
 																lMnLy3.updn_mod = MENU_V3_UPDN_DIG;	break;
 					case MnMS1_OPT_SINGLE_AUTO_FAMP:			lMnLy3.min = MnMS1_AUTO_FAMP_MIN;	lMnLy3.max = MnMS1_AUTO_FAMP_MAX;		break;
 					case MnMS1_OPT_SINGLE_ECHO_AMP:				lMnLy3.min = MnMS1_ECHO_AMP_MIN;	lMnLy3.max = MnMS1_ECHO_AMP_MAX;		lMnLy3.updn_mod = MENU_V3_UPDN_DIG;	break;
 					case MnMS1_OPT_SINGLE_THR_HEAVY:
-					case MnMS1_OPT_SINGLE_THR_LIGHT:			lMnLy3.min = MnMS1_THRESHOLD_MIN;	lMnLy3.max = MnMS1_THRESHOLD_MAX;		break;					
+					case MnMS1_OPT_SINGLE_THR_LIGHT:			lMnLy3.min = MnMS1_THRESHOLD_MIN;	lMnLy3.max = MnMS1_THRESHOLD_MAX;		break;
 					case MnMS1_OPT_SINGLE_ASF_LIGHT:
 					case MnMS1_OPT_SINGLE_ASF_HEAVY:			lMnLy3.min = MnMS1_ASF_MIN;			lMnLy3.max = MnMS1_ASF_MAX;				lMnLy3.updn_mod = MENU_V3_UPDN_DIG;	break;
 					case MnMS1_OPT_SINGLE_DAMPING:				lMnLy3.min = MnMS1_DAMPING_MIN;		lMnLy3.max = MnMS1_DAMPING_MAX;			lMnLy3.updn_mod = MENU_V3_UPDN_DIG;	break;
@@ -165,7 +165,7 @@ void MnL3Itr_Sc0Meas(U08 iSb, U08 iIt)
 				}
 				break;
 			default:										lMnLy3.val = MENU_VAL_INVALID;				break;
-		}			
+		}
 	}
 }
 
@@ -173,25 +173,25 @@ void MnL3Itr_Sc1Outp(U08 iSb, U08 iIt)
 {
 	switch(iSb)
 	{
-		case MnOUT_SUB_CURRENT:		
+		case MnOUT_SUB_CURRENT:
 			if(MnFTR_PrGet_SsChn()==MnFTR_SS_DUAL)
 			{
-				lMnLy3.val = MnOUT_CurPrGet_Value(iIt);		
+				lMnLy3.val = MnOUT_CurPrGet_Value(iIt);
 				if(lMnLy3.updn_mod == MENU_V3_UPDN_DIG_VALUE)	break;
 				switch(iIt)
 				{
-					case MnOS0_OPT_CH1_ASSIGN:		
+					case MnOS0_OPT_CH1_ASSIGN:
 					case MnOS0_OPT_CH2_ASSIGN:		lMnLy3.min = MnOS0_ASSIGN_MIN;	lMnLy3.max = MnOS0_ASSIGN_MAX;		break;
-					case MnOS0_OPT_CH1_SET_04mA:	
+					case MnOS0_OPT_CH1_SET_04mA:
 					case MnOS0_OPT_CH2_SET_04mA:
 					case MnOS0_OPT_CH1_SET_20mA:
 					case MnOS0_OPT_CH2_SET_20mA:	lMnLy3.min = MnOS0_SET_MA_MIN;	lMnLy3.max = MnOS0_SET_MA_MAX;		lMnLy3.updn_mod = MENU_V3_UPDN_DIG;	break;
 					case MnOS0_OPT_CH1_TRM_12mA:
-					case MnOS0_OPT_CH1_TRM_20mA:	lMnLy3.min = MnOS0_TRIM_MIN;	lMnLy3.max = MnOS0_TRIM_MAX;		
+					case MnOS0_OPT_CH1_TRM_20mA:	lMnLy3.min = MnOS0_TRIM_MIN;	lMnLy3.max = MnOS0_TRIM_MAX;
 													lMnLy3.updn_mod = MENU_V3_UPDN_DIG;	OuCUR_SetOutp_Type(MnOUT_CH_0, OuCUR_TYPE_CHK);	break;
 					case MnOS0_OPT_CH1_OUT_04mA:	OuCUR_SetOutp_Type(MnOUT_CH_0, OuCUR_TYPE_CHK);						break;
 					case MnOS0_OPT_CH2_TRM_12mA:
-					case MnOS0_OPT_CH2_TRM_20mA:	lMnLy3.min = MnOS0_TRIM_MIN;	lMnLy3.max = MnOS0_TRIM_MAX;		
+					case MnOS0_OPT_CH2_TRM_20mA:	lMnLy3.min = MnOS0_TRIM_MIN;	lMnLy3.max = MnOS0_TRIM_MAX;
 													lMnLy3.updn_mod = MENU_V3_UPDN_DIG;	OuCUR_SetOutp_Type(MnOUT_CH_1, OuCUR_TYPE_CHK);	break;
 					case MnOS0_OPT_CH2_OUT_04mA:	OuCUR_SetOutp_Type(MnOUT_CH_1, OuCUR_TYPE_CHK);						break;
 					default:																							break;
@@ -199,30 +199,30 @@ void MnL3Itr_Sc1Outp(U08 iSb, U08 iIt)
 			}
 			else if(MnFTR_PrGet_SsChn()==MnFTR_SS_SINGLE)
 			{
-				lMnLy3.val = MnOUT_CurPrGet_CH_Value(APP_CH_1,iIt);		
-				if(lMnLy3.updn_mod == MENU_V3_UPDN_DIG_VALUE)	break;	
+				lMnLy3.val = MnOUT_CurPrGet_CH_Value(APP_CH_1,iIt);
+				if(lMnLy3.updn_mod == MENU_V3_UPDN_DIG_VALUE)	break;
 				switch(iIt)
 				{
 					case MnOS0_OPT_SINGLE_ASSIGN:	lMnLy3.min = MnOS0_ASSIGN_MIN;	lMnLy3.max = MnOS0_ASSIGN_MAX;		break;
 					case MnOS0_OPT_SINGLE_SET_04mA:
 					case MnOS0_OPT_SINGLE_SET_20mA:	lMnLy3.min = MnOS0_SET_MA_MIN;	lMnLy3.max = MnOS0_SET_MA_MAX;		lMnLy3.updn_mod = MENU_V3_UPDN_DIG;	break;
 					case MnOS0_OPT_SINGLE_TRM_12mA:
-					case MnOS0_OPT_SINGLE_TRM_20mA:	lMnLy3.min = MnOS0_TRIM_MIN;	lMnLy3.max = MnOS0_TRIM_MAX;	
-													lMnLy3.updn_mod = MENU_V3_UPDN_DIG;	OuCUR_SetOutp_Type(MnOUT_CH_0, OuCUR_TYPE_CHK);	break;					
+					case MnOS0_OPT_SINGLE_TRM_20mA:	lMnLy3.min = MnOS0_TRIM_MIN;	lMnLy3.max = MnOS0_TRIM_MAX;
+													lMnLy3.updn_mod = MENU_V3_UPDN_DIG;	OuCUR_SetOutp_Type(MnOUT_CH_0, OuCUR_TYPE_CHK);	break;
 					case MnOS0_OPT_SINGLE_OUT_04mA:	OuCUR_SetOutp_Type(MnOUT_CH_0, OuCUR_TYPE_CHK);						break;
 				}
 			}
 			break;
-		case MnOUT_SUB_RELAY:	
+		case MnOUT_SUB_RELAY:
 			lMnLy3.val = MnOUT_RlyPrGet_Value(iIt);
 			if(lMnLy3.updn_mod == MENU_V3_UPDN_DIG_VALUE)	break;
 			switch(iIt)
 			{
-				case MnOS1_OPT_ASSIGN:	
-					lMnLy3.min = MnOS1_ASSIGN_MIN; 	
-					lMnLy3.max = MnOS1_ASSIGN_MAX;	
+				case MnOS1_OPT_ASSIGN:
+					lMnLy3.min = MnOS1_ASSIGN_MIN;
+					lMnLy3.max = MnOS1_ASSIGN_MAX;
 					if(MnFTR_PrGet_SsChn()==MnFTR_SS_SINGLE)
-						lMnLy3.max = MnOS1_ASSIGN_CH1_HEAVY;	
+						lMnLy3.max = MnOS1_ASSIGN_CH1_HEAVY;
 					break;
 				case MnOS1_OPT_ACT:			lMnLy3.min = MnOS1_ACT_MIN;		lMnLy3.max = MnOS1_ACT_MAX;			lMnLy3.updn_mod = MENU_V3_UPDN_DIG;	break;
 				case MnOS1_OPT_STOP:		lMnLy3.min = MnOS1_STOP_MIN;	lMnLy3.max = MnOS1_STOP_MAX;		lMnLy3.updn_mod = MENU_V3_UPDN_DIG;	break;
@@ -230,7 +230,7 @@ void MnL3Itr_Sc1Outp(U08 iSb, U08 iIt)
 				default:																						break;
 			}
 			break;
-		case MnOUT_SUB_CLEAN:			
+		case MnOUT_SUB_CLEAN:
 			lMnLy3.val = MnOUT_PcdPrGet_Value(iIt);
 			if(lMnLy3.updn_mod == MENU_V3_UPDN_DIG_VALUE)	break;
 			switch(iIt)
@@ -240,8 +240,8 @@ void MnL3Itr_Sc1Outp(U08 iSb, U08 iIt)
 				default:																						break;
 			}
 			break;
-		case MnOUT_SUB_ERROR:		
-			lMnLy3.val = MnOUT_ErrPrGet_Value(iIt);	
+		case MnOUT_SUB_ERROR:
+			lMnLy3.val = MnOUT_ErrPrGet_Value(iIt);
 			if(lMnLy3.updn_mod == MENU_V3_UPDN_DIG_VALUE)	break;
 			switch(iIt)
 			{
@@ -251,7 +251,7 @@ void MnL3Itr_Sc1Outp(U08 iSb, U08 iIt)
 			}
 			break;
 		default:					lMnLy3.val = MENU_VAL_INVALID;				break;
-	}	
+	}
 }
 
 void MnL3Itr_Sc2Data(U08 iSb, U08 iIt)
@@ -262,7 +262,7 @@ void MnL3Itr_Sc2Data(U08 iSb, U08 iIt)
 		case MnDAT_SUB_ECHO:		lMnLy3.val = MnDAT_EchoSavePrGet_Value(iIt);	break;
 		case MnDAT_SUB_COMM:		lMnLy3.val = MnDAT_ComPrGet_Value(iIt);			break;
 		default:					lMnLy3.val = MENU_VAL_INVALID;					break;
-	}	
+	}
 }
 
 void MnL3Itr_Sc3Syst(U08 iSb, U08 iIt)
@@ -277,15 +277,15 @@ void MnL3Itr_Sc3Syst(U08 iSb, U08 iIt)
 				if(lMnLy3.updn_mod == MENU_V3_UPDN_DIG_VALUE)	break;
 				switch(iIt)
 				{
-					case MnSYS_OPT_PASSCODE:		
-						lMnLy3.min = MnSYS_PASSCODE_MIN;		
-						lMnLy3.max = MnSYS_PASSCODE_MAX;			
+					case MnSYS_OPT_PASSCODE:
+						lMnLy3.min = MnSYS_PASSCODE_MIN;
+						lMnLy3.max = MnSYS_PASSCODE_MAX;
 						lMnLy3.val = MnSYS_PrGetBase_Item(iIt);
-						lMnLy3.updn_mod = MENU_V3_UPDN_DIG; 		
+						lMnLy3.updn_mod = MENU_V3_UPDN_DIG;
 						break;
-					case MnSYS_OPT_LANG:			
-						lMnLy3.min = MnSYS_LANG_MIN;			
-						lMnLy3.max = MnSYS_LANG_MAX;		
+					case MnSYS_OPT_LANG:
+						lMnLy3.min = MnSYS_LANG_MIN;
+						lMnLy3.max = MnSYS_LANG_MAX;
 						lMnLy3.val = MnSYS_PrGetBase_Item(iIt);
 						break;
 					case MnSYS_OPT_TIME:
@@ -294,23 +294,23 @@ void MnL3Itr_Sc3Syst(U08 iSb, U08 iIt)
 						lMnLy3.time[MnSYS_T01_MM] = rtc.month;
 						lMnLy3.time[MnSYS_T02_DD] = rtc.day;
 						lMnLy3.time[MnSYS_T03_HH] = rtc.hours;
-						lMnLy3.time[MnSYS_T04_MN] = rtc.minutes;		
+						lMnLy3.time[MnSYS_T04_MN] = rtc.minutes;
 						lMnLy3.updn_mod = MENU_V3_UPDN_DIG;
 						break;
-					case MnSYS_OPT_CH1_SITE_NAME:		
+					case MnSYS_OPT_CH1_SITE_NAME:
 						lMnLy3.val = MnSYS_PrGet_site_name(APP_CH_1);
 						lMnLy3.updn_mod = MENU_V3_UPDN_DIG;
 						break;
-					case MnSYS_OPT_CH2_SITE_NAME:	
-						lMnLy3.val = MnSYS_PrGet_site_name(APP_CH_2);		
+					case MnSYS_OPT_CH2_SITE_NAME:
+						lMnLy3.val = MnSYS_PrGet_site_name(APP_CH_2);
 						lMnLy3.updn_mod = MENU_V3_UPDN_DIG;
 						break;
-					case MnSYS_OPT_FTR_RST: 		
-						lMnLy3.val = MENU_CHK_NO;				
+					case MnSYS_OPT_FTR_RST:
+						lMnLy3.val = MENU_CHK_NO;
 						break;
 					// Not Yet
-					default:						
-						lMnLy3.val = MENU_VAL_INVALID;			
+					default:
+						lMnLy3.val = MENU_VAL_INVALID;
 						break;
 				}
 				break;
@@ -324,15 +324,15 @@ void MnL3Itr_Sc3Syst(U08 iSb, U08 iIt)
 				if(lMnLy3.updn_mod == MENU_V3_UPDN_DIG_VALUE)	break;
 				switch(iIt)
 				{
-					case MnSYS_OPT_SINGLE_PASSCODE:		
-						lMnLy3.min = MnSYS_PASSCODE_MIN;		
-						lMnLy3.max = MnSYS_PASSCODE_MAX;			
+					case MnSYS_OPT_SINGLE_PASSCODE:
+						lMnLy3.min = MnSYS_PASSCODE_MIN;
+						lMnLy3.max = MnSYS_PASSCODE_MAX;
 						lMnLy3.val = MnSYS_PrGetBase_Item(iIt);
-						lMnLy3.updn_mod = MENU_V3_UPDN_DIG; 		
+						lMnLy3.updn_mod = MENU_V3_UPDN_DIG;
 						break;
-					case MnSYS_OPT_SINGLE_LANG:			
-						lMnLy3.min = MnSYS_LANG_MIN;			
-						lMnLy3.max = MnSYS_LANG_MAX;		
+					case MnSYS_OPT_SINGLE_LANG:
+						lMnLy3.min = MnSYS_LANG_MIN;
+						lMnLy3.max = MnSYS_LANG_MAX;
 						lMnLy3.val = MnSYS_PrGetBase_Item(iIt);
 						break;
 					case MnSYS_OPT_SINGLE_TIME:
@@ -341,19 +341,19 @@ void MnL3Itr_Sc3Syst(U08 iSb, U08 iIt)
 						lMnLy3.time[MnSYS_T01_MM] = rtc.month;
 						lMnLy3.time[MnSYS_T02_DD] = rtc.day;
 						lMnLy3.time[MnSYS_T03_HH] = rtc.hours;
-						lMnLy3.time[MnSYS_T04_MN] = rtc.minutes;		
+						lMnLy3.time[MnSYS_T04_MN] = rtc.minutes;
 						lMnLy3.updn_mod = MENU_V3_UPDN_DIG;
 						break;
-					case MnSYS_OPT_SINGLE_SITE_NAME:		
+					case MnSYS_OPT_SINGLE_SITE_NAME:
 						lMnLy3.val = MnSYS_PrGet_site_name(APP_CH_1);
 						lMnLy3.updn_mod = MENU_V3_UPDN_DIG;
 						break;
-					case MnSYS_OPT_SINGLE_FTR_RST: 		
-						lMnLy3.val = MENU_CHK_NO;				
+					case MnSYS_OPT_SINGLE_FTR_RST:
+						lMnLy3.val = MENU_CHK_NO;
 						break;
 					// Not Yet
-					default:						
-						lMnLy3.val = MENU_VAL_INVALID;			
+					default:
+						lMnLy3.val = MENU_VAL_INVALID;
 						break;
 				}
 				break;
@@ -369,43 +369,43 @@ void MnL3Itr_Sc4Engi(U08 iIt)
 
 	switch(iIt)
 	{
-		case MnEGN_OPT_THRESHOLD_SYNC:			
-			lMnLy3.min = MnEGN_THRESHOLD_SYNC_MIN;	
-			lMnLy3.max = MnEGN_THRESHOLD_SYNC_MAX;	
+		case MnEGN_OPT_THRESHOLD_SYNC:
+			lMnLy3.min = MnEGN_THRESHOLD_SYNC_MIN;
+			lMnLy3.max = MnEGN_THRESHOLD_SYNC_MAX;
 			break;
-		case MnEGN_OPT_CH1_PROFILE:		
+		case MnEGN_OPT_CH1_PROFILE:
 		case MnEGN_OPT_CH2_PROFILE:
-			lMnLy3.min = MnEGN_PROFILE_MIN;	
-			lMnLy3.max = MnEGN_PROFILE_MAX;	
+			lMnLy3.min = MnEGN_PROFILE_MIN;
+			lMnLy3.max = MnEGN_PROFILE_MAX;
 			if(lMnLy3.updn_mod == MENU_V3_UPDN_DIG_VALUE)	break;
 			lMnLy3.updn_mod = MENU_V3_UPDN_DIG;
 
 			break;
 		case MnEGN_OPT_CH1_TVG:
-		case MnEGN_OPT_CH2_TVG:	
-			lMnLy3.min = MnEGN_TVG_MIN;	
-			lMnLy3.max = MnEGN_TVG_MAX;	
-			break;			
+		case MnEGN_OPT_CH2_TVG:
+			lMnLy3.min = MnEGN_TVG_MIN;
+			lMnLy3.max = MnEGN_TVG_MAX;
+			break;
 		case MnEGN_OPT_CH1_WINDOW_RESET_TIME:
-		case MnEGN_OPT_CH2_WINDOW_RESET_TIME:	
-			lMnLy3.min = MnEGN_WINDOW_RESET_TIME_MIN;	
-			lMnLy3.max = MnEGN_WINDOW_RESET_TIME_MAX;	
+		case MnEGN_OPT_CH2_WINDOW_RESET_TIME:
+			lMnLy3.min = MnEGN_WINDOW_RESET_TIME_MIN;
+			lMnLy3.max = MnEGN_WINDOW_RESET_TIME_MAX;
 			if(lMnLy3.updn_mod == MENU_V3_UPDN_DIG_VALUE)	break;
 			lMnLy3.updn_mod = MENU_V3_UPDN_DIG;
 
-			break;		
+			break;
 		case MnEGN_OPT_CH1_WINDOW_RANGE:
-		case MnEGN_OPT_CH2_WINDOW_RANGE:	
-			lMnLy3.min = MnEGN_WINDOW_RANGE_MIN;	
-			lMnLy3.max = MnEGN_WINDOW_RANGE_MAX;	
+		case MnEGN_OPT_CH2_WINDOW_RANGE:
+			lMnLy3.min = MnEGN_WINDOW_RANGE_MIN;
+			lMnLy3.max = MnEGN_WINDOW_RANGE_MAX;
 			if(lMnLy3.updn_mod == MENU_V3_UPDN_DIG_VALUE)	break;
 			lMnLy3.updn_mod = MENU_V3_UPDN_DIG;
 
-			break;						
+			break;
 		case MnEGN_OPT_MSR:
-			lMnLy3.min = MnEGN_MSR_MIN;	
-			lMnLy3.max = MnEGN_MSR_MAX;	
-			break;					
+			lMnLy3.min = MnEGN_MSR_MIN;
+			lMnLy3.max = MnEGN_MSR_MAX;
+			break;
 		// Not Yet
 		default:						lMnLy3.val = MENU_VAL_INVALID; 			break;
 	}
@@ -435,7 +435,7 @@ void MnL3Itr_Sc5Fact(U08 iIt)
 			case MnFTR_I07_CH1_OUTPUT_4MA:	OuCUR_SetOutp_Type(APP_CH_1,OuCUR_TYPE_CHK);	break;
 			case MnFTR_I08_CH2_TRIM_12MA:	OuCUR_SetOutp_Type(APP_CH_2,OuCUR_TYPE_CHK);	lMnLy3.min = MnOS0_TRIM_MIN;		lMnLy3.max = MnOS0_TRIM_MAX;			lMnLy3.updn_mod = MENU_V3_UPDN_DIG;	break;
 			case MnFTR_I09_CH2_TRIM_20MA:	OuCUR_SetOutp_Type(APP_CH_2,OuCUR_TYPE_CHK);	lMnLy3.min = MnOS0_TRIM_MIN;		lMnLy3.max = MnOS0_TRIM_MAX;			lMnLy3.updn_mod = MENU_V3_UPDN_DIG;	break;
-			case MnFTR_I10_CH2_OUTPUT_4MA:	OuCUR_SetOutp_Type(APP_CH_2,OuCUR_TYPE_CHK);	break;		
+			case MnFTR_I10_CH2_OUTPUT_4MA:	OuCUR_SetOutp_Type(APP_CH_2,OuCUR_TYPE_CHK);	break;
 			case MnFTR_I11_RELAY_TEST:		lMnLy3.min = MnOS1_TEST_MIN;	lMnLy3.max = MnOS1_TEST_MAX;		lMnLy3.updn_mod = MENU_V3_UPDN_DIG;		OuRLY_SetTestfEn(TRUE);	break;
 			case MnFTR_I12_LANG:			lMnLy3.min = MnSYS_LANG_MIN;	lMnLy3.max = MnSYS_LANG_MAX;		break;
 			case MnFTR_I13_TIME:
@@ -444,15 +444,16 @@ void MnL3Itr_Sc5Fact(U08 iIt)
 				lMnLy3.time[MnSYS_T01_MM] = rtc.month;
 				lMnLy3.time[MnSYS_T02_DD] = rtc.day;
 				lMnLy3.time[MnSYS_T03_HH] = rtc.hours;
-				lMnLy3.time[MnSYS_T04_MN] = rtc.minutes;		
+				lMnLy3.time[MnSYS_T04_MN] = rtc.minutes;
 				lMnLy3.updn_mod = MENU_V3_UPDN_DIG;
 				break;
 			case MnFTR_I14_VERSION:
 				break;
 			case MnFTR_I15_CLEAN_TEST:		OuCUR_SetPCD_fRun(PCD_TEST);	break;
 			case MnFTR_I16_RF_VERSION:		lMnLy3.min = MnFTR_RF_VER_MIN;	lMnLy3.max = MnFTR_RF_VER_MAX;	break;
-			case MnFTR_I17_PROTOCOL:		lMnLy3.min = MnDS2_TYPE_MIN;	lMnLy3.max = MnDS2_TYPE_MAX;	break;
-			case MnFTR_I18_FTR_RST:			lMnLy3.val = MENU_CHK_NO;	lMnLy3.min = MnSYS_FTR_RST_MIN;	lMnLy3.max = MnSYS_FTR_RST_MAX;	break;
+			case MnFTR_I17_SENSOR_TYPE:	lMnLy3.min = MnFTR_SENSOR_TYPE_MIN;	lMnLy3.max = MnFTR_SENSOR_TYPE_MAX;	break;
+			case MnFTR_I18_PROTOCOL:		lMnLy3.min = MnDS2_TYPE_MIN;	lMnLy3.max = MnDS2_TYPE_MAX;	break;
+			case MnFTR_I19_FTR_RST:			lMnLy3.val = MENU_CHK_NO;	lMnLy3.min = MnSYS_FTR_RST_MIN;	lMnLy3.max = MnSYS_FTR_RST_MAX;	break;
 			default:
 				break;
 		}
@@ -479,13 +480,14 @@ void MnL3Itr_Sc5Fact(U08 iIt)
 				lMnLy3.time[MnSYS_T01_MM] = rtc.month;
 				lMnLy3.time[MnSYS_T02_DD] = rtc.day;
 				lMnLy3.time[MnSYS_T03_HH] = rtc.hours;
-				lMnLy3.time[MnSYS_T04_MN] = rtc.minutes;		
+				lMnLy3.time[MnSYS_T04_MN] = rtc.minutes;
 				lMnLy3.updn_mod = MENU_V3_UPDN_DIG;
 				break;
 			case MnFTR_OPT_SINGLE_VERSION:
 				break;
 			case MnFTR_OPT_SINGLE_CLEAN_TEST:		OuCUR_SetPCD_fRun(PCD_TEST);	break;
 			case MnFTR_OPT_SINGLE_RF_VERSION:		lMnLy3.min = MnFTR_RF_VER_MIN;	lMnLy3.max = MnFTR_RF_VER_MAX;	break;
+			case MnFTR_OPT_SINGLE_SENSOR_TYPE:	lMnLy3.min = MnFTR_SENSOR_TYPE_MIN;	lMnLy3.max = MnFTR_SENSOR_TYPE_MAX;	break;
 			case MnFTR_OPT_SINGLE_PROTOCOL:			lMnLy3.min = MnDS2_TYPE_MIN;	lMnLy3.max = MnDS2_TYPE_MAX;	break;
 			case MnFTR_OPT_SINGLE_FTR_RST:			lMnLy3.val = MENU_CHK_NO;	lMnLy3.min = MnSYS_FTR_RST_MIN;	lMnLy3.max = MnSYS_FTR_RST_MAX;	break;
 			default:
@@ -506,17 +508,17 @@ void MnL3Itr_Sc6Test(U08 iIt)
 	switch(iIt)
 	{
 		case MnTST_OPT_HW_RX_AMP:			lMnLy3.min = MnTST_HW_RX_AMP_MIN;	lMnLy3.max = MnTST_HW_RX_AMP_MAX;	break;
-		case MnTST_OPT_CH1_SMOOTH_NO:		
+		case MnTST_OPT_CH1_SMOOTH_NO:
 		case MnTST_OPT_CH2_SMOOTH_NO:		lMnLy3.min = MnTST_SMOOTH_NO_MIN;	lMnLy3.max = MnTST_SMOOTH_NO_MAX;	break;
-		case MnTST_OPT_CH1_SMOOTH_RANGE:	
+		case MnTST_OPT_CH1_SMOOTH_RANGE:
 		case MnTST_OPT_CH2_SMOOTH_RANGE:	lMnLy3.min = MnTST_SMOOTH_RANGE_MIN;	lMnLy3.max = MnTST_SMOOTH_RANGE_MAX;	break;
-		case MnTST_OPT_CH1_THR_RANGE:		
+		case MnTST_OPT_CH1_THR_RANGE:
 		case MnTST_OPT_CH2_THR_RANGE:		lMnLy3.min = MnTST_THR_RANGE_MIN;	lMnLy3.max = MnTST_THR_RANGE_MAX;	lMnLy3.updn_mod = MENU_V3_UPDN_DIG; break;
-		case MnTST_OPT_CH1_THR_MIN:			
+		case MnTST_OPT_CH1_THR_MIN:
 		case MnTST_OPT_CH2_THR_MIN:			lMnLy3.min = MnTST_THR_MIN_MIN;	lMnLy3.max = MnTST_THR_MIN_MAX;	lMnLy3.updn_mod = MENU_V3_UPDN_DIG; break;
-			case MnTST_OPT_CH1_PULSE_NO:		
+			case MnTST_OPT_CH1_PULSE_NO:
 			case MnTST_OPT_CH2_PULSE_NO:		lMnLy3.min = MnTST_PULSE_NO_MIN;	lMnLy3.max = MnTST_PULSE_NO_MAX; 	break;
-			case MnTST_OPT_CH1_ECHO_AMP_B:		
+			case MnTST_OPT_CH1_ECHO_AMP_B:
 			case MnTST_OPT_CH2_ECHO_AMP_B:		lMnLy3.min = MnTST_ECHO_AMP_B_MIN;	lMnLy3.max = MnTST_ECHO_AMP_B_MAX;	lMnLy3.updn_mod = MENU_V3_UPDN_DIG; break;
 			case MnTST_OPT_CH1_AUTO_CAL:
 			case MnTST_OPT_CH2_AUTO_CAL:		lMnLy3.min = MnTST_AUTO_CAL_MIN;	lMnLy3.max = MnTST_AUTO_CAL_MAX;
@@ -524,16 +526,16 @@ void MnL3Itr_Sc6Test(U08 iIt)
 												lMnLy3.echo_mod = MENU_V3_ECHO_APPROCH;	break;
 			case MnTST_OPT_FILTER_RANGE:		lMnLy3.min = MnTST_FILTER_RANGE_MIN;	lMnLy3.max = MnTST_FILTER_RANGE_MAX; lMnLy3.updn_mod = MENU_V3_UPDN_DIG; break;
 			case MnTST_OPT_FILTER_TIME:			lMnLy3.min = MnTST_FILTER_TIME_MIN;	lMnLy3.max = MnTST_FILTER_TIME_MAX;	lMnLy3.updn_mod = MENU_V3_UPDN_DIG; break;
-			case MnTST_OPT_SENSOR_DISTANCE:		lMnLy3.min = MnTST_SENSOR_DISTANCE_MIN;	lMnLy3.max = MnTST_SENSOR_DISTANCE_MAX;	lMnLy3.updn_mod = MENU_V3_UPDN_DIG; break;											
+			case MnTST_OPT_SENSOR_DISTANCE:		lMnLy3.min = MnTST_SENSOR_DISTANCE_MIN;	lMnLy3.max = MnTST_SENSOR_DISTANCE_MAX;	lMnLy3.updn_mod = MENU_V3_UPDN_DIG; break;
 		case MnTST_OPT_DEMO_MODE:			lMnLy3.min = MnTST_DEMO_MODE_MIN;	lMnLy3.max = MnTST_DEMO_MODE_MAX;	break;
 		case MnTST_OPT_DEBUG_MODE:			lMnLy3.min = MnTST_DEBUG_MODE_MIN;	lMnLy3.max = MnTST_DEBUG_MODE_MAX;	break;
-		case MnTST_OPT_AUTO_VOLT_DIFF:		lMnLy3.min = MnTST_AUTO_VOLT_DIFF_MIN;	lMnLy3.max = MnTST_AUTO_VOLT_DIFF_MAX;	lMnLy3.updn_mod = MENU_V3_UPDN_DIG; break;	
-		case MnTST_OPT_AUTO_RANGE:			lMnLy3.min = MnTST_AUTO_RANGE_MIN;	lMnLy3.max = MnTST_AUTO_RANGE_MAX;	lMnLy3.updn_mod = MENU_V3_UPDN_DIG; break;	
-		case MnTST_OPT_AUTO_THR_MIN:		
-		case MnTST_OPT_AUTO_THR_MAX:		lMnLy3.min = MnTST_AUTO_THR_MIN;	lMnLy3.max = MnTST_AUTO_THR_MAX;	lMnLy3.updn_mod = MENU_V3_UPDN_DIG; break;	
-		case MnTST_OPT_AUTO_VOLT_PEAK:		lMnLy3.min = MnTST_AUTO_VOLT_PEAK_MIN;	lMnLy3.max = MnTST_AUTO_VOLT_PEAK_MAX;	lMnLy3.updn_mod = MENU_V3_UPDN_DIG; break;	
-		case MnTST_OPT_AUTO_LEVEL_RANGE:	lMnLy3.min = MnTST_AUTO_LEVEL_RANGE_MIN;	lMnLy3.max = MnTST_AUTO_LEVEL_RANGE_MAX;	lMnLy3.updn_mod = MENU_V3_UPDN_DIG; break;	
-		case MnTST_OPT_AUTO_VOLT_MIN:		lMnLy3.min = MnTST_AUTO_VOLT_MIN_MIN;	lMnLy3.max = MnTST_AUTO_VOLT_MIN_MAX;	lMnLy3.updn_mod = MENU_V3_UPDN_DIG; break;	
+		case MnTST_OPT_AUTO_VOLT_DIFF:		lMnLy3.min = MnTST_AUTO_VOLT_DIFF_MIN;	lMnLy3.max = MnTST_AUTO_VOLT_DIFF_MAX;	lMnLy3.updn_mod = MENU_V3_UPDN_DIG; break;
+		case MnTST_OPT_AUTO_RANGE:			lMnLy3.min = MnTST_AUTO_RANGE_MIN;	lMnLy3.max = MnTST_AUTO_RANGE_MAX;	lMnLy3.updn_mod = MENU_V3_UPDN_DIG; break;
+		case MnTST_OPT_AUTO_THR_MIN:
+		case MnTST_OPT_AUTO_THR_MAX:		lMnLy3.min = MnTST_AUTO_THR_MIN;	lMnLy3.max = MnTST_AUTO_THR_MAX;	lMnLy3.updn_mod = MENU_V3_UPDN_DIG; break;
+		case MnTST_OPT_AUTO_VOLT_PEAK:		lMnLy3.min = MnTST_AUTO_VOLT_PEAK_MIN;	lMnLy3.max = MnTST_AUTO_VOLT_PEAK_MAX;	lMnLy3.updn_mod = MENU_V3_UPDN_DIG; break;
+		case MnTST_OPT_AUTO_LEVEL_RANGE:	lMnLy3.min = MnTST_AUTO_LEVEL_RANGE_MIN;	lMnLy3.max = MnTST_AUTO_LEVEL_RANGE_MAX;	lMnLy3.updn_mod = MENU_V3_UPDN_DIG; break;
+		case MnTST_OPT_AUTO_VOLT_MIN:		lMnLy3.min = MnTST_AUTO_VOLT_MIN_MIN;	lMnLy3.max = MnTST_AUTO_VOLT_MIN_MAX;	lMnLy3.updn_mod = MENU_V3_UPDN_DIG; break;
 		default:
 			break;
 	}
@@ -544,6 +546,42 @@ void MnL3Itr_Sc6Test(U08 iIt)
 //------------------------------------------------------------------------------------------------------------------------------
 //  Local Functions - Direction Key (Value)
 //------------------------------------------------------------------------------------------------------------------------------
+static U08 MnL3Val_IsMeasureFreqItem(U08 iSb, U08 iIt)
+{
+	if(iSb != MnMSR_SUB_CAL)
+		return FALSE;
+
+	if(MnFTR_PrGet_SsChn()==MnFTR_SS_DUAL)
+	{
+		switch(iIt)
+		{
+			case MnMS1_OPT_CH1_FREQ:
+			case MnMS1_OPT_CH2_FREQ:	return TRUE;
+			default:				return FALSE;
+		}
+	}
+	else if(MnFTR_PrGet_SsChn()==MnFTR_SS_SINGLE)
+	{
+		switch(iIt)
+		{
+			case MnMS1_OPT_SINGLE_FREQ:	return TRUE;
+			default:					return FALSE;
+		}
+	}
+
+	return FALSE;
+}
+
+static void MnL3Val_FreqUpDn(U08 key)
+{
+	switch(key)
+	{
+		case KEY_IDX_PREV:	lMnLy3.val = MnMSR_GetPrevFreq((U08)lMnLy3.val);	break;
+		case KEY_IDX_NEXT:	lMnLy3.val = MnMSR_GetNextFreq((U08)lMnLy3.val);	break;
+		default:			break;
+	}
+}
+
 void MnL3Val_UpDn(U08 key, S32 min, S32 max)
 {
 	S32 dig_min = 0;
@@ -588,7 +626,7 @@ void MnL3Val_UpDn(U08 key, S32 min, S32 max)
 						case 2:	if((lMnLy3.val<100) && (lMnLy3.val>0)) lMnLy3.val*=-1;	else lMnLy3.val-=100;	break;
 						case 1:	if((lMnLy3.val<10) && (lMnLy3.val>0)) lMnLy3.val*=-1;	else lMnLy3.val-=10;		break;
 						case 0:	lMnLy3.val-=1;		break;
-						default:	break;				
+						default:	break;
 					}
 					if(lMnLy3.val<min)	lMnLy3.val= min;
 					break;
@@ -600,8 +638,8 @@ void MnL3Val_UpDn(U08 key, S32 min, S32 max)
 						case 2:	if((lMnLy3.val>-100) && (lMnLy3.val<0)) lMnLy3.val*=-1;		else lMnLy3.val+=100;	break;
 						case 1:	if((lMnLy3.val>-10) && (lMnLy3.val<0)) lMnLy3.val*=-1;		else lMnLy3.val+=10;		break;
 						case 0: lMnLy3.val+=1;		break;
-						default:	break;				
-					}	
+						default:	break;
+					}
 					if(lMnLy3.val>max)	lMnLy3.val= max;
 					break;
 				default:	break;
@@ -614,6 +652,12 @@ void MnL3Val_UpDn(U08 key, S32 min, S32 max)
 
 void MnL2Val_Sc0Meas(U08 iSb, U08 iIt, U08 key)
 {
+	if((lMnLy3.updn_mod == MENU_V3_UPDN_IDLE) && MnL3Val_IsMeasureFreqItem(iSb, iIt))
+	{
+		MnL3Val_FreqUpDn(key);
+		return;
+	}
+
 	MnL3Val_UpDn(key,lMnLy3.min,lMnLy3.max);
 }
 
@@ -624,7 +668,7 @@ void MnL2Val_Sc1Outp(U08 iSb, U08 iIt, U08 key)
 }
 
 void MnL2Val_Sc2Data(U08 iSb, U08 iIt, U08 key)
-{	
+{
 
 	switch(iSb)
 	{
@@ -632,11 +676,11 @@ void MnL2Val_Sc2Data(U08 iSb, U08 iIt, U08 key)
 			switch(iIt)
 			{
 				case MnDS0_OPT_INTERVAL:			MnL3Val_UpDn(key, MnDS0_INTV_MIN, MnDS0_INTV_MAX);			break;
-				case MnDS0_OPT_DOWNLOAD:		
-					if(MnFTR_PrGet_SsChn()==MnFTR_SS_DUAL)	
-						MnL3Val_UpDn(key, MnDS0_DOWN_MIN, MnDS0_DOWN_MAX);		
+				case MnDS0_OPT_DOWNLOAD:
+					if(MnFTR_PrGet_SsChn()==MnFTR_SS_DUAL)
+						MnL3Val_UpDn(key, MnDS0_DOWN_MIN, MnDS0_DOWN_MAX);
 					else if(MnFTR_PrGet_SsChn()==MnFTR_SS_SINGLE)
-						MnL3Val_UpDn(key, MnDS0_DOWN_MIN, MnDS0_DOWN_SINGLE_MAX);	
+						MnL3Val_UpDn(key, MnDS0_DOWN_MIN, MnDS0_DOWN_SINGLE_MAX);
 					break;
 				case MnDS0_OPT_DELETE:				MnL3Val_UpDn(key, MnDS0_DELETE_MIN, MnDS0_DELETE_MAX);		break;
 				case MnDS0_OPT_DISPLAY_TERM:		MnL3Val_UpDn(key, MnDS0_DISPLAY_TERM_MIN, MnDS0_DISPLAY_TERM_MAX);	break;
@@ -735,7 +779,7 @@ void MnL2Val_Sc3Syst(U08 sub, U08 iIt, U08 key)
 							case KEY_IDX_NEXT:
 								switch(lMnLy3.updn_mod)
 								{
-									case MENU_V3_UPDN_IDLE: 
+									case MENU_V3_UPDN_IDLE:
 										break;
 									case MENU_V3_UPDN_DIG:
 										if(lMnLy3.updn_dig == MnSYS_T04_MN)		lMnLy3.updn_dig = MnSYS_T00_YY;
@@ -774,12 +818,12 @@ void MnL2Val_Sc3Syst(U08 sub, U08 iIt, U08 key)
 										switch(lMnLy3.updn_dig)
 										{
 											case MnSYS_SITE_SEL_HI: 	lMnLy3.val-=100;	break;
-											case MnSYS_SITE_SEL_LO_10:	lMnLy3.val-=10;	break;									
+											case MnSYS_SITE_SEL_LO_10:	lMnLy3.val-=10;	break;
 											case MnSYS_SITE_SEL_LO_1:	lMnLy3.val-=1;	break;
 											default:
 												break;
 										}
-										if(lMnLy3.val <= MnSYS_SITE_NAME_MIN)		
+										if(lMnLy3.val <= MnSYS_SITE_NAME_MIN)
 											lMnLy3.val = MnSYS_SITE_NAME_MIN;
 										break;
 									default:	break;
@@ -797,12 +841,12 @@ void MnL2Val_Sc3Syst(U08 sub, U08 iIt, U08 key)
 										switch(lMnLy3.updn_dig)
 										{
 											case MnSYS_SITE_SEL_HI: 	lMnLy3.val+=100; break;
-											case MnSYS_SITE_SEL_LO_10:	lMnLy3.val+=10; break;									
+											case MnSYS_SITE_SEL_LO_10:	lMnLy3.val+=10; break;
 											case MnSYS_SITE_SEL_LO_1:	lMnLy3.val+=1;	break;
 											default:
 												break;
 										}
-										if(lMnLy3.val >= MnSYS_SITE_NAME_MAX)		
+										if(lMnLy3.val >= MnSYS_SITE_NAME_MAX)
 											lMnLy3.val = MnSYS_SITE_NAME_MAX;
 										break;
 									default:	break;
@@ -867,7 +911,7 @@ void MnL2Val_Sc3Syst(U08 sub, U08 iIt, U08 key)
 							case KEY_IDX_NEXT:
 								switch(lMnLy3.updn_mod)
 								{
-									case MENU_V3_UPDN_IDLE: 
+									case MENU_V3_UPDN_IDLE:
 										break;
 									case MENU_V3_UPDN_DIG:
 										if(lMnLy3.updn_dig == MnSYS_T04_MN) 	lMnLy3.updn_dig = MnSYS_T00_YY;
@@ -905,12 +949,12 @@ void MnL2Val_Sc3Syst(U08 sub, U08 iIt, U08 key)
 										switch(lMnLy3.updn_dig)
 										{
 											case MnSYS_SITE_SEL_HI: 	lMnLy3.val-=100;	break;
-											case MnSYS_SITE_SEL_LO_10:	lMnLy3.val-=10; break;									
+											case MnSYS_SITE_SEL_LO_10:	lMnLy3.val-=10; break;
 											case MnSYS_SITE_SEL_LO_1:	lMnLy3.val-=1;	break;
 											default:
 												break;
 										}
-										if(lMnLy3.val <= MnSYS_SITE_NAME_MIN)		
+										if(lMnLy3.val <= MnSYS_SITE_NAME_MIN)
 											lMnLy3.val = MnSYS_SITE_NAME_MIN;
 										break;
 									default:	break;
@@ -928,12 +972,12 @@ void MnL2Val_Sc3Syst(U08 sub, U08 iIt, U08 key)
 										switch(lMnLy3.updn_dig)
 										{
 											case MnSYS_SITE_SEL_HI: 	lMnLy3.val+=100; break;
-											case MnSYS_SITE_SEL_LO_10:	lMnLy3.val+=10; break;									
+											case MnSYS_SITE_SEL_LO_10:	lMnLy3.val+=10; break;
 											case MnSYS_SITE_SEL_LO_1:	lMnLy3.val+=1;	break;
 											default:
 												break;
 										}
-										if(lMnLy3.val >= MnSYS_SITE_NAME_MAX)		
+										if(lMnLy3.val >= MnSYS_SITE_NAME_MAX)
 											lMnLy3.val = MnSYS_SITE_NAME_MAX;
 										break;
 									default:	break;
@@ -962,7 +1006,7 @@ void MnL2Val_Sc4Engi(U08 iIt, U08 key)
 		case MnEGN_OPT_THRESHOLD_SYNC:			MnL3Val_UpDn(key, MnEGN_THRESHOLD_SYNC_MIN, MnEGN_THRESHOLD_SYNC_MAX);	break;
 		case MnEGN_OPT_CH1_PROFILE:
 		case MnEGN_OPT_CH2_PROFILE:				MnL3Val_UpDn(key, MnEGN_PROFILE_MIN, MnEGN_PROFILE_MAX);	break;
-		case MnEGN_OPT_CH1_TVG:					
+		case MnEGN_OPT_CH1_TVG:
 		case MnEGN_OPT_CH2_TVG:					MnL3Val_UpDn(key, MnEGN_TVG_MIN, MnEGN_TVG_MAX);	break;
 		case MnEGN_OPT_CH1_WINDOW_RESET_TIME:
 		case MnEGN_OPT_CH2_WINDOW_RESET_TIME:	MnL3Val_UpDn(key, MnEGN_WINDOW_RESET_TIME_MIN, MnEGN_WINDOW_RESET_TIME_MAX);	break;
@@ -993,7 +1037,7 @@ void MnL2Val_Sc5Fact(U08 iIt, U08 key)
 		}
 	}
 
-		
+
 
 	switch(key)
 	{
@@ -1033,7 +1077,7 @@ void MnL2Val_Sc5Fact(U08 iIt, U08 key)
 		case KEY_IDX_NEXT:
 			switch(lMnLy3.updn_mod)
 			{
-				case MENU_V3_UPDN_IDLE: 
+				case MENU_V3_UPDN_IDLE:
 					break;
 				case MENU_V3_UPDN_DIG:
 					if(lMnLy3.updn_dig == MnSYS_T04_MN) 	lMnLy3.updn_dig = MnSYS_T00_YY;
@@ -1068,13 +1112,13 @@ void MnL2Val_Sc6Test(U08 iIt, U08 key)
 		{
 			lMnLy3.val-=10;
 			if(lMnLy3.val<=lMnLy3.min)	lMnLy3.val = lMnLy3.min;
-		}	
+		}
 
 		if(key == KEY_IDX_NEXT)
 		{
 			lMnLy3.val+=10;
 			if(lMnLy3.val>=lMnLy3.max)	lMnLy3.val = lMnLy3.max;
-		}			
+		}
 	}
 	else
 		MnL3Val_UpDn(key, lMnLy3.min, lMnLy3.max);
@@ -1099,22 +1143,22 @@ void MnLy2Act_EnterMsr(void)
 	{
 		switch(iSb)
 		{
-			case MnMSR_SUB_BASE:			
+			case MnMSR_SUB_BASE:
 				MnMSR_BaseSet_Value(iIt, lMnLy3.val);
-				
+
 				switch(iIt)
 				{
 					case MnMS0_OPT_UNIT:					MnLY3_GotoLyr2();	break;
-					case MnMS0_OPT_CH1_OPERATION:		
+					case MnMS0_OPT_CH1_OPERATION:
 					case MnMS0_OPT_CH2_OPERATION:			MnLY3_GotoLyr2();	break;
-					case MnMS0_OPT_CH1_EMPTY:				
-					case MnMS0_OPT_CH2_EMPTY:				break;		
-					case MnMS0_OPT_CH1_DEADZONE:		
-					case MnMS0_OPT_CH2_DEADZONE:			break;	
-					case MnMS0_OPT_CH1_MEASURE_CYCLE:		
-					case MnMS0_OPT_CH2_MEASURE_CYCLE:		break;	
+					case MnMS0_OPT_CH1_EMPTY:
+					case MnMS0_OPT_CH2_EMPTY:				break;
+					case MnMS0_OPT_CH1_DEADZONE:
+					case MnMS0_OPT_CH2_DEADZONE:			break;
+					case MnMS0_OPT_CH1_MEASURE_CYCLE:
+					case MnMS0_OPT_CH2_MEASURE_CYCLE:		break;
 					case MnMS0_OPT_CH1_MEASURE_RESET:
-					case MnMS0_OPT_CH2_MEASURE_RESET:	
+					case MnMS0_OPT_CH2_MEASURE_RESET:
 						switch(lMnLy3.val)
 						{
 							case MENU_CHK_YES:				MnLY3_GotoLyr2();	break;
@@ -1122,15 +1166,15 @@ void MnLy2Act_EnterMsr(void)
 							default:						MnLY3_GotoLyr2();		break;
 						}
 						break;
-					default:								
+					default:
 						break;
-				}			
+				}
 				break;
-			case MnMSR_SUB_CAL:	
-			
+			case MnMSR_SUB_CAL:
+
 				switch(iIt)
 				{
-					case MnMS1_OPT_CH1_FREQ:			
+					case MnMS1_OPT_CH1_FREQ:
 					case MnMS1_OPT_CH2_FREQ:			MnMSR_CalSet_Value(iIt, lMnLy3.val);	MnLY3_GotoLyr2();	break;
 					case MnMS1_OPT_CH1_AUTO_CAL:
 					case MnMS1_OPT_CH2_AUTO_CAL:		MnMSR_CalSet_Value(iIt, lMnLy3.val);	break;
@@ -1138,20 +1182,20 @@ void MnLy2Act_EnterMsr(void)
 					case MnMS1_OPT_CH2_AUTO_FAMP:		MnMSR_CalSet_Value(iIt, lMnLy3.val);	MnLY3_GotoLyr2();	break;
 					case MnMS1_OPT_CH1_ECHO_AMP:		MnMSR_CalSet_Value(iIt, lMnLy3.val);	CalPrc_ResetFlag(APP_CH_1);	lMsCal.auto_gain_fslope[APP_CH_1] = 1;break;
 					case MnMS1_OPT_CH2_ECHO_AMP:		MnMSR_CalSet_Value(iIt, lMnLy3.val);	CalPrc_ResetFlag(APP_CH_2);	lMsCal.auto_gain_fslope[APP_CH_2] = 1;break;
-					case MnMS1_OPT_CH1_THR_LIGHT:		
+					case MnMS1_OPT_CH1_THR_LIGHT:
 					case MnMS1_OPT_CH2_THR_LIGHT:		MnLy3Act_GotoLyr4();	return;
-					case MnMS1_OPT_CH1_THR_HEAVY:		
+					case MnMS1_OPT_CH1_THR_HEAVY:
 					case MnMS1_OPT_CH2_THR_HEAVY:		MnLy3Act_GotoLyr4();	return;
-					case MnMS1_OPT_CH1_ASF_LIGHT:		
-					case MnMS1_OPT_CH1_ASF_HEAVY:		
-					case MnMS1_OPT_CH2_ASF_LIGHT:		
+					case MnMS1_OPT_CH1_ASF_LIGHT:
+					case MnMS1_OPT_CH1_ASF_HEAVY:
+					case MnMS1_OPT_CH2_ASF_LIGHT:
 					case MnMS1_OPT_CH2_ASF_HEAVY:		MnMSR_CalSet_Value(iIt, lMnLy3.val);	break;
-					case MnMS1_OPT_CH1_DAMPING:			
+					case MnMS1_OPT_CH1_DAMPING:
 					case MnMS1_OPT_CH2_DAMPING:			MnMSR_CalSet_Value(iIt, lMnLy3.val);	break;
-					case MnMS1_OPT_CH1_OFFSET:			
+					case MnMS1_OPT_CH1_OFFSET:
 					case MnMS1_OPT_CH2_OFFSET:			MnMSR_CalSet_Value(iIt, lMnLy3.val);	break;
 					default:							break;
-				} 
+				}
 				break;
 			default:					break;
 		}
@@ -1160,16 +1204,16 @@ void MnLy2Act_EnterMsr(void)
 	{
 		switch(iSb)
 		{
-			case MnMSR_SUB_BASE:			
+			case MnMSR_SUB_BASE:
 				MnMSR_BaseSet_Ch_Value(APP_CH_1,iIt, lMnLy3.val);
-				
+
 				switch(iIt)
 				{
 					case MnMS0_OPT_SINGLE_UNIT:					MnLY3_GotoLyr2();	break;
 					case MnMS0_OPT_SINGLE_OPERATION:			MnLY3_GotoLyr2();	break;
-					case MnMS0_OPT_SINGLE_EMPTY:				break;		
-					case MnMS0_OPT_SINGLE_DEADZONE:				break;	
-					case MnMS0_OPT_SINGLE_MEASURE_CYCLE:		break;	
+					case MnMS0_OPT_SINGLE_EMPTY:				break;
+					case MnMS0_OPT_SINGLE_DEADZONE:				break;
+					case MnMS0_OPT_SINGLE_MEASURE_CYCLE:		break;
 					case MnMS0_OPT_SINGLE_MEASURE_RESET:
 						switch(lMnLy3.val)
 						{
@@ -1178,12 +1222,12 @@ void MnLy2Act_EnterMsr(void)
 							default:						MnLY3_GotoLyr2();		break;
 						}
 						break;
-					default:								
+					default:
 						break;
-				}			
+				}
 				break;
-			case MnMSR_SUB_CAL: 
-			
+			case MnMSR_SUB_CAL:
+
 				switch(iIt)
 				{
 					case MnMS1_OPT_SINGLE_FREQ:				MnMSR_CalSet_Ch_Value(APP_CH_1,iIt, lMnLy3.val);	MnLY3_GotoLyr2();	break;
@@ -1192,12 +1236,12 @@ void MnLy2Act_EnterMsr(void)
 					case MnMS1_OPT_SINGLE_ECHO_AMP:			MnMSR_CalSet_Ch_Value(APP_CH_1,iIt, lMnLy3.val);	CalPrc_ResetFlag(APP_CH_1);		lMsCal.auto_gain_fslope[APP_CH_1] = 1;		break;
 					case MnMS1_OPT_SINGLE_THR_LIGHT:		MnLy3Act_GotoLyr4();	return;
 					case MnMS1_OPT_SINGLE_THR_HEAVY:		MnLy3Act_GotoLyr4();	return;
-					case MnMS1_OPT_SINGLE_ASF_LIGHT:		
+					case MnMS1_OPT_SINGLE_ASF_LIGHT:
 					case MnMS1_OPT_SINGLE_ASF_HEAVY:		MnMSR_CalSet_Ch_Value(APP_CH_1,iIt, lMnLy3.val);	break;
 					case MnMS1_OPT_SINGLE_DAMPING: 			MnMSR_CalSet_Ch_Value(APP_CH_1,iIt, lMnLy3.val);	break;
 					case MnMS1_OPT_SINGLE_OFFSET:			MnMSR_CalSet_Ch_Value(APP_CH_1,iIt, lMnLy3.val);	break;
 					default:							break;
-				} 
+				}
 				break;
 			default:					break;
 		}
@@ -1211,11 +1255,11 @@ void MnLy2Act_EnterOut(void)
 
 #if 1
 	switch(iSb)
-	{	
-		case MnOUT_SUB_CURRENT:		
+	{
+		case MnOUT_SUB_CURRENT:
 			if(MnFTR_PrGet_SsChn()==MnFTR_SS_DUAL)
 			{
-				MnOUT_CurPrSet_Value(iIt, lMnLy3.val);	
+				MnOUT_CurPrSet_Value(iIt, lMnLy3.val);
 				switch(iIt)
 				{
 					case MnOS0_OPT_CH1_ASSIGN:		MnLY3_GotoLyr2();	break;
@@ -1235,7 +1279,7 @@ void MnLy2Act_EnterOut(void)
 			}
 			else if(MnFTR_PrGet_SsChn()==MnFTR_SS_SINGLE)
 			{
-				MnOUT_CurPrSet_Ch_Value(APP_CH_1,iIt, lMnLy3.val);	
+				MnOUT_CurPrSet_Ch_Value(APP_CH_1,iIt, lMnLy3.val);
 				switch(iIt)
 				{
 					case MnOS0_OPT_SINGLE_ASSIGN:	MnLY3_GotoLyr2();	break;
@@ -1249,7 +1293,7 @@ void MnLy2Act_EnterOut(void)
 				}
 			}
 			break;
-		case MnOUT_SUB_RELAY:	
+		case MnOUT_SUB_RELAY:
 			MnOUT_RlyPrSet_Value(iIt, lMnLy3.val);
 			switch(iIt)
 			{
@@ -1260,7 +1304,7 @@ void MnLy2Act_EnterOut(void)
 				default:					return;
 			}
 			break;
-		case MnOUT_SUB_CLEAN:	
+		case MnOUT_SUB_CLEAN:
 			MnOUT_PcdPrSet_Value(iIt, lMnLy3.val);
 			switch(iIt)
 			{
@@ -1268,9 +1312,9 @@ void MnLy2Act_EnterOut(void)
 				case MnOS2_OPT_TERM:		break;
 				default:					break;
 			}
-			break;	
-		case MnOUT_SUB_ERROR:	
-			MnOUT_ErrPrSet_Value(iIt, lMnLy3.val);	
+			break;
+		case MnOUT_SUB_ERROR:
+			MnOUT_ErrPrSet_Value(iIt, lMnLy3.val);
 			switch(iIt)
 			{
 				case MnOS3_OPT_ERR_DELAY:	break;
@@ -1283,10 +1327,10 @@ void MnLy2Act_EnterOut(void)
 	}
 #else
 	switch(iSb)
-	{	
+	{
 		case MnOUT_S00_CURRENT:
 		case MnOUT_S01_RELAY:
-		case MnOUT_S02_PCD:		
+		case MnOUT_S02_PCD:
 		case MnOUT_S03_ERROR:	MnOUT_PrSet_Value(iSb, iIt, lMnLy3.val);	MnLY3_GotoLyr2();	break;
 		default:				MnLY3_GotoLyr2();		break;
 	}
@@ -1299,7 +1343,7 @@ void MnLy2Act_EnterDat(void)
 	U08 iIt = MnLY2_GetIdxItem();
 
 	switch(iSb)
-	{	
+	{
 		case MnDAT_SUB_TREND:		MnDAT_SavPrSet_Value(iIt, lMnLy3.val);						break;
 		case MnDAT_SUB_ECHO:		MnDAT_EchoSavePrSet_Value(iIt, lMnLy3.val);					break;
 		case MnDAT_SUB_COMM:
@@ -1335,17 +1379,17 @@ void MnLy2Act_EnterSys(void)
 							default:												MnLY3_GotoLyr2();			break;
 						}
 						break;
-					case MnSYS_OPT_TIME:						
+					case MnSYS_OPT_TIME:
 						rtc.year = lMnLy3.time[MnSYS_T00_YY];
 						rtc.month = lMnLy3.time[MnSYS_T01_MM];
 						rtc.day = lMnLy3.time[MnSYS_T02_DD];
 						rtc.hours = lMnLy3.time[MnSYS_T03_HH];
-						rtc.minutes = lMnLy3.time[MnSYS_T04_MN];	
+						rtc.minutes = lMnLy3.time[MnSYS_T04_MN];
 						MnSYS_PrSet_Time(rtc);
 						break;
-					case MnSYS_OPT_CH1_SITE_NAME:	
-					case MnSYS_OPT_CH2_SITE_NAME:	
-						MnSYS_PrSetBase_Value(iIt,lMnLy3.val);	
+					case MnSYS_OPT_CH1_SITE_NAME:
+					case MnSYS_OPT_CH2_SITE_NAME:
+						MnSYS_PrSetBase_Value(iIt,lMnLy3.val);
 						break;
 					default:						MnLY3_GotoLyr2();				break;
 				}
@@ -1369,16 +1413,16 @@ void MnLy2Act_EnterSys(void)
 							default:												MnLY3_GotoLyr2();			break;
 						}
 						break;
-					case MnSYS_OPT_SINGLE_TIME:						
+					case MnSYS_OPT_SINGLE_TIME:
 						rtc.year = lMnLy3.time[MnSYS_T00_YY];
 						rtc.month = lMnLy3.time[MnSYS_T01_MM];
 						rtc.day = lMnLy3.time[MnSYS_T02_DD];
 						rtc.hours = lMnLy3.time[MnSYS_T03_HH];
-						rtc.minutes = lMnLy3.time[MnSYS_T04_MN];	
+						rtc.minutes = lMnLy3.time[MnSYS_T04_MN];
 						MnSYS_PrSet_Time(rtc);
 						break;
 					case MnSYS_OPT_SINGLE_SITE_NAME:
-						MnSYS_PrSetBase_Ch_Value(iIt,lMnLy3.val);	
+						MnSYS_PrSetBase_Ch_Value(iIt,lMnLy3.val);
 						DpTTB_UdtIntro(TEXT_LIST_MENU, 330, _cTTB_ST_TITLE);
 						break;
 					default:						MnLY3_GotoLyr2();				break;
@@ -1408,7 +1452,7 @@ void MnLy2Act_EnterEgn(void)
 		case MnEGN_OPT_CH2_WINDOW_RANGE:		break;
 		case MnEGN_OPT_MSR:						MnLY3_GotoLyr2();	break;
 		default:								break;
-	}			
+	}
 }
 
 void MnLy2Act_EnterFtr(void)
@@ -1430,7 +1474,7 @@ void MnLy2Act_EnterFtr(void)
 			case MnFTR_I07_CH1_OUTPUT_4MA:	OuCUR_SetOutp_Type(APP_CH_1,OuCUR_TYPE_MSR);	MnLY3_GotoLyr2();	break;
 			case MnFTR_I08_CH2_TRIM_12MA:
 			case MnFTR_I09_CH2_TRIM_20MA:	break;
-			case MnFTR_I10_CH2_OUTPUT_4MA:	OuCUR_SetOutp_Type(APP_CH_2,OuCUR_TYPE_MSR);	MnLY3_GotoLyr2();	break;	
+			case MnFTR_I10_CH2_OUTPUT_4MA:	OuCUR_SetOutp_Type(APP_CH_2,OuCUR_TYPE_MSR);	MnLY3_GotoLyr2();	break;
 			case MnFTR_I11_RELAY_TEST:		break;
 			case MnFTR_I12_LANG:			MnLY3_GotoLyr2();	break;
 			case MnFTR_I13_TIME:
@@ -1438,14 +1482,15 @@ void MnLy2Act_EnterFtr(void)
 				rtc.month = lMnLy3.time[MnSYS_T01_MM];
 				rtc.day = lMnLy3.time[MnSYS_T02_DD];
 				rtc.hours = lMnLy3.time[MnSYS_T03_HH];
-				rtc.minutes = lMnLy3.time[MnSYS_T04_MN];	
+				rtc.minutes = lMnLy3.time[MnSYS_T04_MN];
 				MnSYS_PrSet_Time(rtc);
 				break;
 			case MnFTR_I14_VERSION:			MnLY3_GotoLyr2();	break;
 			case MnFTR_I15_CLEAN_TEST:		OuCUR_SetPCD_fRun(PCD_OFF);	MnLY3_GotoLyr2();	break;
 			case MnFTR_I16_RF_VERSION:		MnLY3_GotoLyr2();	break;
-			case MnFTR_I17_PROTOCOL:		MnLY3_GotoLyr2();	break;
-			case MnFTR_I18_FTR_RST:
+			case MnFTR_I17_SENSOR_TYPE:	MnLY3_GotoLyr2();	break;
+			case MnFTR_I18_PROTOCOL:		MnLY3_GotoLyr2();	break;
+			case MnFTR_I19_FTR_RST:
 				switch(lMnLy3.val)
 				{
 					case MENU_CHK_YES:		APP_FtrReset();					MnLY3_GotoLyr2AfterFtrReset();		break;
@@ -1475,12 +1520,13 @@ void MnLy2Act_EnterFtr(void)
 				rtc.month = lMnLy3.time[MnSYS_T01_MM];
 				rtc.day = lMnLy3.time[MnSYS_T02_DD];
 				rtc.hours = lMnLy3.time[MnSYS_T03_HH];
-				rtc.minutes = lMnLy3.time[MnSYS_T04_MN];	
+				rtc.minutes = lMnLy3.time[MnSYS_T04_MN];
 				MnSYS_PrSet_Time(rtc);
 				break;
 			case MnFTR_OPT_SINGLE_VERSION: 		MnLY3_GotoLyr2();	break;
 			case MnFTR_OPT_SINGLE_CLEAN_TEST:		OuCUR_SetPCD_fRun(PCD_OFF); MnLY3_GotoLyr2();	break;
 			case MnFTR_OPT_SINGLE_RF_VERSION:		MnLY3_GotoLyr2();	break;
+			case MnFTR_OPT_SINGLE_SENSOR_TYPE:	MnLY3_GotoLyr2();	break;
 			case MnFTR_OPT_SINGLE_PROTOCOL:			MnLY3_GotoLyr2();	break;
 			case MnFTR_OPT_SINGLE_FTR_RST:
 				switch(lMnLy3.val)
@@ -1529,11 +1575,11 @@ void MnLy2Act_EnterTst(void)
 		case MnTST_OPT_AUTO_THR_MIN:
 		case MnTST_OPT_AUTO_THR_MAX:
 		case MnTST_OPT_AUTO_VOLT_PEAK:
-		case MnTST_OPT_AUTO_LEVEL_RANGE:			
+		case MnTST_OPT_AUTO_LEVEL_RANGE:
 		case MnTST_OPT_AUTO_VOLT_MIN:			break;
 		default:
 			break;
-	}		
+	}
 }
 
 
@@ -1541,7 +1587,7 @@ void MnLy2Act_EnterTst(void)
 //  Local Functions - Event - Key Action
 //------------------------------------------------------------------------------------------------------------------------------
 void MnLy3Evt_KeyFunc(void)
-{	
+{
 	// Relay Test
 
 	if(OuCUR_GetPCD_fRun()==PCD_TEST)
@@ -1559,9 +1605,9 @@ void MnLy3Evt_KeyFunc(void)
 				OuCUR_SetOutp_Type(MnOUT_CH_1,OuCUR_TYPE_MSR);
 			break;
 		case MENU_V3_UPDN_DIG_VALUE:
-			break;		
+			break;
 	}
-	
+
 	DpSTR_DebugExp(1, 1, "[MnLY3] Goto L1 (ITEM)");
 	INPU_ClrKeyEvt(KEY_EVT_NONE);
 
@@ -1582,11 +1628,11 @@ void MnLy3Evt_KeyFunc(void)
 			MnLY3_InitValue();
 			break;
 		case MENU_V3_UPDN_DIG_VALUE:
-			lMnLy3.updn_mod = MENU_V3_UPDN_DIG;	
+			lMnLy3.updn_mod = MENU_V3_UPDN_DIG;
 			lMnLy3.stt = MENU_S0_INTRO;
 			DpMN_UpdtBttn(MENU_L3_VALUE);
-			DpM3_UpdatPop();	
-			return;			
+			DpM3_UpdatPop();
+			return;
 	}
 
 
@@ -1611,7 +1657,7 @@ void MnLy3Evt_KeyEnter(void)
 			break;
 		case MENU_V3_UPDN_DIG:
 		case MENU_V3_UPDN_DIG_VALUE:
-			break;		
+			break;
 	}
 
 
@@ -1619,17 +1665,17 @@ void MnLy3Evt_KeyEnter(void)
 	switch(lMnLy3.updn_mod)
 	{
 		case MENU_V3_UPDN_DIG:
-			lMnLy3.updn_mod = MENU_V3_UPDN_DIG_VALUE;	
-			lMnLy3.stt = MENU_S1_STDBY; 		
+			lMnLy3.updn_mod = MENU_V3_UPDN_DIG_VALUE;
+			lMnLy3.stt = MENU_S1_STDBY;
 			DpMN_UpdtBttn(MENU_L3_VALUE);
-			DpM3_UpdatPop();		
+			DpM3_UpdatPop();
 			break;
 		case MENU_V3_UPDN_DIG_VALUE:
-			lMnLy3.updn_mod = MENU_V3_UPDN_DIG;	
-			lMnLy3.stt = MENU_S0_INTRO; 		
+			lMnLy3.updn_mod = MENU_V3_UPDN_DIG;
+			lMnLy3.stt = MENU_S0_INTRO;
 			DpMN_UpdtBttn(MENU_L3_VALUE);
-			DpM3_UpdatPop();		
-			break;	
+			DpM3_UpdatPop();
+			break;
 	}
 
 
@@ -1698,10 +1744,10 @@ void MnLy3Stt_St0Intro(void)
 {
 	U08 iSc = MENU_GetSection();
 	U08 iSb = MnLY1_GetSection();
-	U08 iIt = MnLY2_GetIdxItem(); 
+	U08 iIt = MnLY2_GetIdxItem();
 
 	if(iSc == MENU_SC3_SYST)	iSb = MnSYS_SUB_SYSTEM;
-	
+
 	INPU_ClrKeyEvt(KEY_EVT_NONE);
 	lMnLy3.updn_mod = MENU_V3_UPDN_IDLE;
 	lMnLy3.echo_mod = MENU_V3_ECHO_CANCLE;
@@ -1804,7 +1850,7 @@ void MnLY3_InitValue(void)
 void MnLY3_GotoLyr2(void)
 {
 	U08 iSc = MENU_GetSection();
-	
+
 	lMnLy3.stt = MENU_S0_INTRO;
 
 	DpM0_IntroSct();
@@ -1822,7 +1868,7 @@ void MnLY3_GotoLyr2(void)
 		default:
 			break;
 	}
-	
+
 	DpM2_IntroItm();
 	MENU_SetLayer(MENU_L2_ITEM);
 }

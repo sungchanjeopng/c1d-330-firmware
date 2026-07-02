@@ -170,9 +170,9 @@ object FrameParser {
         val heavy = (buf.short.toInt() and 0xFFFF) * 0.01
         val temperature = buf.short.toInt() * 0.1
         val currentMA = (buf.short.toInt() and 0xFFFF) * 0.01
-        // 계면계 FREQ: 인덱스 0/1/2/3 → 380/270/160/130 kHz
+        // 계면계 FREQ: index 0=380, 1=legacy/reserved 270, 2=160, 3=130, 4=415 kHz
         val freqIdx = buf.short.toInt() and 0xFFFF
-        val freq = when (freqIdx) { 0 -> 380; 1 -> 270; 2 -> 160; 3 -> 130; else -> 0 }
+        val freq = when (freqIdx) { 0 -> 380; 1 -> 270; 2 -> 160; 3 -> 130; 4 -> 415; else -> 0 }
         val offset = buf.short.toInt()
         val set4mA = (buf.short.toInt() and 0xFFFF) * 0.01
         val set20mA = (buf.short.toInt() and 0xFFFF) * 0.01

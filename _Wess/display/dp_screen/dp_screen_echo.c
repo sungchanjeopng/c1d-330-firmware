@@ -138,7 +138,7 @@ void DpEchoPOP_EchoSaveTimeVal(void)
 	U08 ifn = ScEC1_GetIdxFunc();
 	I08 pSt0[5][64] = {0, };
 
-	
+
 	//U08 val = 0;
 
 	//DpFIG_DrwRect(DpPOP_BGD_X0, DpPOP_CT1_Y0-3, DpPOP_BGD_WD, 30, _cPOP_BG_WND, DpFIG_FILL);
@@ -149,8 +149,8 @@ void DpEchoPOP_EchoSaveTimeVal(void)
 	if(MnLY3_GetUpdnMod() == MENU_V3_UPDN_DIG_VALUE)
 	{
 		DpFIG_DrwRect(DpPOP_TM_VL_X0-5, DpPOP_TM_VL_Y0, 200, 50, _cPOP_BG_WND, DpFIG_FILL);
-		DpSTR_GuiLeft(DpPOP_TM_VL_X0,	DpPOP_TM_VL_Y0, _cMNU_SEL_SCT, _cPOP_BG_WND, _fE35HsB, nnd_echo.echo_main[ifn]);	
-	}	
+		DpSTR_GuiLeft(DpPOP_TM_VL_X0,	DpPOP_TM_VL_Y0, _cMNU_SEL_SCT, _cPOP_BG_WND, _fE35HsB, nnd_echo.echo_main[ifn]);
+	}
 #endif
 }
 #endif
@@ -161,7 +161,7 @@ void DpEchoPOP_EchoSaveOption(void)
 	U16 x0 = DpPOP_CT1_X0;
 	U16 y0 = DpPOP_CT1_Y0;
 	U16 y1 = DpPOP_CT2_Y0;
-	//U16 y2 = DpPOP_CT3_Y0;	
+	//U16 y2 = DpPOP_CT3_Y0;
 	U32 cBg = _cPOP_BG_WND;
 	I08 pSt0[6][64] = {0, };
 	U08 ch;
@@ -174,10 +174,10 @@ void DpEchoPOP_EchoSaveOption(void)
 	U16 aY0[5] = {lScEco.yy,lScEco.mm,lScEco.dd,lScEco.hh,lScEco.mn};
 	U16 cnt_max = NND_Meta_GetEchocnt(nnd_echo.ch);
 
-	if(cnt_max!=0) cnt_max = cnt_max-1; 
+	if(cnt_max!=0) cnt_max = cnt_max-1;
 
 	DpPOP_DrwIntro();
-	
+
 	RTC_TM rtc = MnSYS_PrGet_Rtc();
 
 	_SPRINTF(pSt0[5],_sNOW_);
@@ -186,7 +186,7 @@ void DpEchoPOP_EchoSaveOption(void)
 	_SPRINTF(pSt0[5], "20%02d - %d - %d   %2d:%02d", rtc.year, rtc.month, rtc.day, rtc.hours, rtc.minutes);
 
 
-	
+
 	DpSTR_GuiLeft(DpPOP_OLD_X0-110,  DpPOP_OLD_Y0, _cPOP_ST_OLD,  _cPOP_BG_WND, _fE22HsB, pSt0[5]);
 	DpSTR_GuiLeft(DpPOP_TM_X0_YY-50, DpPOP_CT1_Y0, _cPOP_ST_VAL_IDL, _cPOP_BG_WND, _fE22HsB, "20");
 	DpSTR_GuiLeft(DpPOP_TM_X0_YY+50, DpPOP_CT1_Y0, _cPOP_ST_VAL_IDL, _cPOP_BG_WND, _fE22HsB, "-");
@@ -210,18 +210,18 @@ void DpEchoPOP_EchoSaveOption(void)
 
 	if(ScEC2_GetMode() == SCRN_L2_UPDN_DIG_VALUE)
 	{
-		
+
 
 		DpFIG_DrwRect(DpPOP_TM_VL_X0-5, DpPOP_TM_VL_Y0, 200, 50, _cPOP_BG_WND, DpFIG_FILL);
-		DpSTR_GuiLeft(DpPOP_TM_VL_X0,	DpPOP_TM_VL_Y0, _cMNU_SEL_SCT, _cPOP_BG_WND, _fE35HsB, pSt0[ifn]);	
-	}	
+		DpSTR_GuiLeft(DpPOP_TM_VL_X0,	DpPOP_TM_VL_Y0, _cMNU_SEL_SCT, _cPOP_BG_WND, _fE35HsB, pSt0[ifn]);
+	}
 
-	_SPRINTF(pSt0[5], "20%02d - %d - %d   %2d:%02d   ~   20%02d - %d - %d   %2d:%02d", 
+	_SPRINTF(pSt0[5], "20%02d - %d - %d   %2d:%02d   ~   20%02d - %d - %d   %2d:%02d",
 	 NND_Meta_Getmain(nnd_echo.ch,0,0),NND_Meta_Getmain(nnd_echo.ch,0,1),NND_Meta_Getmain(nnd_echo.ch,0,2),NND_Meta_Getmain(nnd_echo.ch,0,3),NND_Meta_Getmain(nnd_echo.ch,0,4),
 	 NND_Meta_Getmain(nnd_echo.ch,cnt_max,0),NND_Meta_Getmain(nnd_echo.ch,cnt_max,1),NND_Meta_Getmain(nnd_echo.ch,cnt_max,2),NND_Meta_Getmain(nnd_echo.ch,cnt_max,3),NND_Meta_Getmain(nnd_echo.ch,cnt_max,4));
-	
+
 	DpFIG_DrwRect(x0, DpPOP_EXP_Y0, 200, 30, cBg, DpFIG_FILL);
-	DpSTR_GuiLeft(x0, DpPOP_EXP_Y0, _cPOP_ST_VAL_SEL, cBg, _fE17HsB, pSt0[5]);		
+	DpSTR_GuiLeft(x0, DpPOP_EXP_Y0, _cPOP_ST_VAL_SEL, cBg, _fE17HsB, pSt0[5]);
 }
 
 
@@ -244,7 +244,7 @@ void DpEcoGrp_LineTvg(void)
 {
 	U32 i;
 	U32 x0[TVG_IDX_MAX];
-	U16 y0[TVG_IDX_MAX];	
+	U16 y0[TVG_IDX_MAX];
 	U08 ich = ScECH_PrGet_Chnnl();
 	U08 iFn = ScEC1_GetIdxFunc();
 	S32 val = ScEC2_GetValue();
@@ -267,22 +267,22 @@ void DpEcoGrp_LineTvg(void)
 		case ScECO_TYPE_AVG:
 		default:
 			return;
-		
+
 	}
 
-	
+
 
 	if(ScECH_GetLayer() != SCRN_L2_VALU)
 		return;
 
 	for(i=0; i<=(empty/20); i++)
-	{			
+	{
 		switch(fTVG)
 		{
 			case ScCLB_TVG_OFF:		vca = 29;								break;
 			default:				vca  = lMsr_aTvg[fTVG-1][i];			break;
 		}
-		
+
 		volt = (vca*gain)+trans;
 		if(volt>DAC_CON_DIG_MAX)	volt = DAC_CON_DIG_MAX;
 		if(volt<0)					volt = 0;
@@ -294,7 +294,7 @@ void DpEcoGrp_LineTvg(void)
 		if(y0[i] < (DpECO_TRHD_000-(DpECO_GRP_HT-10)))	return;
 		if(y0[i] > DpECO_TRHD_000)	return;
 		DpFIG_DrwCirc(x0[i]+3, y0[i], 3, _cCLB_GAIN_CIRC, _F_T);
-		
+
 		if(i > 0)	DpFIG_DrwLine(x0[i-1], y0[i-1], x0[i], y0[i], _cCLB_GAIN_LINE);
 	}
 }
@@ -308,13 +308,13 @@ void DpEcoGrp_FgrAsfBar(U08 iCh, U16 x0, U16 thd)
 
 	switch(MnMSR_CalGet_Ch_Value(iCh,MnMS1_OPT_SINGLE_THR_HEAVY))
 	{
-		case MnMS0_IV0_AUTO:	
+		case MnMS0_IV0_AUTO:
 			y0 = DpECO_TRHD_100+(DpECO_GRP_HT-(DpECO_GRP_HT*(F32)((F32)thd/ADC_VAL_MAX)));
 			break;
-		case MnMS0_IV0_MANUAL:	
+		case MnMS0_IV0_MANUAL:
 			y0 = DpECO_TRHD_100+(DpECO_GRP_HT-(DpECO_GRP_HT*(F32)((F32)thd/ADC_VAL_MAX)));
 			break;
-		default:				
+		default:
 			break;
 	}
 
@@ -357,21 +357,21 @@ void DpEcoGrp_FgrTrhdTria(U08 iCh, U32 thd, U16 type)
 	S16 val = ScEC2_GetValue();
 	U08 ifn = ScEC1_GetIdxFunc();
 	//U08 page = SCRN_GetPage();
-	U16 x0;	
+	U16 x0;
 	U16 y0;
 	F32 y0_t,y1_t,y2_t;
 	U08 thr_mod;
 	U16 i;
-	
+
 	switch(type)
 	{
-		case MsCAL_THR_LIGHT:	
+		case MsCAL_THR_LIGHT:
 			thr_mod =  MnMSR_CalGet_Ch_Value(iCh, MnMS1_OPT_SINGLE_THR_LIGHT);
 			break;
-		case MsCAL_THR_HEAVY:	
-			thr_mod =  MnMSR_CalGet_Ch_Value(iCh, MnMS1_OPT_SINGLE_THR_HEAVY);				
+		case MsCAL_THR_HEAVY:
+			thr_mod =  MnMSR_CalGet_Ch_Value(iCh, MnMS1_OPT_SINGLE_THR_HEAVY);
 			break;
-		default:				
+		default:
 			break;
 	}
 
@@ -408,11 +408,11 @@ void DpEcoGrp_FgrTrhdTria(U08 iCh, U32 thd, U16 type)
 				if(val>4095)	val = 4095;
 				if(val<0) val = 0;
 				y0 = DpECO_GRP_Y0+(DpECO_GRP_HT-(val/16));
-				y0_t = DpECO_GRP_Y0+(DpECO_GRP_HT-(thd/16));	
+				y0_t = DpECO_GRP_Y0+(DpECO_GRP_HT-(thd/16));
 				break;
 			case MnMS1_THRESHOLD_MANUAL:
 				val = (ADC_VAL_MAX * val)/33;
-				
+
 				if(ScECH_GetSave()==ScECO_SAVE_ON)
 				{
 					val = MsCAL_FIELD_THR;
@@ -424,7 +424,7 @@ void DpEcoGrp_FgrTrhdTria(U08 iCh, U32 thd, U16 type)
 
 				y0 = DpECO_GRP_Y0+(DpECO_GRP_HT-(val/16));
 				y0_t = DpECO_GRP_Y0+(DpECO_GRP_HT-(thd/16));
-				break;			
+				break;
 		}
 	}
 	x0 = DpECO_GRP_X0;
@@ -440,12 +440,12 @@ void DpEcoGrp_FgrTrhdTria(U08 iCh, U32 thd, U16 type)
 	{
 		case SCRN_L2_VALU:
 			if(ScECH_GetType() == ScECO_TYPE_AVG)
-			{		
+			{
 				switch(ifn)
 				{
-					case ScECO_AVG_THR_LIGHT:	
+					case ScECO_AVG_THR_LIGHT:
 						if(type !=MsCAL_THR_LIGHT)	break;
-						
+
 						for(i=x0; i<(x0+DpECO_GRP_WD-4); i+=4)
 						{
 							DpFIG_DrwLinH(i, y0, 2, _cSD_WHITE);
@@ -453,13 +453,13 @@ void DpEcoGrp_FgrTrhdTria(U08 iCh, U32 thd, U16 type)
 						break;
 					case ScECO_AVG_THR_HEAVY:
 						if(type !=MsCAL_THR_HEAVY)	break;
-						
+
 						for(i=x0; i<(x0+DpECO_GRP_WD-4); i+=4)
 						{
 							DpFIG_DrwLinH(i, y0, 2, _cSD_ORANGE);
 						}
 						break;
-					case ScECO_AVG_ASF_LIGHT:							
+					case ScECO_AVG_ASF_LIGHT:
 						if(type == MsCAL_THR_LIGHT)
 						{
 							for(i=x0; i<(x0+DpECO_GRP_WD-4); i+=4)
@@ -468,7 +468,7 @@ void DpEcoGrp_FgrTrhdTria(U08 iCh, U32 thd, U16 type)
 							}
 						}
 						break;
-					case ScECO_AVG_ASF_HEAVY:							
+					case ScECO_AVG_ASF_HEAVY:
 						if(type == MsCAL_THR_HEAVY)
 						{
 							for(i=x0; i<(x0+DpECO_GRP_WD-4); i+=4)
@@ -476,7 +476,7 @@ void DpEcoGrp_FgrTrhdTria(U08 iCh, U32 thd, U16 type)
 								DpFIG_DrwLinH(i, (U16)y0_t, 2, _cSD_ORANGE);
 							}
 						}
-						break;							
+						break;
 					default:
 						break;
 				}
@@ -486,7 +486,7 @@ void DpEcoGrp_FgrTrhdTria(U08 iCh, U32 thd, U16 type)
 		default:
 			switch(type)
 			{
-				case MsCAL_THR_LIGHT:		
+				case MsCAL_THR_LIGHT:
 					for(i=x0; i<(x0+DpECO_GRP_WD-4); i+=4)
 					{
 						if(ScECH_GetType()!=ScECO_TYPE_SAVE_ECHO)
@@ -496,15 +496,15 @@ void DpEcoGrp_FgrTrhdTria(U08 iCh, U32 thd, U16 type)
 						}
 					}
 					break;
-				case MsCAL_THR_HEAVY:	
+				case MsCAL_THR_HEAVY:
 					for(i=x0; i<(x0+DpECO_GRP_WD-4); i+=4)
 					{
 						DpFIG_DrwLinH(i, y0_t, 2, _cSD_ORANGE);
 					}
-					break; 
-				default:				
 					break;
-			}	
+				default:
+					break;
+			}
 			break;
 	}
 }
@@ -521,7 +521,7 @@ void DpECO_ASFValue(void)
 	U08 ch = ScECH_PrGet_Chnnl();
 	U08 ifn = ScEC1_GetIdxFunc();
 	U16 val;
-	
+
 	switch(screen_type)
 	{
 		case ScECO_TYPE_REAL:	return;
@@ -536,15 +536,15 @@ void DpECO_ASFValue(void)
 					{
 						case SCRN_L2_UPDN_DIG:			val = MsCAL_GetVl_ASF_R(ch);	break;
 						case SCRN_L2_UPDN_DIG_VALUE:	val = ScEC2_GetValue();			break;
-					}		
-					break;					
+					}
+					break;
 				default:
 					break;
 			}
-			break;			
+			break;
 		default:
 			return;
-	}	
+	}
 
 
 
@@ -563,18 +563,18 @@ void DpECO_ASFValue(void)
 
 
 	DpFIG_DrwRect(DpECO_LVL_VALU_X0+30, DpECO_LVL_VALU_Y0, DpECO_LVL_VALU_WD, DpECO_LVL_VALU_HT, _cBGD_SCRN, DpFIG_FILL);
-	DpSTR_GuiLeft(DpECO_LVL_VALU_X0+30, DpECO_LVL_VALU_Y0, _cSD_ORANGE, _cBGD_SCRN, _fE35HsB, lDpEco.pStr[0]);	
+	DpSTR_GuiLeft(DpECO_LVL_VALU_X0+30, DpECO_LVL_VALU_Y0, _cSD_ORANGE, _cBGD_SCRN, _fE35HsB, lDpEco.pStr[0]);
 
 	_SPRINTF(lDpEco.pStr[0], "%d",val);
 
 	DpFIG_DrwRect(DpECO_LVL_VALU_X0+30, DpECO_LVL_VALU_Y0+60, DpECO_LVL_VALU_WD, DpECO_LVL_VALU_HT, _cBGD_SCRN, DpFIG_FILL);
-	DpSTR_GuiLeft(DpECO_LVL_VALU_X0+30, DpECO_LVL_VALU_Y0+60, _cSD_ORANGE, _cBGD_SCRN, _fE35HsB, lDpEco.pStr[0]);	
+	DpSTR_GuiLeft(DpECO_LVL_VALU_X0+30, DpECO_LVL_VALU_Y0+60, _cSD_ORANGE, _cBGD_SCRN, _fE35HsB, lDpEco.pStr[0]);
 
 
 	_SPRINTF(lDpEco.pStr[0], "%d",MsCAL_GetVl_ASF_H(ch));
 
 	DpFIG_DrwRect(DpECO_LVL_VALU_X0+30, DpECO_LVL_VALU_Y0+120, DpECO_LVL_VALU_WD, DpECO_LVL_VALU_HT, _cBGD_SCRN, DpFIG_FILL);
-	DpSTR_GuiLeft(DpECO_LVL_VALU_X0+30, DpECO_LVL_VALU_Y0+120, _cSD_ORANGE, _cBGD_SCRN, _fE35HsB, lDpEco.pStr[0]);	
+	DpSTR_GuiLeft(DpECO_LVL_VALU_X0+30, DpECO_LVL_VALU_Y0+120, _cSD_ORANGE, _cBGD_SCRN, _fE35HsB, lDpEco.pStr[0]);
 #endif
 }
 
@@ -608,20 +608,20 @@ void DpECO_ASFDraw(void)
 					{
 						case SCRN_L2_UPDN_DIG:			lDpEco.asf_x[ch] = val;	break;
 						case SCRN_L2_UPDN_DIG_VALUE:	break;
-					}		
+					}
 					break;
 				default:
 					break;
 			}
-			break;			
+			break;
 		default:
 			return;
-	}	
+	}
 
 	if(lDpEco.asf_x[ch] > empty) lDpEco.asf_x[ch] = empty;
 	if(lDpEco.asf_x[ch] < dead)	lDpEco.asf_x[ch] = dead;
 	x0 = (lDpEco.asf_x[ch]*DpECO_GRP_WD_CURSOR_10)/(empty);
-	
+
 	DpFIG_DrwLinV(x0+DpECO_GRP_X0, y0_a, ht_a, _cSD_ORANGE);
 	DpFIG_DrwLinV(x0+DpECO_GRP_X0+1, y0_a, ht_a, _cSD_ORANGE);
 	DpFIG_DrwLinV(x0+DpECO_GRP_X0+2, y0_a, ht_a, _cSD_ORANGE);
@@ -656,10 +656,10 @@ void DpEcoGrp_FgrSignal(U08 iCh, U16 i,U16 empty,U16 d_zn,U16 range, U08 type)
 
 		switch(type)
 		{
-			case ScECO_TYPE_AVG:	
+			case ScECO_TYPE_AVG:
 				if(i<=ADC_BUFF_MAX)
 					ht_v0 = MsCAL_GetVl_EchoBuff(iCh, i) / 16;
-				else 
+				else
 					ht_v0 = 0;
 				break;
 			case ScECO_TYPE_REAL:
@@ -674,12 +674,12 @@ void DpEcoGrp_FgrSignal(U08 iCh, U16 i,U16 empty,U16 d_zn,U16 range, U08 type)
 					ht_v0 = nnd_echo.echo_main[i] / 16;
 				else
 					ht_v0 = 0;
-				break;				
-			default:	
+				break;
+			default:
 				break;
 		}
 
-		
+
 		y0_v = DpECO_GRP_Y0 + (DpECO_GRP_HT - ht_v0);
 
 		if(x_range!=0)
@@ -699,13 +699,13 @@ void DpEcoGrp_FgrSignal(U08 iCh, U16 i,U16 empty,U16 d_zn,U16 range, U08 type)
 
 		switch(type)
 		{
-			case ScECO_TYPE_AVG:	
+			case ScECO_TYPE_AVG:
 				if(i<=ADC_BUFF_MAX)
 					ht_v0 = MsCAL_GetVl_EchoBuff(iCh, i) / 16;
-				else 
+				else
 					ht_v0 = 0;
 				break;
-			case ScECO_TYPE_REAL: 
+			case ScECO_TYPE_REAL:
 			case ScECO_TYPE_MSR_ECHO:
 				if(i<=ADC_BUFF_MAX)
 					ht_v0 = MsCAL_GetVl_EchoReal(iCh, i) / 16;
@@ -717,8 +717,8 @@ void DpEcoGrp_FgrSignal(U08 iCh, U16 i,U16 empty,U16 d_zn,U16 range, U08 type)
 					ht_v0 = nnd_echo.echo_main[i] / 16;
 				else
 					ht_v0 = 0;
-				break;				
-			default:	
+				break;
+			default:
 				break;
 		}
 
@@ -733,7 +733,7 @@ void DpEcoGrp_FgrSignal(U08 iCh, U16 i,U16 empty,U16 d_zn,U16 range, U08 type)
 			else if ((i > d_zn)  && (i > (empty)))					DpFIG_DrwLinV(x0+DpECO_GRP_X0+n, y0_v, ht_v0, _cSD_DARKGRAY);
 			else													DpFIG_DrwLinV(x0+DpECO_GRP_X0+n, y0_v, ht_v0, _cECO_LN_V_SLDG);
 		}
-	}	
+	}
 }
 #endif
 
@@ -763,8 +763,8 @@ void DpEcoGrp_DrawLive(U08 range)
 		empty = nnd_echo.empty;
 		msr_range = (nnd_echo.empty*110)/100;
 		d_zn = nnd_echo.dead;
-		
-		
+
+
 	}
 
 
@@ -790,7 +790,7 @@ void DpEcoGrp_DrawLive(U08 range)
 		{
 			if(ScEC1_GetIdxFunc()==ScECO_REAL_EMPTY)
 			{
-				empty = ScEC2_GetValue();	
+				empty = ScEC2_GetValue();
 				msr_range = (empty*110)/100;
 				DpFIG_DrwRect(DpECO_GRP_X0-20, DpECO_GRP_Y0 + DpECO_GRP_HT + 4+10, DpECO_GRP_WD, 35, _cBGD_SCRN, 0);
 				for(i=0; i<12; i++)
@@ -801,15 +801,15 @@ void DpEcoGrp_DrawLive(U08 range)
 						if(val>=1000)	_SPRINTF(lDpEco.pStr[0], "%02d.%02d",val/100,val%100);
 						else			_SPRINTF(lDpEco.pStr[0], "%01d.%02d",val/100,val%100);
 						DpSTR_GuiLeft(DpECO_GRP_X0+ (DpECO_GRP_WD_CURSOR*i)-18, DpECO_GRP_Y0 + DpECO_GRP_HT + 4+10, _cECO_AMP_STD, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
-					}	
+					}
 				}
-			
+
 
 			}
 			if(ScEC1_GetIdxFunc()==ScECO_REAL_DEADZONE)
 			{
-				d_zn = ScEC2_GetValue();	
-			}			
+				d_zn = ScEC2_GetValue();
+			}
 		}
 	}
 
@@ -822,7 +822,7 @@ void DpEcoGrp_DrawLive(U08 range)
 	if((ScECH_GetLayer() == SCRN_L2_VALU) && (ScECH_GetType() == ScECO_TYPE_AVG) && (ScEC2_GetMode()==SCRN_L2_UPDN_DIG))
 	{
 			MsCAL_SetVl_ASF_R(iCh, 0);
-		if(ScEC1_GetIdxFunc()==ScECO_AVG_ASF_LIGHT)	
+		if(ScEC1_GetIdxFunc()==ScECO_AVG_ASF_LIGHT)
 		{
 			thd_asf = MsCAL_GetVl_Threshold(iCh, MsCAL_THR_LIGHT);
 			for(i=0; i<=msr_range; i++)
@@ -835,7 +835,7 @@ void DpEcoGrp_DrawLive(U08 range)
 			}
 
 		}
-		
+
 		if(ScEC1_GetIdxFunc()==ScECO_AVG_ASF_HEAVY)
 		{
 			thd_asf = MsCAL_GetVl_Threshold(iCh, MsCAL_THR_HEAVY);
@@ -849,7 +849,7 @@ void DpEcoGrp_DrawLive(U08 range)
 			}
 		}
 	}
-	
+
 	DpFIG_DrwRect(DpECO_GRP_X0, y0_a-40, DpECO_GRP_WD, 35, _cBGD_SCRN, 0);
 
 
@@ -859,12 +859,12 @@ void DpEcoGrp_DrawLive(U08 range)
 		DpFIG_DrwLinV(x1+DpECO_GRP_X0, y0_a, ht_a, _cECO_LN_V_DZ_L);
 		DpFIG_DrwLinV(x1+DpECO_GRP_X0, y0_a, ht_a, _cECO_LN_V_DZ_L);
 	}
-	
+
 	x1 = DpECO_GRP_WD_CURSOR_10;
 	if((x1<=DpECO_GRP_WD_CURSOR_10))
 	{
-		DpFIG_DrwLinV(x1+DpECO_GRP_X0, y0_a, ht_a, _cSD_LIGHTGRAY); 
-	}	
+		DpFIG_DrwLinV(x1+DpECO_GRP_X0, y0_a, ht_a, _cSD_LIGHTGRAY);
+	}
 
 
 	DpEcoGrp_LineTvg();
@@ -897,18 +897,18 @@ void DpEcoGrp_DrawLive(U08 range)
 				}
 
 				if(screen_type==ScECO_TYPE_SAVE_ECHO)
-					dist[i]  = nnd_echo.trac_dist[i];	
+					dist[i]  = nnd_echo.trac_dist[i];
 				else if(screen_type == ScECO_TYPE_MSR_ECHO)
 				{
 					dist[i]  = empty - MnMSR_CalGet_Ch_Value(iCh, MnMS1_OPT_SINGLE_AUTO_CAL);
 				}
 				else
 					dist[i] = MsCAL_GetVl_TracDist(iCh, i);
-				
+
 				if(dist[i] > empty)	dist[i] = empty;
 				if(dist[i] < d_zn)	break;
 				x0[i] = (dist[i]*DpECO_GRP_WD_CURSOR_10)/(empty);
-				
+
 				switch(i)
 				{
 					case MsCAL_THR_LIGHT:
@@ -920,39 +920,39 @@ void DpEcoGrp_DrawLive(U08 range)
 						DpFIG_DrwLinV(x0[i]+DpECO_GRP_X0, y0_a, ht_a, _cSD_ORANGE);
 						//DpFIG_DrwLinV(x0[i]+DpECO_GRP_X0+1, y0_a, ht_a, _cSD_ORANGE);
 						//DpFIG_DrwLinV(x0[i]+DpECO_GRP_X0+2, y0_a, ht_a, _cSD_ORANGE);
-						break;				
-					default:	
+						break;
+					default:
 						break;
 				}
 
 
 				if(screen_type == ScECO_TYPE_SAVE_ECHO)
 				{
-					dist[i]  = nnd_echo.each_slope_val[0][0];	
+					dist[i]  = nnd_echo.each_slope_val[0][0];
 					if(dist[i] > empty)	dist[i] = empty;
 					if(dist[i] < d_zn)	break;
-					x0[i] = (dist[i]*DpECO_GRP_WD_CURSOR_10)/(empty);			
+					x0[i] = (dist[i]*DpECO_GRP_WD_CURSOR_10)/(empty);
 					DpFIG_DrwLinV(x0[i]+DpECO_GRP_X0, y0_a, ht_a, _cSD_RED);
 
 					dist[i]  = nnd_echo.each_slope_val[1][0];
 					if(dist[i] > empty)	dist[i] = empty;
 					if(dist[i] < d_zn)	break;
-					x0[i] = (dist[i]*DpECO_GRP_WD_CURSOR_10)/(empty);			
-					DpFIG_DrwLinV(x0[i]+DpECO_GRP_X0, y0_a, ht_a, _cSD_BLUE);					
+					x0[i] = (dist[i]*DpECO_GRP_WD_CURSOR_10)/(empty);
+					DpFIG_DrwLinV(x0[i]+DpECO_GRP_X0, y0_a, ht_a, _cSD_BLUE);
 				}
 				else if(screen_type == ScECO_TYPE_MSR_ECHO)
 				{
-					dist[i]  = (empty-MnMSR_CalGet_Ch_Value(iCh, MnMS1_OPT_SINGLE_AUTO_CAL))-MnTST_PrGet_Value(MnTST_OPT_AUTO_LEVEL_RANGE);	
+					dist[i]  = (empty-MnMSR_CalGet_Ch_Value(iCh, MnMS1_OPT_SINGLE_AUTO_CAL))-MnTST_PrGet_Value(MnTST_OPT_AUTO_LEVEL_RANGE);
 					if(dist[i] > empty) dist[i] = empty;
 					if(dist[i] < d_zn)	break;
-					x0[i] = (dist[i]*DpECO_GRP_WD_CURSOR_10)/(empty);			
+					x0[i] = (dist[i]*DpECO_GRP_WD_CURSOR_10)/(empty);
 					DpFIG_DrwLinV(x0[i]+DpECO_GRP_X0, y0_a, ht_a, _cSD_RED);
-					
-					dist[i]  = (empty-MnMSR_CalGet_Ch_Value(iCh, MnMS1_OPT_SINGLE_AUTO_CAL))+MnTST_PrGet_Value(MnTST_OPT_AUTO_LEVEL_RANGE);	
+
+					dist[i]  = (empty-MnMSR_CalGet_Ch_Value(iCh, MnMS1_OPT_SINGLE_AUTO_CAL))+MnTST_PrGet_Value(MnTST_OPT_AUTO_LEVEL_RANGE);
 					if(dist[i] > empty) dist[i] = empty;
 					if(dist[i] < d_zn)	break;
-					x0[i] = (dist[i]*DpECO_GRP_WD_CURSOR_10)/(empty);			
-					DpFIG_DrwLinV(x0[i]+DpECO_GRP_X0, y0_a, ht_a, _cSD_BLUE);		
+					x0[i] = (dist[i]*DpECO_GRP_WD_CURSOR_10)/(empty);
+					DpFIG_DrwLinV(x0[i]+DpECO_GRP_X0, y0_a, ht_a, _cSD_BLUE);
 				}
 		}
 	}
@@ -972,18 +972,18 @@ void DpEcoGrp_DrawLive(U08 range)
 
 			if((abs(x0[MsCAL_THR_LIGHT] - x0[MsCAL_THR_HEAVY]))<20)
 			{
-				if(dist[MsCAL_THR_LIGHT] < d_zn)	break;			
-				if(dist[MsCAL_THR_HEAVY] < d_zn)	break;		
+				if(dist[MsCAL_THR_LIGHT] < d_zn)	break;
+				if(dist[MsCAL_THR_HEAVY] < d_zn)	break;
 				DpSTR_GuiLeft(x0[MsCAL_THR_LIGHT]+DpECO_GRP_X0-5, y0_a-22, _cSD_WHITE, _cBGD_SCRN, _fE12HsM, "L");
 				DpSTR_GuiLeft(x0[MsCAL_THR_HEAVY]+DpECO_GRP_X0-5, y0_a-35, _cSD_ORANGE, _cBGD_SCRN, _fE12HsM, "H");
 			}
 			else
 			{
-				if(dist[MsCAL_THR_LIGHT] < d_zn)	break;			
-				if(dist[MsCAL_THR_HEAVY] < d_zn)	break;				
+				if(dist[MsCAL_THR_LIGHT] < d_zn)	break;
+				if(dist[MsCAL_THR_HEAVY] < d_zn)	break;
 				DpSTR_GuiLeft(x0[MsCAL_THR_LIGHT]+DpECO_GRP_X0-5, y0_a-22, _cSD_WHITE, _cBGD_SCRN, _fE12HsM, "L");
 				DpSTR_GuiLeft(x0[MsCAL_THR_HEAVY]+DpECO_GRP_X0-5, y0_a-22, _cSD_ORANGE, _cBGD_SCRN, _fE12HsM, "H");
-			}	
+			}
 			break;
 	}
 }
@@ -1004,23 +1004,23 @@ void DpEcoLvl_StrTitle(void)
 			_SPRINTF(lDpEco.pStr[0], "Level :");
 			DpFIG_DrwRect(DpECO_LVL_TITL_X0, DpECO_LVL_VALU_Y0-10, DpECO_LVL_CH_WD, DpECO_LVL_CH_HT, _cBGD_SCRN, DpFIG_FILL);	// Clear
 			DpSTR_GuiLeft(DpECO_LVL_TITL_X0, DpECO_LVL_VALU_Y0-10, _cLight_level, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
-			_SPRINTF(lDpEco.pStr[0], "Final Echo Amp:");		
+			_SPRINTF(lDpEco.pStr[0], "Final Echo Amp:");
 			DpFIG_DrwRect(DpECO_LVL_TITL_X0, DpECO_LVL_VALU_Y0+10, DpECO_LVL_CH_WD, DpECO_LVL_CH_HT, _cBGD_SCRN, DpFIG_FILL);	// Clear
 			DpSTR_GuiLeft(DpECO_LVL_TITL_X0, DpECO_LVL_VALU_Y0+10, _cLight_level, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
-			_SPRINTF(lDpEco.pStr[0], "Final Thr:"); 	
+			_SPRINTF(lDpEco.pStr[0], "Final Thr:");
 			DpFIG_DrwRect(DpECO_LVL_TITL_X0, DpECO_LVL_VALU_Y0+30, DpECO_LVL_CH_WD, DpECO_LVL_CH_HT, _cBGD_SCRN, DpFIG_FILL);	// Clear
 			DpSTR_GuiLeft(DpECO_LVL_TITL_X0, DpECO_LVL_VALU_Y0+30, _cLight_level, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
-			_SPRINTF(lDpEco.pStr[0], "Final Slope"); 	
+			_SPRINTF(lDpEco.pStr[0], "Final Slope");
 			DpFIG_DrwRect(DpECO_LVL_TITL_X0, DpECO_LVL_VALU_Y0+50, DpECO_LVL_CH_WD, DpECO_LVL_CH_HT, _cBGD_SCRN, DpFIG_FILL);	// Clear
 			DpSTR_GuiLeft(DpECO_LVL_TITL_X0, DpECO_LVL_VALU_Y0+50, _cLight_level, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
 
 			DpFIG_DrwLinH(DpECO_LVL_TITL_X0, DpECO_LVL_VALU_Y0+75, DpECO_BOX_FG_WD, _cSD_WHITE);
 
-			
-			_SPRINTF(lDpEco.pStr[0], "Thr:"); 	
+
+			_SPRINTF(lDpEco.pStr[0], "Thr:");
 			DpFIG_DrwRect(DpECO_LVL_TITL_X0, DpECO_LVL_VALU_Y0+80, DpECO_LVL_CH_WD, DpECO_LVL_CH_HT-15, _cBGD_SCRN, DpFIG_FILL);	// Clear
 			DpSTR_GuiLeft(DpECO_LVL_TITL_X0, DpECO_LVL_VALU_Y0+80, _cLight_level, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
-			_SPRINTF(lDpEco.pStr[0], "Slope");	
+			_SPRINTF(lDpEco.pStr[0], "Slope");
 			DpFIG_DrwRect(DpECO_LVL_TITL_X0, DpECO_LVL_VALU_Y0+100, DpECO_LVL_CH_WD, DpECO_LVL_CH_HT-15, _cBGD_SCRN, DpFIG_FILL);	// Clear
 			DpSTR_GuiLeft(DpECO_LVL_TITL_X0, DpECO_LVL_VALU_Y0+100, _cLight_level, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
 		}
@@ -1029,27 +1029,27 @@ void DpEcoLvl_StrTitle(void)
 			_SPRINTF(lDpEco.pStr[0], "Level :");
 			DpFIG_DrwRect(DpECO_LVL_TITL_X0, DpECO_LVL_VALU_Y0-10, DpECO_LVL_CH_WD, DpECO_LVL_CH_HT, _cBGD_SCRN, DpFIG_FILL);	// Clear
 			DpSTR_GuiLeft(DpECO_LVL_TITL_X0, DpECO_LVL_VALU_Y0-10, _cLight_level, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
-			_SPRINTF(lDpEco.pStr[0], "Echo Amp:");		
+			_SPRINTF(lDpEco.pStr[0], "Echo Amp:");
 			DpFIG_DrwRect(DpECO_LVL_TITL_X0, DpECO_LVL_VALU_Y0+10, DpECO_LVL_CH_WD, DpECO_LVL_CH_HT, _cBGD_SCRN, DpFIG_FILL);	// Clear
 			DpSTR_GuiLeft(DpECO_LVL_TITL_X0, DpECO_LVL_VALU_Y0+10, _cLight_level, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
-			_SPRINTF(lDpEco.pStr[0], "Thr:"); 	
+			_SPRINTF(lDpEco.pStr[0], "Thr:");
 			DpFIG_DrwRect(DpECO_LVL_TITL_X0, DpECO_LVL_VALU_Y0+30, DpECO_LVL_CH_WD, DpECO_LVL_CH_HT, _cBGD_SCRN, DpFIG_FILL);	// Clear
 			DpSTR_GuiLeft(DpECO_LVL_TITL_X0, DpECO_LVL_VALU_Y0+30, _cLight_level, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
 
 			DpFIG_DrwLinH(DpECO_LVL_TITL_X0, DpECO_LVL_VALU_Y0+55, DpECO_BOX_FG_WD, _cSD_WHITE);
 
-			
-			_SPRINTF(lDpEco.pStr[0], "Min Volt:");	
+
+			_SPRINTF(lDpEco.pStr[0], "Min Volt:");
 			DpFIG_DrwRect(DpECO_LVL_TITL_X0, DpECO_LVL_VALU_Y0+60, DpECO_LVL_CH_WD, DpECO_LVL_CH_HT, _cBGD_SCRN, DpFIG_FILL);	// Clear
 			DpSTR_GuiLeft(DpECO_LVL_TITL_X0, DpECO_LVL_VALU_Y0+60, _cLight_level, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
-			
-			_SPRINTF(lDpEco.pStr[0], "Max Volt:");	
+
+			_SPRINTF(lDpEco.pStr[0], "Max Volt:");
 			DpFIG_DrwRect(DpECO_LVL_TITL_X0, DpECO_LVL_VALU_Y0+80, DpECO_LVL_CH_WD, DpECO_LVL_CH_HT-15, _cBGD_SCRN, DpFIG_FILL);	// Clear
 			DpSTR_GuiLeft(DpECO_LVL_TITL_X0, DpECO_LVL_VALU_Y0+80, _cLight_level, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
-			_SPRINTF(lDpEco.pStr[0], "Pass Min Volt:");	
+			_SPRINTF(lDpEco.pStr[0], "Pass Min Volt:");
 			DpFIG_DrwRect(DpECO_LVL_TITL_X0, DpECO_LVL_VALU_Y0+100, DpECO_LVL_CH_WD, DpECO_LVL_CH_HT-15, _cBGD_SCRN, DpFIG_FILL);	// Clear
 			DpSTR_GuiLeft(DpECO_LVL_TITL_X0, DpECO_LVL_VALU_Y0+100, _cLight_level, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
-			_SPRINTF(lDpEco.pStr[0], "Pass Max Volt:");	
+			_SPRINTF(lDpEco.pStr[0], "Pass Max Volt:");
 			DpFIG_DrwRect(DpECO_LVL_TITL_X0, DpECO_LVL_VALU_Y0+120, DpECO_LVL_CH_WD, DpECO_LVL_CH_HT-15, _cBGD_SCRN, DpFIG_FILL);	// Clear
 			DpSTR_GuiLeft(DpECO_LVL_TITL_X0, DpECO_LVL_VALU_Y0+120, _cLight_level, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
 
@@ -1062,26 +1062,26 @@ void DpEcoLvl_StrTitle(void)
 		{
 			case MnSYS_LANG_ENG:
 				_SPRINTF(lDpEco.pStr[0], _sLight_level);
-				
+
 				DpFIG_DrwRect(DpECO_LVL_VALU_X0-20, DpECO_LVL_VALU_Y0, DpECO_LVL_CH_WD, DpECO_LVL_CH_HT, _cBGD_SCRN, DpFIG_FILL);	// Clear
 				DpSTR_GuiLeft(DpECO_LVL_VALU_X0-20, DpECO_LVL_VALU_Y0, _cLight_level, _cBGD_SCRN, _fE17HsB, lDpEco.pStr[0]);
 				_SPRINTF(lDpEco.pStr[0], _sHeavy_level);
-				
+
 				DpFIG_DrwRect(DpECO_LVL_VALU_X0-20, DpECO_LVL_VALU_Y0+90, DpECO_LVL_CH_WD, DpECO_LVL_CH_HT, _cBGD_SCRN, DpFIG_FILL);	// Clear
-				DpSTR_GuiLeft(DpECO_LVL_VALU_X0-20, DpECO_LVL_VALU_Y0+90, _cHeavy_level, _cBGD_SCRN, _fE17HsB, lDpEco.pStr[0]);	
+				DpSTR_GuiLeft(DpECO_LVL_VALU_X0-20, DpECO_LVL_VALU_Y0+90, _cHeavy_level, _cBGD_SCRN, _fE17HsB, lDpEco.pStr[0]);
 				break;
 			case MnSYS_LANG_KOR:
 				DpSTR_GuiList(TEXT_LIST_LIGHT_LEVEL);
 				DpFIG_DrwRect(DpECO_LVL_VALU_X0-20, DpECO_LVL_VALU_Y0, DpECO_LVL_CH_WD, DpECO_LVL_CH_HT, _cBGD_SCRN, DpFIG_FILL);	// Clear
 				DpSTR_GuiLeft_KOR(DpECO_LVL_VALU_X0-20, DpECO_LVL_VALU_Y0, _cLight_level, _cBGD_SCRN, _fE22HsBKOR, gDpStr.Text_list);
 				_SPRINTF(pSt0, "(m)");
-				DpSTR_GuiLeft(DpECO_LVL_VALU_X0-20+145, DpECO_LVL_VALU_Y0, _cLight_level, _cBGD_SCRN, _fE17HsB, pSt0); 
+				DpSTR_GuiLeft(DpECO_LVL_VALU_X0-20+145, DpECO_LVL_VALU_Y0, _cLight_level, _cBGD_SCRN, _fE17HsB, pSt0);
 
 				DpSTR_GuiList(TEXT_LIST_HEAVY_LEVEL);
 				DpFIG_DrwRect(DpECO_LVL_VALU_X0-20, DpECO_LVL_VALU_Y0+90, DpECO_LVL_CH_WD, DpECO_LVL_CH_HT, _cBGD_SCRN, DpFIG_FILL);	// Clear
-				DpSTR_GuiLeft_KOR(DpECO_LVL_VALU_X0-20, DpECO_LVL_VALU_Y0+90, _cHeavy_level, _cBGD_SCRN, _fE22HsBKOR, gDpStr.Text_list);	
+				DpSTR_GuiLeft_KOR(DpECO_LVL_VALU_X0-20, DpECO_LVL_VALU_Y0+90, _cHeavy_level, _cBGD_SCRN, _fE22HsBKOR, gDpStr.Text_list);
 				_SPRINTF(pSt0, "(m)");
-				DpSTR_GuiLeft(DpECO_LVL_VALU_X0-20+145, DpECO_LVL_VALU_Y0+90, _cHeavy_level, _cBGD_SCRN, _fE17HsB, pSt0);				
+				DpSTR_GuiLeft(DpECO_LVL_VALU_X0-20+145, DpECO_LVL_VALU_Y0+90, _cHeavy_level, _cBGD_SCRN, _fE17HsB, pSt0);
 				break;
 		}
 	}
@@ -1098,15 +1098,15 @@ void DpEcoLvl_StrValue(void)
 	U16 val;
 	switch(MnMSR_BaseGet_Ch_Value(iCh, MnMS0_OPT_SINGLE_OPERATION))
 	{
-		case MnMS0_OPERATION_SLUDGE:	
-			valu_light = MsCAL_GetVl_RsltSldg(iCh,MsCAL_THR_LIGHT);		
+		case MnMS0_OPERATION_SLUDGE:
+			valu_light = MsCAL_GetVl_RsltSldg(iCh,MsCAL_THR_LIGHT);
 			valu_heavy = MsCAL_GetVl_RsltSldg(iCh,MsCAL_THR_HEAVY);
 			break;
-		case MnMS0_OPERATION_DISTANCE:	
-			valu_light = MsCAL_GetVl_RsltDist(iCh,MsCAL_THR_LIGHT);	
-			valu_heavy = MsCAL_GetVl_RsltDist(iCh,MsCAL_THR_HEAVY);	
+		case MnMS0_OPERATION_DISTANCE:
+			valu_light = MsCAL_GetVl_RsltDist(iCh,MsCAL_THR_LIGHT);
+			valu_heavy = MsCAL_GetVl_RsltDist(iCh,MsCAL_THR_HEAVY);
 			break;
-		default:				
+		default:
 			break;
 	}
 
@@ -1120,10 +1120,10 @@ void DpEcoLvl_StrValue(void)
 	if(ScECH_GetType()==ScECO_TYPE_MSR_ECHO)
 	{
 		DpFIG_DrwRect(DpECO_BOX_L0_TL_X0, 270+DpECO_BOX_Lx_SB_HT*2, DpECO_BOX_Lx_SB_WD, DpECO_BOX_Lx_SB_HT, _cBGD_SCRN, DpFIG_FILL);
-		DpSTR_GuiLeft(DpECO_BOX_L0_TL_X0, 270+DpECO_BOX_Lx_SB_HT*2, _cSD_WHITE, _cBGD_SCRN, _fE22HsB, "Echo Amp:");	
+		DpSTR_GuiLeft(DpECO_BOX_L0_TL_X0, 270+DpECO_BOX_Lx_SB_HT*2, _cSD_WHITE, _cBGD_SCRN, _fE22HsB, "Echo Amp:");
 		_SPRINTF(sDbg, "%d",lMsCal.auto_calib);
 		DpFIG_DrwRect(DpECO_BOX_L0_VL_X0+10, 270+DpECO_BOX_Lx_SB_HT*2, 60, 20, _cBGD_SCRN, DpFIG_FILL);
-		DpSTR_GuiLeft(DpECO_BOX_L0_VL_X0+10, 270+DpECO_BOX_Lx_SB_HT*2, _cECO_BOX_VALU, _cBGD_SCRN, _fE22HsB, sDbg);	
+		DpSTR_GuiLeft(DpECO_BOX_L0_VL_X0+10, 270+DpECO_BOX_Lx_SB_HT*2, _cECO_BOX_VALU, _cBGD_SCRN, _fE22HsB, sDbg);
 	}
 	else if(ScECH_GetType()==ScECO_TYPE_SAVE_ECHO)
 	{
@@ -1132,21 +1132,21 @@ void DpEcoLvl_StrValue(void)
 			_SPRINTF(lDpEco.pStr[0], "[%2d.%02d,%2d.%02d]",nnd_echo.input_val/100,nnd_echo.input_val%100,nnd_echo.output_val/100,nnd_echo.output_val%100);
 			DpFIG_DrwRect(DpECO_LVL_VALU_X0+60, DpECO_LVL_VALU_Y0-10, DpECO_LVL_CH_WD, DpECO_LVL_CH_HT-10, _cBGD_SCRN, DpFIG_FILL);	// Clear
 			DpSTR_GuiLeft(DpECO_LVL_VALU_X0+60, DpECO_LVL_VALU_Y0-10, _cLight_level, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
-			_SPRINTF(lDpEco.pStr[0], "%d",nnd_echo.result_echo_amp);		
+			_SPRINTF(lDpEco.pStr[0], "%d",nnd_echo.result_echo_amp);
 			DpFIG_DrwRect(DpECO_LVL_VALU_X0+100, DpECO_LVL_VALU_Y0+10, DpECO_LVL_CH_WD, DpECO_LVL_CH_HT-10, _cBGD_SCRN, DpFIG_FILL);	// Clear
 			DpSTR_GuiLeft(DpECO_LVL_VALU_X0+100, DpECO_LVL_VALU_Y0+10, _cLight_level, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
-			_SPRINTF(lDpEco.pStr[0], "%d",nnd_echo.result_thr); 	
+			_SPRINTF(lDpEco.pStr[0], "%d",nnd_echo.result_thr);
 			DpFIG_DrwRect(DpECO_LVL_VALU_X0+100, DpECO_LVL_VALU_Y0+30, DpECO_LVL_CH_WD, DpECO_LVL_CH_HT-10, _cBGD_SCRN, DpFIG_FILL);	// Clear
 			DpSTR_GuiLeft(DpECO_LVL_VALU_X0+100, DpECO_LVL_VALU_Y0+30, _cLight_level, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
-			_SPRINTF(lDpEco.pStr[0], "%2d.%02d",(U16)(nnd_echo.result_slope*8.05)/100,(U16)(nnd_echo.result_slope*8.05)%100);	
+			_SPRINTF(lDpEco.pStr[0], "%2d.%02d",(U16)(nnd_echo.result_slope*8.05)/100,(U16)(nnd_echo.result_slope*8.05)%100);
 			DpFIG_DrwRect(DpECO_LVL_VALU_X0+100, DpECO_LVL_VALU_Y0+50, DpECO_LVL_CH_WD, DpECO_LVL_CH_HT-10, _cBGD_SCRN, DpFIG_FILL);	// Clear
 			DpSTR_GuiLeft(DpECO_LVL_VALU_X0+100, DpECO_LVL_VALU_Y0+50, _cLight_level, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
 
-			
-			_SPRINTF(lDpEco.pStr[0], "%d",nnd_echo.thr[MsCAL_THR_HEAVY]);	
+
+			_SPRINTF(lDpEco.pStr[0], "%d",nnd_echo.thr[MsCAL_THR_HEAVY]);
 			DpFIG_DrwRect(DpECO_LVL_VALU_X0+100, DpECO_LVL_VALU_Y0+80, DpECO_LVL_CH_WD, DpECO_LVL_CH_HT-15, _cBGD_SCRN, DpFIG_FILL);	// Clear
 			DpSTR_GuiLeft(DpECO_LVL_VALU_X0+100, DpECO_LVL_VALU_Y0+80, _cLight_level, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
-			_SPRINTF(lDpEco.pStr[0], "%2d.%02d",(U16)(nnd_echo.each_slope*8.05)/100,(U16)(nnd_echo.each_slope*8.05)%100);	
+			_SPRINTF(lDpEco.pStr[0], "%2d.%02d",(U16)(nnd_echo.each_slope*8.05)/100,(U16)(nnd_echo.each_slope*8.05)%100);
 			DpFIG_DrwRect(DpECO_LVL_VALU_X0+100, DpECO_LVL_VALU_Y0+100, DpECO_LVL_CH_WD, DpECO_LVL_CH_HT-15, _cBGD_SCRN, DpFIG_FILL);	// Clear
 			DpSTR_GuiLeft(DpECO_LVL_VALU_X0+100, DpECO_LVL_VALU_Y0+100, _cLight_level, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
 			return;
@@ -1156,56 +1156,56 @@ void DpEcoLvl_StrValue(void)
 			_SPRINTF(lDpEco.pStr[0], "%2d.%02dm",nnd_echo.input_val/100,nnd_echo.input_val%100);
 			DpFIG_DrwRect(DpECO_LVL_VALU_X0+60, DpECO_LVL_VALU_Y0-10, DpECO_LVL_CH_WD, DpECO_LVL_CH_HT-10, _cBGD_SCRN, DpFIG_FILL); // Clear
 			DpSTR_GuiLeft(DpECO_LVL_VALU_X0+60, DpECO_LVL_VALU_Y0-10, _cLight_level, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
-			_SPRINTF(lDpEco.pStr[0], "%d",nnd_echo.result_echo_amp);		
+			_SPRINTF(lDpEco.pStr[0], "%d",nnd_echo.result_echo_amp);
 			DpFIG_DrwRect(DpECO_LVL_VALU_X0+100, DpECO_LVL_VALU_Y0+10, DpECO_LVL_CH_WD, DpECO_LVL_CH_HT-10, _cBGD_SCRN, DpFIG_FILL);	// Clear
 			DpSTR_GuiLeft(DpECO_LVL_VALU_X0+100, DpECO_LVL_VALU_Y0+10, _cLight_level, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
-			_SPRINTF(lDpEco.pStr[0], "%d %",nnd_echo.result_thr); 	
+			_SPRINTF(lDpEco.pStr[0], "%d %",nnd_echo.result_thr);
 			DpFIG_DrwRect(DpECO_LVL_VALU_X0+100, DpECO_LVL_VALU_Y0+30, DpECO_LVL_CH_WD, DpECO_LVL_CH_HT-10, _cBGD_SCRN, DpFIG_FILL);	// Clear
 			DpSTR_GuiLeft(DpECO_LVL_VALU_X0+100, DpECO_LVL_VALU_Y0+30, _cLight_level, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
 
 
 #if 0
-			_SPRINTF(lDpEco.pStr[0], "%2d.%02d",(U16)(nnd_echo.result_slope*8.05)/100,(U16)(nnd_echo.result_slope*8.05)%100);	
+			_SPRINTF(lDpEco.pStr[0], "%2d.%02d",(U16)(nnd_echo.result_slope*8.05)/100,(U16)(nnd_echo.result_slope*8.05)%100);
 			DpFIG_DrwRect(DpECO_LVL_VALU_X0+100, DpECO_LVL_VALU_Y0+60, DpECO_LVL_CH_WD, DpECO_LVL_CH_HT-10, _cBGD_SCRN, DpFIG_FILL);	// Clear
 			DpSTR_GuiLeft(DpECO_LVL_VALU_X0+100, DpECO_LVL_VALU_Y0+60, _cLight_level, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
-			
-			
-			_SPRINTF(lDpEco.pStr[0], "%2d.%02d",(U16)(nnd_echo.each_slope*8.05)/100,(U16)(nnd_echo.each_slope*8.05)%100);	
+
+
+			_SPRINTF(lDpEco.pStr[0], "%2d.%02d",(U16)(nnd_echo.each_slope*8.05)/100,(U16)(nnd_echo.each_slope*8.05)%100);
 			DpFIG_DrwRect(DpECO_LVL_VALU_X0+100, DpECO_LVL_VALU_Y0+80, DpECO_LVL_CH_WD, DpECO_LVL_CH_HT-15, _cBGD_SCRN, DpFIG_FILL);	// Clear
 			DpSTR_GuiLeft(DpECO_LVL_VALU_X0+100, DpECO_LVL_VALU_Y0+80, _cLight_level, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
 
 			val = (nnd_echo.result_slope*nnd_echo.echo_main[19]*330)/4095;
-			
-			_SPRINTF(lDpEco.pStr[0], "%1d.%02d",(U16)(val)/100,(U16)(val)%100);	
+
+			_SPRINTF(lDpEco.pStr[0], "%1d.%02d",(U16)(val)/100,(U16)(val)%100);
 			DpFIG_DrwRect(DpECO_LVL_VALU_X0+100, DpECO_LVL_VALU_Y0+100, DpECO_LVL_CH_WD, DpECO_LVL_CH_HT-15, _cBGD_SCRN, DpFIG_FILL);	// Clear
 			DpSTR_GuiLeft(DpECO_LVL_VALU_X0+100, DpECO_LVL_VALU_Y0+100, _cLight_level, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
 
-			val = (nnd_echo.each_slope*nnd_echo.echo_main[27]*330*2)/4095;			
-			_SPRINTF(lDpEco.pStr[0], "%1d.%02d",(U16)(val)/100,(U16)(val)%100);	
+			val = (nnd_echo.each_slope*nnd_echo.echo_main[27]*330*2)/4095;
+			_SPRINTF(lDpEco.pStr[0], "%1d.%02d",(U16)(val)/100,(U16)(val)%100);
 			DpFIG_DrwRect(DpECO_LVL_VALU_X0+100, DpECO_LVL_VALU_Y0+120, DpECO_LVL_CH_WD, DpECO_LVL_CH_HT-15, _cBGD_SCRN, DpFIG_FILL);	// Clear
 			DpSTR_GuiLeft(DpECO_LVL_VALU_X0+100, DpECO_LVL_VALU_Y0+120, _cLight_level, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
 #else
-			val = (nnd_echo.echo_main[9]*330)/4095;			
-			_SPRINTF(lDpEco.pStr[0], "%1d.%02dV",(U16)(val)/100,(U16)(val)%100);	
+			val = (nnd_echo.echo_main[9]*330)/4095;
+			_SPRINTF(lDpEco.pStr[0], "%1d.%02dV",(U16)(val)/100,(U16)(val)%100);
 
 			DpFIG_DrwRect(DpECO_LVL_VALU_X0+100, DpECO_LVL_VALU_Y0+60, DpECO_LVL_CH_WD, DpECO_LVL_CH_HT-10, _cBGD_SCRN, DpFIG_FILL);	// Clear
 			DpSTR_GuiLeft(DpECO_LVL_VALU_X0+100, DpECO_LVL_VALU_Y0+60, _cLight_level, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
-			
-			
+
+
 			val = (nnd_echo.echo_main[7]*330)/4095;
-			_SPRINTF(lDpEco.pStr[0], "%1d.%02dV",(U16)(val)/100,(U16)(val)%100);	
+			_SPRINTF(lDpEco.pStr[0], "%1d.%02dV",(U16)(val)/100,(U16)(val)%100);
 
 			DpFIG_DrwRect(DpECO_LVL_VALU_X0+100, DpECO_LVL_VALU_Y0+80, DpECO_LVL_CH_WD, DpECO_LVL_CH_HT-15, _cBGD_SCRN, DpFIG_FILL);	// Clear
 			DpSTR_GuiLeft(DpECO_LVL_VALU_X0+100, DpECO_LVL_VALU_Y0+80, _cLight_level, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
 
 			val = nnd_echo.echo_main[28];
-			
-			_SPRINTF(lDpEco.pStr[0], "%1d.%02dV",(U16)(val)/100,(U16)(val)%100);	
+
+			_SPRINTF(lDpEco.pStr[0], "%1d.%02dV",(U16)(val)/100,(U16)(val)%100);
 			DpFIG_DrwRect(DpECO_LVL_VALU_X0+100, DpECO_LVL_VALU_Y0+100, DpECO_LVL_CH_WD, DpECO_LVL_CH_HT-15, _cBGD_SCRN, DpFIG_FILL);	// Clear
 			DpSTR_GuiLeft(DpECO_LVL_VALU_X0+100, DpECO_LVL_VALU_Y0+100, _cLight_level, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
 
-			val = nnd_echo.echo_main[29];			
-			_SPRINTF(lDpEco.pStr[0], "%1d.%02dV",(U16)(val)/100,(U16)(val)%100);	
+			val = nnd_echo.echo_main[29];
+			_SPRINTF(lDpEco.pStr[0], "%1d.%02dV",(U16)(val)/100,(U16)(val)%100);
 			DpFIG_DrwRect(DpECO_LVL_VALU_X0+100, DpECO_LVL_VALU_Y0+120, DpECO_LVL_CH_WD, DpECO_LVL_CH_HT-15, _cBGD_SCRN, DpFIG_FILL);	// Clear
 			DpSTR_GuiLeft(DpECO_LVL_VALU_X0+100, DpECO_LVL_VALU_Y0+120, _cLight_level, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
 #endif
@@ -1217,7 +1217,7 @@ void DpEcoLvl_StrValue(void)
 	}
 
 
-	
+
 #if 0
 	if(ScHYB_PrGet_Unit_() == ScHYB_UNIT_FEET)
 		valu = (U16)MsCAL_Meter2Feet(valu);
@@ -1227,7 +1227,7 @@ void DpEcoLvl_StrValue(void)
 	else					_SPRINTF(lDpEco.pStr[0], "%1d.%02d", valu_light/100, valu_light%100);
 
 	DpFIG_DrwRect(DpECO_LVL_VALU_X0+10, DpECO_LVL_VALU_Y0+30, DpECO_LVL_VALU_WD, DpECO_LVL_VALU_HT, _cBGD_SCRN, DpFIG_FILL);
-	DpSTR_GuiLeft(DpECO_LVL_VALU_X0+10, DpECO_LVL_VALU_Y0+30, _cLight_level, _cBGD_SCRN, _fE35HsB, lDpEco.pStr[0]);	
+	DpSTR_GuiLeft(DpECO_LVL_VALU_X0+10, DpECO_LVL_VALU_Y0+30, _cLight_level, _cBGD_SCRN, _fE35HsB, lDpEco.pStr[0]);
 
 	if(valu_heavy >= 1000)	_SPRINTF(lDpEco.pStr[0], "%2d.%02d", valu_heavy /100, valu_heavy %100);
 	else					_SPRINTF(lDpEco.pStr[0], "%1d.%02d", valu_heavy /100, valu_heavy %100);
@@ -1276,9 +1276,9 @@ void DpEcoLvl_StrChnnl(void)
 			break;
 		case MnSYS_LANG_KOR:
 			DpFIG_DrwRect(DpECO_LVL_TITL_X0+40,  DpECO_GRP_Y0-35, DpECO_LVL_CH_WD+10, DpECO_LVL_CH_HT, _cBGD_SCRN, DpFIG_FILL);	// Clear
-			DpSTR_GuiLeft_KOR(DpECO_LVL_TITL_X0+40, DpECO_GRP_Y0-35, _cSD_WHITE, _cBGD_SCRN, _fE22HsBKOR, gDpStr.Text_list);						
+			DpSTR_GuiLeft_KOR(DpECO_LVL_TITL_X0+40, DpECO_GRP_Y0-35, _cSD_WHITE, _cBGD_SCRN, _fE22HsBKOR, gDpStr.Text_list);
 			break;
-	}	
+	}
 
 	val = MnSYS_PrGet_site_name(ch);
 
@@ -1331,7 +1331,7 @@ void DpEcoBox_LstTitle(U08 iFn)
 
 	if(ScEC1_GetIdxFunc()<ScECO_FNC_PAGE)
 	{
-		page =DpECO_PG_0;	
+		page =DpECO_PG_0;
 	}
 	else if(ScEC1_GetIdxFunc()>=ScECO_FNC_PAGE)
 	{
@@ -1344,7 +1344,7 @@ void DpEcoBox_LstTitle(U08 iFn)
 	else if (iFn >= (ScECO_FNC_PAGE*1))		page = DpECO_PG_1;
 	else									page = DpECO_PG_0;
 	#endif
-	
+
 	y0s = 270 + (DpECO_BOX_Lx_SB_HT * (iFn - (4*page)));
 
 	switch(lang)
@@ -1373,10 +1373,10 @@ void DpEcoBox_LstTitle(U08 iFn)
 						case ScECO_AVG_ASF_HEAVY:		_SPRINTF(lDpEco.pStr[0], _sASF_HEAVY);	break;
 						default:						break;
 					}
-					break;			
-			}			
+					break;
+			}
 			DpFIG_DrwRect(x0s, y0s, w_c, h_c, _cBGD_SCRN, DpFIG_FILL);
-			DpSTR_GuiLeft(x0s, y0s, _cSD_WHITE, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);		
+			DpSTR_GuiLeft(x0s, y0s, _cSD_WHITE, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
 			break;
 		case MnSYS_LANG_KOR:
 			DpFIG_DrwRect(x0s, y0s, w_c, h_c, _cBGD_SCRN, DpFIG_FILL);
@@ -1393,7 +1393,7 @@ void DpEcoBox_LstTitle(U08 iFn)
 						case ScECO_REAL_TVG:
 							_SPRINTF(lDpEco.pStr[0], _sTVG);
 							DpFIG_DrwRect(x0s, y0s, w_c, h_c, _cBGD_SCRN, DpFIG_FILL);
-							DpSTR_GuiLeft(x0s, y0s, _cSD_WHITE, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);		
+							DpSTR_GuiLeft(x0s, y0s, _cSD_WHITE, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
 							return;
 						default:						break;
 					}
@@ -1403,24 +1403,24 @@ void DpEcoBox_LstTitle(U08 iFn)
 					{	// Page #0
 						case ScECO_AVG_THR_LIGHT:		DpSTR_GuiList(TEXT_LIST_THR_LIGHT);	break;
 						case ScECO_AVG_THR_HEAVY:		DpSTR_GuiList(TEXT_LIST_THR_HEAVY);	break;
-						case ScECO_AVG_ASF_LIGHT:	
+						case ScECO_AVG_ASF_LIGHT:
 							DpFIG_DrwRect(x0s, y0s, w_c, h_c, _cBGD_SCRN, DpFIG_FILL);
 							DpSTR_GuiList(TEXT_LIST_LIGHT);
 							DpSTR_GuiLeft_KOR(x0s, y0s, _cSD_WHITE, _cBGD_SCRN, _fE12HsMKOR, gDpStr.Text_list);
-							_SPRINTF(lDpEco.pStr[0], _sASF);		
+							_SPRINTF(lDpEco.pStr[0], _sASF);
 							DpSTR_GuiLeft(x0s+60, y0s, _cSD_WHITE, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
 							return;
-						case ScECO_AVG_ASF_HEAVY:	
+						case ScECO_AVG_ASF_HEAVY:
 							DpFIG_DrwRect(x0s, y0s, w_c, h_c, _cBGD_SCRN, DpFIG_FILL);
 							DpSTR_GuiList(TEXT_LIST_HEAVY);
 							DpSTR_GuiLeft_KOR(x0s, y0s, _cSD_WHITE, _cBGD_SCRN, _fE12HsMKOR, gDpStr.Text_list);
-							_SPRINTF(lDpEco.pStr[0], _sASF);		
+							_SPRINTF(lDpEco.pStr[0], _sASF);
 							DpSTR_GuiLeft(x0s+60, y0s, _cSD_WHITE, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
-							return;							
+							return;
 						default:						break;
-					}				
-					break;			
-			}		
+					}
+					break;
+			}
 			DpSTR_GuiLeft_KOR(x0s, y0s, _cSD_WHITE, _cBGD_SCRN, _fE12HsMKOR, gDpStr.Text_list);
 			break;
 	}
@@ -1440,7 +1440,7 @@ void DpEcoBox_LstValue(U08 iFn, S32 val)
 
 	if(ScEC1_GetIdxFunc()<ScECO_FNC_PAGE)
 	{
-		page =DpECO_PG_0;	
+		page =DpECO_PG_0;
 	}
 	else if(ScEC1_GetIdxFunc()>=ScECO_FNC_PAGE)
 	{
@@ -1460,19 +1460,20 @@ void DpEcoBox_LstValue(U08 iFn, S32 val)
 			{
 				case ScECO_REAL_ECHO_AMP:	_SPRINTF(lDpEco.pStr[0], ": %d", val);		break;
 				case ScECO_REAL_MEAS_RESET:	_SPRINTF(lDpEco.pStr[0], ": -");			break;
-				case ScECO_REAL_FREQ:		
+				case ScECO_REAL_FREQ:
 					switch(val)
 					{
 						case MnMS1_FREQ_130K:	_SPRINTF(lDpEco.pStr[0], ": 130");		break;
 						case MnMS1_FREQ_160K:	_SPRINTF(lDpEco.pStr[0], ": 160");		break;
 						case MnMS1_FREQ_270K:	_SPRINTF(lDpEco.pStr[0], ": 270");		break;
 						case MnMS1_FREQ_380K:	_SPRINTF(lDpEco.pStr[0], ": 380");		break;
+						case MnMS1_FREQ_415K:	_SPRINTF(lDpEco.pStr[0], ": 415");		break;
 						default:				break;
 					}
 					break;
 				case ScECO_REAL_EMPTY:		_SPRINTF(lDpEco.pStr[0], ": %d.%02d", (U16)(val/100), (U16)(val%100));	break;
 				case ScECO_REAL_DEADZONE:	_SPRINTF(lDpEco.pStr[0], ": %d.%02d", (U16)(val/100), (U16)(val%100));	break;
-				case ScECO_REAL_TVG:		
+				case ScECO_REAL_TVG:
 					if(val == MnEGN_TVG_MIN)
 					{
 						if(lang == MnSYS_LANG_ENG)
@@ -1480,10 +1481,10 @@ void DpEcoBox_LstValue(U08 iFn, S32 val)
 						else
 						{
 							DpFIG_DrwRect(x0c, y0c, 60, 20, _cBGD_SCRN, DpFIG_FILL);
-							_SPRINTF(lDpEco.pStr[0], ":");	
+							_SPRINTF(lDpEco.pStr[0], ":");
 							DpSTR_GuiLeft(x0s, y0s, col, _cBGD_SCRN, sFt, lDpEco.pStr[0]);
 							DpSTR_GuiList(TEXT_LIST_OFF);
-							DpSTR_GuiLeft_KOR(x0s+5, y0s, col, _cBGD_SCRN, _fE12HsMKOR, gDpStr.Text_list);			
+							DpSTR_GuiLeft_KOR(x0s+5, y0s, col, _cBGD_SCRN, _fE12HsMKOR, gDpStr.Text_list);
 							return;
 						}
 					}
@@ -1496,7 +1497,7 @@ void DpEcoBox_LstValue(U08 iFn, S32 val)
 		case ScECO_TYPE_AVG:
 			switch(iFn)
 			{	// Page #0
-				case ScECO_AVG_THR_LIGHT:		
+				case ScECO_AVG_THR_LIGHT:
 					switch(MnMSR_CalGet_Ch_Value(iCh, MnMS1_OPT_SINGLE_THR_LIGHT))
 					{
 						case MnMS1_THRESHOLD_AUTO:		_SPRINTF(lDpEco.pStr[0], ": %d%c", val,37);		break;
@@ -1514,7 +1515,7 @@ void DpEcoBox_LstValue(U08 iFn, S32 val)
 				case ScECO_AVG_ASF_HEAVY:				_SPRINTF(lDpEco.pStr[0], ": %d", val);		break;
 				default:						break;
 			}
-			break;				
+			break;
 	}
 
 
@@ -1540,7 +1541,7 @@ void DpEcoBox_LstSaveEcho(S16 iFn)
 #if 0
 	if(ScEC1_GetIdxFunc()<ScECO_FNC_PAGE)
 	{
-		page =DpECO_PG_0;	
+		page =DpECO_PG_0;
 	}
 	else if(ScEC1_GetIdxFunc()>=ScECO_FNC_PAGE)
 	{
@@ -1553,7 +1554,7 @@ void DpEcoBox_LstSaveEcho(S16 iFn)
 	else if (iFn >= (ScECO_FNC_PAGE*1))		page = DpECO_PG_1;
 	else									page = DpECO_PG_0;
 	#endif
-	
+
 	y[0] = 270 + (DpECO_BOX_Lx_SB_HT * 0)-10;
 	y[1] = 270 + (DpECO_BOX_Lx_SB_HT * 1)-10;
 	y[2] = 270 + (DpECO_BOX_Lx_SB_HT * 2)-10;
@@ -1563,58 +1564,58 @@ void DpEcoBox_LstSaveEcho(S16 iFn)
 
 #if 0
 	_SPRINTF(lDpEco.pStr[0], "Total count  : %d", max);
-	
+
 	DpFIG_DrwRect(x0s, y[0]-25, w_c, h_c, _cBGD_SCRN, DpFIG_FILL);
-	DpSTR_GuiLeft(x0s, y[0]-25, _cSD_WHITE, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);				
+	DpSTR_GuiLeft(x0s, y[0]-25, _cSD_WHITE, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
 #endif
 	if(iFn+2>=max)	num = (iFn+2) -max;
 	else num =iFn +2;
-	
+
 	for(i=0; i<6; i++)
 		data[i] = NND_Meta_Getmain(ch, num, i);
 
 	_SPRINTF(lDpEco.pStr[0], "[%d] %02d-%02d-%02d %02d:%02d", num+1,data[0],data[1],data[2],data[3],data[4]);
-	
+
 	DpFIG_DrwRect(x0s+10, y[0], w_c, h_c, _cBGD_SCRN, DpFIG_FILL);
-	DpSTR_GuiLeft(x0s+10, y[0], _cSD_WHITE, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);	
+	DpSTR_GuiLeft(x0s+10, y[0], _cSD_WHITE, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
 
 	if(iFn+1>=max)	num = (iFn+1) -max;
 	else num =iFn +1;
 	for(i=0; i<6; i++)
 		data[i] = NND_Meta_Getmain(ch, num, i);
-	
+
 	_SPRINTF(lDpEco.pStr[0], "[%d] %02d-%02d-%02d %02d:%02d",num+1,data[0],data[1],data[2],data[3],data[4]);
-	
+
 	DpFIG_DrwRect(x0s+10, y[1], w_c, h_c, _cBGD_SCRN, DpFIG_FILL);
-	DpSTR_GuiLeft(x0s+10, y[1], _cSD_WHITE, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);	
+	DpSTR_GuiLeft(x0s+10, y[1], _cSD_WHITE, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
 
 
 	for(i=0; i<6; i++)
 		data[i] = NND_Meta_Getmain(ch, iFn, i);
 	_SPRINTF(lDpEco.pStr[0], "[%d] %02d-%02d-%02d %02d:%02d", iFn+1,data[0],data[1],data[2],data[3],data[4]);
-	
+
 	DpFIG_DrwRect(x0s+10, y[2], w_c, h_c, _cBGD_SCRN, DpFIG_FILL);
-	DpSTR_GuiLeft(x0s+10, y[2], _cSD_WHITE, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);		
+	DpSTR_GuiLeft(x0s+10, y[2], _cSD_WHITE, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
 
 	if(iFn-1<0)	num = ((iFn-1)+max);
 	else num = iFn-1;
 	for(i=0; i<6; i++)
 		data[i] = NND_Meta_Getmain(ch, num, i);
-	
+
 	_SPRINTF(lDpEco.pStr[0], "[%d] %02d-%02d-%02d %02d:%02d", num+1,data[0],data[1],data[2],data[3],data[4]);
-	
+
 	DpFIG_DrwRect(x0s+10, y[3]+5, w_c, h_c, _cBGD_SCRN, DpFIG_FILL);
-	DpSTR_GuiLeft(x0s+10, y[3]+5, _cSD_WHITE, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);		
-	
+	DpSTR_GuiLeft(x0s+10, y[3]+5, _cSD_WHITE, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
+
 	if(iFn-2<0)	num = ((iFn-2)+max);
 	else num = iFn-2;
 	for(i=0; i<6; i++)
 		data[i] = NND_Meta_Getmain(ch, num, i);
-	
+
 	_SPRINTF(lDpEco.pStr[0], "[%d] %02d-%02d-%02d %02d:%02d", num+1,data[0],data[1],data[2],data[3],data[4]);
-	
+
 	DpFIG_DrwRect(x0s+10, y[4]+5, w_c, h_c, _cBGD_SCRN, DpFIG_FILL);
-	DpSTR_GuiLeft(x0s+10, y[4]+5, _cSD_WHITE, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);		
+	DpSTR_GuiLeft(x0s+10, y[4]+5, _cSD_WHITE, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
 
 	DpFIG_DrwRect(x0s-3, y[2]-2, w_c, h_c, _cBGD_SCRN, 2);
 	aSl[DpSCR_SBX_aX0] = x0s-3;
@@ -1624,7 +1625,7 @@ void DpEcoBox_LstSaveEcho(S16 iFn)
 
 	DpFIG_DrwRect(aSl[DpSCR_SBX_aX0]-5, y[0]-5, aSl[DpSCR_SBX_aWd], y[4]+10-y[0]+h_c, _cSD_LIGHTGRAY, 2);
 	DpFIG_DrwRect(aSl[DpSCR_SBX_aX0], aSl[DpSCR_SBX_aY0], aSl[DpSCR_SBX_aWd]-10, aSl[DpSCR_SBX_aHt], _cBTN_FG_SELE, 2);
-	DpSCR_LnHrBttn(); 
+	DpSCR_LnHrBttn();
 
 }
 
@@ -1648,39 +1649,39 @@ void DpEcoBox_LstAll(void)
 			val[ScECO_REAL_TVG] = MnEGN_PrGet_CH_Item(iCh,MnEGN_OPT_SINGLE_TVG);
 			switch(ScECH_GetLayer())
 			{
-				case SCRN_L2_VALU:	
-					val[ScEC1_GetIdxFunc()]   = ScEC2_GetValue();	
+				case SCRN_L2_VALU:
+					val[ScEC1_GetIdxFunc()]   = ScEC2_GetValue();
 					break;
-				default:			
+				default:
 					break;
 			}
 			break;
 		case ScECO_TYPE_AVG:
 			num = ScECO_AVG_NUM;
-			val[ScECO_AVG_THR_HEAVY]   = MnMSR_Get_Threshold_Ch_Value(iCh,MnMS1_OPT_SINGLE_THR_HEAVY);	
-			val[ScECO_AVG_THR_LIGHT]   = MnMSR_Get_Threshold_Ch_Value(iCh,MnMS1_OPT_SINGLE_THR_LIGHT);		
-			val[ScECO_AVG_ASF_HEAVY]   = MnMSR_CalGet_Ch_Value(iCh,MnMS1_OPT_SINGLE_ASF_HEAVY);			
-			val[ScECO_AVG_ASF_LIGHT]   = MnMSR_CalGet_Ch_Value(iCh,MnMS1_OPT_SINGLE_ASF_LIGHT);	
+			val[ScECO_AVG_THR_HEAVY]   = MnMSR_Get_Threshold_Ch_Value(iCh,MnMS1_OPT_SINGLE_THR_HEAVY);
+			val[ScECO_AVG_THR_LIGHT]   = MnMSR_Get_Threshold_Ch_Value(iCh,MnMS1_OPT_SINGLE_THR_LIGHT);
+			val[ScECO_AVG_ASF_HEAVY]   = MnMSR_CalGet_Ch_Value(iCh,MnMS1_OPT_SINGLE_ASF_HEAVY);
+			val[ScECO_AVG_ASF_LIGHT]   = MnMSR_CalGet_Ch_Value(iCh,MnMS1_OPT_SINGLE_ASF_LIGHT);
 
 			if(ScECH_GetLayer() == SCRN_L2_VALU)
 			{
 				val[ScEC1_GetIdxFunc()]    = ScEC2_GetValue();
-				
+
 				if(ScEC1_GetIdxFunc() == ScECO_AVG_ASF_LIGHT)
 				{
-					if(ScEC2_GetMode() == SCRN_L2_UPDN_DIG)	
-						val[ScECO_AVG_ASF_LIGHT]	= MnMSR_CalGet_Ch_Value(iCh,MnMS1_OPT_SINGLE_ASF_LIGHT);								
-					if(ScEC2_GetMode() == SCRN_L2_UPDN_DIG_VALUE)		
-						val[ScECO_AVG_ASF_LIGHT]	= ScEC2_GetValue();	
+					if(ScEC2_GetMode() == SCRN_L2_UPDN_DIG)
+						val[ScECO_AVG_ASF_LIGHT]	= MnMSR_CalGet_Ch_Value(iCh,MnMS1_OPT_SINGLE_ASF_LIGHT);
+					if(ScEC2_GetMode() == SCRN_L2_UPDN_DIG_VALUE)
+						val[ScECO_AVG_ASF_LIGHT]	= ScEC2_GetValue();
 				}
-				
+
 				if(ScEC1_GetIdxFunc() == ScECO_AVG_ASF_HEAVY)
 				{
-					if(ScEC2_GetMode() == SCRN_L2_UPDN_DIG)	
-						val[ScECO_AVG_ASF_HEAVY]	= MnMSR_CalGet_Ch_Value(iCh,MnMS1_OPT_SINGLE_ASF_HEAVY);								
-					if(ScEC2_GetMode() == SCRN_L2_UPDN_DIG_VALUE)		
-						val[ScECO_AVG_ASF_HEAVY]	= ScEC2_GetValue();	
-				}			
+					if(ScEC2_GetMode() == SCRN_L2_UPDN_DIG)
+						val[ScECO_AVG_ASF_HEAVY]	= MnMSR_CalGet_Ch_Value(iCh,MnMS1_OPT_SINGLE_ASF_HEAVY);
+					if(ScEC2_GetMode() == SCRN_L2_UPDN_DIG_VALUE)
+						val[ScECO_AVG_ASF_HEAVY]	= ScEC2_GetValue();
+				}
 			}
 			break;
 		case ScECO_TYPE_SAVE_ECHO:
@@ -1688,7 +1689,7 @@ void DpEcoBox_LstAll(void)
 			DpEcoBox_LstSaveEcho(nnd_echo.num);
 			return;
 		case ScECO_TYPE_MSR_ECHO:
-			DpFIG_DrwRect(DpECO_BOX_L0_TL_X0-10, 280, DpECO_BOX_Lx_SB_WD+60, 110, _cBGD_SCRN, DpFIG_FILL);		
+			DpFIG_DrwRect(DpECO_BOX_L0_TL_X0-10, 280, DpECO_BOX_Lx_SB_WD+60, 110, _cBGD_SCRN, DpFIG_FILL);
 			return;
 		default:
 			break;
@@ -1697,10 +1698,10 @@ void DpEcoBox_LstAll(void)
 
 	if(ScEC1_GetIdxFunc()<ScECO_FNC_PAGE)
 	{
-		page =DpECO_PG_0;	
+		page =DpECO_PG_0;
 		if(num>=ScECO_FNC_PAGE)
 			end= ScECO_FNC_PAGE;
-		else 
+		else
 			end= num;
 
 	}
@@ -1709,7 +1710,7 @@ void DpEcoBox_LstAll(void)
 		page = DpECO_PG_1;
 		if(num>=ScECO_FNC_PAGE+4)
 			end= ScECO_FNC_PAGE+4;
-		else 
+		else
 			end= num-4;
 	}
 
@@ -1785,7 +1786,7 @@ void DpEcoL1l_SelBox(void)
 	for(i=0; i<num; i++)
 		DpFIG_DrwRect(lDpEco.sbx.aX0[i], lDpEco.sbx.aY0[i], lDpEco.sbx.aWd[i], lDpEco.sbx.aHt[i], _cBGD_SCRN, 2);
 
-	
+
 	aSl[DpSCR_SBX_aX0] = lDpEco.sbx.aX0[iFn];
 	aSl[DpSCR_SBX_aY0] = lDpEco.sbx.aY0[iFn];
 	aSl[DpSCR_SBX_aWd] = lDpEco.sbx.aWd[iFn];
@@ -1808,7 +1809,7 @@ void DpEcoL2l_SelBox(void)
 			DpEcoL1l_SelBox();
 			return;
 		}
-	}	
+	}
 
 
 	switch(ScECH_GetType())
@@ -1818,15 +1819,15 @@ void DpEcoL2l_SelBox(void)
 		default:										break;
 	}
 
-	
-	for(i=0; i<num; i++)
-		DpFIG_DrwRect(lDpEco.sbx.aX0[i], lDpEco.sbx.aY0[i], lDpEco.sbx.aWd[i], lDpEco.sbx.aHt[i], _cBGD_SCRN, 2);
-
 
 	for(i=0; i<num; i++)
 		DpFIG_DrwRect(lDpEco.sbx.aX0[i], lDpEco.sbx.aY0[i], lDpEco.sbx.aWd[i], lDpEco.sbx.aHt[i], _cBGD_SCRN, 2);
 
-	
+
+	for(i=0; i<num; i++)
+		DpFIG_DrwRect(lDpEco.sbx.aX0[i], lDpEco.sbx.aY0[i], lDpEco.sbx.aWd[i], lDpEco.sbx.aHt[i], _cBGD_SCRN, 2);
+
+
 	aSl[DpSCR_SBX_aX0] = lDpEco.sbx.aX0[iFn];
 	aSl[DpSCR_SBX_aY0] = lDpEco.sbx.aY0[iFn];
 	aSl[DpSCR_SBX_aWd] = lDpEco.sbx.aWd[iFn];
@@ -1849,13 +1850,13 @@ void DpEcoL2l_SelPopUp(void)
 	U08 lang = MnSYS_PrGetBase_Item(MnSYS_OPT_LANG);
 	U08 x0s = DpECO_LVL_TITL_X0+20;
 	U08 y0s = DpECO_GRP_Y0+20;
-	U08 w_c = DpECO_BOX_FG_WD-20; 
+	U08 w_c = DpECO_BOX_FG_WD-20;
 	U08 h_c = DpECO_BOX_FG_HT-20;
 	U32 cBg = _cPOP_BG_WND;
 	U08 updn_mod = ScEC2_GetMode();
 	S32 dig = ScEC2_Getupdn_dig();
 	U08 flang = TRUE;
-	
+
 	if(ScECH_GetType()==ScECO_TYPE_AVG)
 	{
 		switch(iFn)
@@ -1865,7 +1866,7 @@ void DpEcoL2l_SelPopUp(void)
 				return;
 		}
 	}
-	
+
 	DpEchoPOP_DrwIntro();
 
 
@@ -1895,8 +1896,8 @@ void DpEcoL2l_SelPopUp(void)
 						case ScECO_AVG_ASF_HEAVY:		_SPRINTF(lDpEco.pStr[0], _sASF_HEAVY);	break;
 						default:						break;
 					}
-					break;			
-			}						
+					break;
+			}
 			break;
 		case MnSYS_LANG_KOR:
 			switch(ScECH_GetType())
@@ -1922,24 +1923,24 @@ void DpEcoL2l_SelPopUp(void)
 					{	// Page #0
 						case ScECO_AVG_THR_LIGHT:		DpSTR_GuiList(TEXT_LIST_THR_LIGHT);	break;
 						case ScECO_AVG_THR_HEAVY:		DpSTR_GuiList(TEXT_LIST_THR_HEAVY);	break;
-						case ScECO_AVG_ASF_LIGHT:	
+						case ScECO_AVG_ASF_LIGHT:
 							DpFIG_DrwRect(x0s, y0s, w_c, h_c, _cBGD_SCRN, DpFIG_FILL);
 							DpSTR_GuiList(TEXT_LIST_LIGHT);
 							DpSTR_GuiLeft_KOR(x0s, y0s, _cSD_WHITE, _cBGD_SCRN, _fE12HsMKOR, gDpStr.Text_list);
-							_SPRINTF(lDpEco.pStr[0], _sASF);		
+							_SPRINTF(lDpEco.pStr[0], _sASF);
 							DpSTR_GuiLeft(x0s+60, y0s, _cSD_WHITE, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
 							return;
-						case ScECO_AVG_ASF_HEAVY:	
+						case ScECO_AVG_ASF_HEAVY:
 							DpFIG_DrwRect(x0s, y0s, w_c, h_c, _cBGD_SCRN, DpFIG_FILL);
 							DpSTR_GuiList(TEXT_LIST_HEAVY);
 							DpSTR_GuiLeft_KOR(x0s, y0s, _cSD_WHITE, _cBGD_SCRN, _fE12HsMKOR, gDpStr.Text_list);
-							_SPRINTF(lDpEco.pStr[0], _sASF);		
+							_SPRINTF(lDpEco.pStr[0], _sASF);
 							DpSTR_GuiLeft(x0s+60, y0s, _cSD_WHITE, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
-							return;							
+							return;
 						default:						break;
-					}				
-					break;			
-			}		
+					}
+					break;
+			}
 			_SPRINTF(lDpEco.pStr[0], gDpStr.Text_list);
 			break;
 	}
@@ -1948,7 +1949,7 @@ void DpEcoL2l_SelPopUp(void)
 		DpEchoPOP_UdtTitle(lDpEco.pStr[0]);
 
 	flang = TRUE;
-	
+
 	switch(ScECH_GetType())
 	{
 		case ScECO_TYPE_REAL:
@@ -1963,11 +1964,12 @@ void DpEcoL2l_SelPopUp(void)
 						case MnMS1_FREQ_270K:	_SPRINTF(pSt0, "270");		break;
 						case MnMS1_FREQ_160K:	_SPRINTF(pSt0, "160");		break;
 						case MnMS1_FREQ_130K:	_SPRINTF(pSt0, "130");		break;
+						case MnMS1_FREQ_415K:	_SPRINTF(pSt0, "415");		break;
 					}
 					break;
 				case ScECO_REAL_EMPTY:		_SPRINTF(pSt0, "%d.%02d", (U16)(old/100), (U16)(old%100));	break;
 				case ScECO_REAL_DEADZONE:	_SPRINTF(pSt0, "%d.%02d", (U16)(old/100), (U16)(old%100));	break;
-				case ScECO_REAL_TVG:		
+				case ScECO_REAL_TVG:
 					if(old ==0)
 					{
 						if(lang==MnSYS_LANG_ENG)
@@ -1981,16 +1983,16 @@ void DpEcoL2l_SelPopUp(void)
 						}
 					}
 					else
-						_SPRINTF(pSt0, "%d", old);		
+						_SPRINTF(pSt0, "%d", old);
 					break;
-				default:					
+				default:
 					return;
 			}
 			break;
 		case ScECO_TYPE_AVG:
 			switch(iFn)
 			{	// Page #0
-				case ScECO_AVG_THR_LIGHT:		
+				case ScECO_AVG_THR_LIGHT:
 					switch(MnMSR_CalGet_Ch_Value(ch, MnMS1_OPT_SINGLE_THR_LIGHT))
 					{
 						case MnMS1_THRESHOLD_AUTO:		_SPRINTF(pSt0, "%d%c", old,37);		break;
@@ -2008,14 +2010,14 @@ void DpEcoL2l_SelPopUp(void)
 				case ScECO_AVG_ASF_HEAVY:				_SPRINTF(pSt0, "%d", old);		break;
 				default:								break;
 			}
-			break;				
+			break;
 	}
 
 	if(flang)
 		DpEchoPOP_UdtOldVl(pSt0);
 
 	flang = TRUE;
-	
+
 	switch(ScECH_GetType())
 	{
 		case ScECO_TYPE_REAL:
@@ -2025,27 +2027,27 @@ void DpEcoL2l_SelPopUp(void)
 				case ScECO_REAL_MEAS_RESET:
 					switch(val)
 					{
-						case MENU_CHK_NO:	
+						case MENU_CHK_NO:
 							if(lang==MnSYS_LANG_ENG)
-								_SPRINTF(pSt0, "NO");		
+								_SPRINTF(pSt0, "NO");
 							else if(lang==MnSYS_LANG_KOR)
 							{
 								DpSTR_GuiList(TEXT_LIST_NO);
 								DpSTR_GuiLeft_KOR(DpECO_LVL_TITL_X0+20, DpECO_GRP_Y0+70, _cPOP_ST_VAL_SEL, _cPOP_BG_WND, _fE22HsBKOR, gDpStr.Text_list);
 								return;
-							}	
+							}
 							break;
 						case MENU_CHK_YES:
 							if(lang==MnSYS_LANG_ENG)
-								_SPRINTF(pSt0, "YES");		
+								_SPRINTF(pSt0, "YES");
 							else if(lang==MnSYS_LANG_KOR)
 							{
 								DpSTR_GuiList(TEXT_LIST_YES);
 								DpSTR_GuiLeft_KOR(DpECO_LVL_TITL_X0+20, DpECO_GRP_Y0+70, _cPOP_ST_VAL_SEL, _cPOP_BG_WND, _fE22HsBKOR, gDpStr.Text_list);
 								return;
-							}	
+							}
 							break;
-					}		
+					}
 					break;
 				case ScECO_REAL_FREQ:
 					switch(val)
@@ -2054,6 +2056,7 @@ void DpEcoL2l_SelPopUp(void)
 						case MnMS1_FREQ_270K:	_SPRINTF(pSt0, "270kHz");		break;
 						case MnMS1_FREQ_160K:	_SPRINTF(pSt0, "160kHz");		break;
 						case MnMS1_FREQ_130K:	_SPRINTF(pSt0, "130kHz");		break;
+						case MnMS1_FREQ_415K:	_SPRINTF(pSt0, "415kHz");		break;
 					}
 					break;
 				case ScECO_REAL_EMPTY:		_SPRINTF(pSt0, "%02d.%02d(m)", (U16)(val/100), (U16)(val%100));	break;
@@ -2071,7 +2074,7 @@ void DpEcoL2l_SelPopUp(void)
 					}
 				}
 				else
-					_SPRINTF(pSt0, "%d", val);		
+					_SPRINTF(pSt0, "%d", val);
 				break;
 				default:					return;
 			}
@@ -2079,7 +2082,7 @@ void DpEcoL2l_SelPopUp(void)
 		case ScECO_TYPE_AVG:
 			switch(iFn)
 			{	// Page #0
-				case ScECO_AVG_THR_LIGHT:		
+				case ScECO_AVG_THR_LIGHT:
 					switch(MnMSR_CalGet_Ch_Value(ch, MnMS1_OPT_SINGLE_THR_LIGHT))
 					{
 						case MnMS1_THRESHOLD_AUTO:		_SPRINTF(pSt0, "%d%c", val,37);		break;
@@ -2097,10 +2100,10 @@ void DpEcoL2l_SelPopUp(void)
 				case ScECO_AVG_ASF_HEAVY:				_SPRINTF(pSt0, "%d", val);		break;
 				default:								break;
 			}
-			break;				
+			break;
 	}
 
- 
+
 
 
 	switch(updn_mod)
@@ -2116,7 +2119,7 @@ void DpEcoL2l_SelPopUp(void)
 
 	switch(dig)
 	{
-		case 4:	
+		case 4:
 			_SPRINTF(pSt0, "%d", (abs(val)/10000)%10);	DpSTR_GuiLeft(DpECO_LVL_TITL_X0+20, DpECO_GRP_Y0+120, _cMNU_SEL_SCT, cBg, _fE22HsB, pSt0);
 			break;
 		case 3:
@@ -2131,7 +2134,7 @@ void DpEcoL2l_SelPopUp(void)
 		case 0:
 			_SPRINTF(pSt0, "%d", abs(val)%10); DpSTR_GuiLeft(DpECO_LVL_TITL_X0+20, DpECO_GRP_Y0+120, _cMNU_SEL_SCT, cBg, _fE22HsB, pSt0);
 			break;
-	}	
+	}
 }
 
 
@@ -2217,15 +2220,15 @@ void DpEC0_FncStdBy(U08 range)
 		DpTTB_UdtIntro(TEXT_LIST_MENU, 300, _cTTB_ST_TITLE);
 		return;
 	}
-	
+
 	DpEcoGrp_DrawLive(range);
 
 	DpEcoLvl_StrValue();
 
-	
+
 	before_volt_diff = lMsCal.auto_gain_before_slope[ch]*lMsCal.auto_gain_before_xrange[ch];
 	current_volt_diff = lMsCal.auto_gain_current_slope[ch]*(auto_range_x*2);
-	
+
 
 
 
@@ -2298,7 +2301,7 @@ void DpEC0_FncIntro(void)
 	}
 	else if (type == MnFTR_SS_DUAL)
 		ch = ScECH_PrGet_Chnnl();
-	
+
 	DpECO_InitVari();
 	// Title
 
@@ -2307,16 +2310,16 @@ void DpEC0_FncIntro(void)
 		empty = nnd_echo.empty;
 		ch =  nnd_echo.ch;
 	}
-	
+
 	switch(ScECH_GetType())
 	{
 		case ScECO_TYPE_REAL:			DpTTB_UdtIntro(TEXT_LIST_REAL_ECHO_SCREEN, 300, _cTTB_ST_TITLE);	break;
 		case ScECO_TYPE_AVG:			DpTTB_UdtIntro(TEXT_LIST_AVG_ECHO_SCREEN, 300, _cTTB_ST_TITLE);		break;
-		case ScECO_TYPE_SAVE_ECHO:		
+		case ScECO_TYPE_SAVE_ECHO:
 			if(MnDAT_EchoSavePrGet_SingleValue(nnd_echo.ch, MnDS1_OPT_SINGLE_ECHO_VIEW_MODE)==MnDS1_ECHO_VIEW_MODE_MSR)
-				DpTTB_UdtIntro(TEXT_LIST_SAVE_ECHO_SCREEN, 300, _cTTB_ST_TITLE);	
+				DpTTB_UdtIntro(TEXT_LIST_SAVE_ECHO_SCREEN, 300, _cTTB_ST_TITLE);
 			else
-				DpTTB_UdtIntro(TEXT_LIST_SAVE_CALIB_SCREEN, 300, _cTTB_ST_TITLE);	
+				DpTTB_UdtIntro(TEXT_LIST_SAVE_CALIB_SCREEN, 300, _cTTB_ST_TITLE);
 			break;
 		case ScECO_TYPE_MSR_ECHO:		DpTTB_UdtIntro(TEXT_LIST_AVG_ECHO_SCREEN, 300, _cTTB_ST_TITLE);	break;
 	}
@@ -2330,7 +2333,7 @@ void DpEC0_FncIntro(void)
 	DpFIG_DrwLinH(DpECO_GRP_X0-10, DpECO_GRP_Y0+DpECO_GRP_HT+8-6, 6, _cECO_GRP_BDR);
 	// Graph - Amplitude Rate
 	DpEcoGrp_TtlAmp();
-	
+
 
 
 	// Graph - Meter Sign
@@ -2341,17 +2344,17 @@ void DpEC0_FncIntro(void)
 			val = empty-((empty*i)/10);
 			if(val>=1000)	_SPRINTF(lDpEco.pStr[0], "%02d.%02d",val/100,val%100);
 			else			_SPRINTF(lDpEco.pStr[0], "%01d.%02d",val/100,val%100);
-		
+
 			DpSTR_GuiLeft(sn_x0+ (sn_xG*i)-18, sn_y0+10, _cECO_AMP_STD, _cBGD_SCRN, _fE12HsM, lDpEco.pStr[0]);
 		}
-		DpFIG_DrwLinV(sn_x0+ (sn_xG*i), sn_y0, 6, _cECO_GRP_BDR);	
+		DpFIG_DrwLinV(sn_x0+ (sn_xG*i), sn_y0, 6, _cECO_GRP_BDR);
 	}
 
-	
+
 	DpFIG_DrwLinH(sn_x0-10, y1, 6, _cECO_GRP_BDR);
 	DpFIG_DrwLinH(sn_x0-10, y2, 6, _cECO_GRP_BDR);
 	DpFIG_DrwLinH(sn_x0-10, y3, 6, _cECO_GRP_BDR);
-	
+
 	// Layer (Multi / Single)
 	//DpEcoLyr_StrUpdat();
 	// Parameter Box

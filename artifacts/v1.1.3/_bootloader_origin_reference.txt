@@ -1,0 +1,3 @@
+Bootloader source linker script used for merge:
+C:\old_laptop\D\svn server\c1d-330\branches\bootload\STM32F769IITX_FLASH.ld
+FLASH ORIGIN = 0x08000000

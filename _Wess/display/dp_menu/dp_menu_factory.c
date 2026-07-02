@@ -101,14 +101,14 @@ void DpFTR_PopUpdat(void)
 	S32 updn_mod = MnLY3_GetUpdnMod();
 	S32 max  = MnLY3_GetMax();
 
-	DpFIG_DrwRect(x0, y1, 500, 30, cBg, DpFIG_FILL);	
+	DpFIG_DrwRect(x0, y1, 500, 30, cBg, DpFIG_FILL);
 
 
 	if(MnFTR_PrGet_SsChn()==MnFTR_SS_DUAL)
 	{
 		switch(iIt)
 		{
-			case MnFTR_I00_SS_CH:	
+			case MnFTR_I00_SS_CH:
 				if(val == MnFTR_SS_DUAL)
 					_SPRINTF(pSt0, "Dual");
 				if(val == MnFTR_SS_SINGLE)
@@ -131,7 +131,7 @@ void DpFTR_PopUpdat(void)
 				break;
 			case MnFTR_I10_CH2_OUTPUT_4MA:	return;
 			case MnFTR_I11_RELAY_TEST:
-				_SPRINTF(pSt0, "%02d.%02d", val/100, val%100);	
+				_SPRINTF(pSt0, "%02d.%02d", val/100, val%100);
 				break;
 			case MnFTR_I12_LANG:
 				switch(val)
@@ -148,11 +148,15 @@ void DpFTR_PopUpdat(void)
 				if(val == MnFTR_RF_VER_NEW)		_SPRINTF(pSt0, "NEW");
 				else							_SPRINTF(pSt0, "OLD");
 				break;
-			case MnFTR_I17_PROTOCOL:
+			case MnFTR_I17_SENSOR_TYPE:
+				if(val == MnFTR_SENSOR_TYPE_S1)		_SPRINTF(pSt0, "S1");
+				else							_SPRINTF(pSt0, "ATK50");
+				break;
+			case MnFTR_I18_PROTOCOL:
 				if(val == MnDS2_TYPE_MDB)		_SPRINTF(pSt0, "Modbus");
 				else							_SPRINTF(pSt0, "RF");
 				break;
-			case MnFTR_I18_FTR_RST:			DpSy2Val_FtRsUpdat();		return;
+			case MnFTR_I19_FTR_RST:			DpSy2Val_FtRsUpdat();		return;
 			default:
 				break;
 		}
@@ -161,7 +165,7 @@ void DpFTR_PopUpdat(void)
 	{
 		switch(iIt)
 		{
-			case MnFTR_OPT_SINGLE_SS_CH:		
+			case MnFTR_OPT_SINGLE_SS_CH:
 				if(val == MnFTR_SS_DUAL)
 					_SPRINTF(pSt0, "Dual");
 				if(val == MnFTR_SS_SINGLE)
@@ -176,7 +180,7 @@ void DpFTR_PopUpdat(void)
 				break;
 			case MnFTR_OPT_SINGLE_OUTPUT_4MA:	return;
 			case MnFTR_OPT_SINGLE_RELAY_TEST:
-				_SPRINTF(pSt0, "%02d.%02d", val/100, val%100);	
+				_SPRINTF(pSt0, "%02d.%02d", val/100, val%100);
 				break;
 			case MnFTR_OPT_SINGLE_LANG:
 				switch(val)
@@ -192,6 +196,10 @@ void DpFTR_PopUpdat(void)
 			case MnFTR_OPT_SINGLE_RF_VERSION:
 				if(val == MnFTR_RF_VER_NEW)		_SPRINTF(pSt0, "NEW");
 				else							_SPRINTF(pSt0, "OLD");
+				break;
+			case MnFTR_OPT_SINGLE_SENSOR_TYPE:
+				if(val == MnFTR_SENSOR_TYPE_S1)		_SPRINTF(pSt0, "S1");
+				else							_SPRINTF(pSt0, "ATK50");
 				break;
 			case MnFTR_OPT_SINGLE_PROTOCOL:
 				if(val == MnDS2_TYPE_MDB)		_SPRINTF(pSt0, "Modbus");
@@ -215,10 +223,10 @@ void DpFTR_PopUpdat(void)
 
 	if(MnLY3_GetUpdnMod() != MENU_V3_UPDN_DIG_VALUE)
 		return;
-	
+
 	switch(dig)
 	{
-		case 4:	
+		case 4:
 			_SPRINTF(pSt0, "%d", (val/10000)%10);	DpSTR_GuiLeft(x0, y1, _cMNU_SEL_SCT, cBg, _fE22HsB, pSt0);
 			break;
 		case 3:
@@ -279,7 +287,7 @@ void DpFTR_PopIntro(void)
 			case MnFTR_I01_CH0_04mA:
 			case MnFTR_I02_CH0_20mA:
 			case MnFTR_I03_CH1_04mA:
-			case MnFTR_I04_CH1_20mA:			
+			case MnFTR_I04_CH1_20mA:
 			case MnFTR_I05_CH1_TRIM_12MA:
 			case MnFTR_I06_CH1_TRIM_20MA:
 				if(val>=0)	_SPRINTF(lDpFtr.pStr, "%d", val);
@@ -323,7 +331,15 @@ void DpFTR_PopIntro(void)
 					default:					_SPRINTF(lDpFtr.pStr, _sNG);		break;
 				}
 				break;
-			case MnFTR_I17_PROTOCOL:
+			case MnFTR_I17_SENSOR_TYPE:
+				switch(val)
+				{
+					case MnFTR_SENSOR_TYPE_S1:		_SPRINTF(lDpFtr.pStr, "S1");		break;
+					case MnFTR_SENSOR_TYPE_ATK50:	_SPRINTF(lDpFtr.pStr, "ATK50");	break;
+					default:						_SPRINTF(lDpFtr.pStr, _sNG);		break;
+				}
+				break;
+			case MnFTR_I18_PROTOCOL:
 				switch(val)
 				{
 					case MnDS2_TYPE_MDB:		_SPRINTF(lDpFtr.pStr, "Modbus");	break;
@@ -331,7 +347,7 @@ void DpFTR_PopIntro(void)
 					default:					_SPRINTF(lDpFtr.pStr, _sNG);		break;
 				}
 				break;
-			case MnFTR_I18_FTR_RST:
+			case MnFTR_I19_FTR_RST:
 				fDp = _F_F;
 				break;
 			default:							_SPRINTF(lDpFtr.pStr, _sNG);			break;
@@ -350,7 +366,7 @@ void DpFTR_PopIntro(void)
 				}
 				break;
 			case MnFTR_OPT_SINGLE_04mA:
-			case MnFTR_OPT_SINGLE_20mA:		
+			case MnFTR_OPT_SINGLE_20mA:
 			case MnFTR_OPT_SINGLE_TRIM_12MA:
 			case MnFTR_OPT_SINGLE_TRIM_20MA:
 				if(val>=0)	_SPRINTF(lDpFtr.pStr, "%d", val);
@@ -386,6 +402,14 @@ void DpFTR_PopIntro(void)
 					default:					_SPRINTF(lDpFtr.pStr, _sNG);		break;
 				}
 				break;
+			case MnFTR_OPT_SINGLE_SENSOR_TYPE:
+				switch(val)
+				{
+					case MnFTR_SENSOR_TYPE_S1:		_SPRINTF(lDpFtr.pStr, "S1");		break;
+					case MnFTR_SENSOR_TYPE_ATK50:	_SPRINTF(lDpFtr.pStr, "ATK50");	break;
+					default:						_SPRINTF(lDpFtr.pStr, _sNG);		break;
+				}
+				break;
 			case MnFTR_OPT_SINGLE_PROTOCOL:
 				switch(val)
 				{
@@ -403,7 +427,7 @@ void DpFTR_PopIntro(void)
 	}
 	if(fDp)
 		DpPOP_UdtOldVl(lDpFtr.pStr);
-	
+
 	if(MnFTR_PrGet_SsChn()==MnFTR_SS_DUAL)
 	{
 		if(iIt==MnFTR_I11_RELAY_TEST)
@@ -426,12 +450,12 @@ void DpFTR_PopIntro(void)
 		{
 			_SPRINTF(sAct, "%2d.%02d m", (U16)(act/100), (U16)(act%100));
 			_SPRINTF(sStop, "%2d.%02d m", (U16)(stop/100), (U16)(stop%100));
-		
-		
-		
+
+
+
 			DpSTR_GuiLeft(DpPOP_MIN_X0, DpPOP_MIN_Y0, _cPOP_ST_MIN, _cPOP_BG_WND, _fE17HsB, "ACT");
 			DpSTR_GuiLeft(DpPOP_MAX_X0, DpPOP_MAX_Y0, _cPOP_ST_MAX, _cPOP_BG_WND, _fE17HsB, "STOP");
-		
+
 			DpSTR_GuiLeft(DpPOP_OLD_X0, DpPOP_MIN_Y0, _cPOP_ST_VAL_IDL, _cPOP_BG_WND, _fE17HsB, sAct);
 			DpSTR_GuiLeft(DpPOP_OLD_X0, DpPOP_MAX_Y0, _cPOP_ST_VAL_IDL, _cPOP_BG_WND, _fE17HsB, sStop);
 		}
@@ -489,15 +513,16 @@ void DpFTR_InitVari(void)
 		_SPRINTF(lDpFtr.sItm[MnFTR_I07_CH1_OUTPUT_4MA], _sCH1_OUT_04mA);
 		_SPRINTF(lDpFtr.sItm[MnFTR_I08_CH2_TRIM_12MA], _sCH2_Trm_12mA);
 		_SPRINTF(lDpFtr.sItm[MnFTR_I09_CH2_TRIM_20MA], _sCH2_Trm_20mA);
-		_SPRINTF(lDpFtr.sItm[MnFTR_I10_CH2_OUTPUT_4MA], _sCH2_OUT_04mA);	
+		_SPRINTF(lDpFtr.sItm[MnFTR_I10_CH2_OUTPUT_4MA], _sCH2_OUT_04mA);
 		_SPRINTF(lDpFtr.sItm[MnFTR_I11_RELAY_TEST], "Relay Test");
 		_SPRINTF(lDpFtr.sItm[MnFTR_I12_LANG], "Lang");
-		_SPRINTF(lDpFtr.sItm[MnFTR_I13_TIME], "Time");	
-		_SPRINTF(lDpFtr.sItm[MnFTR_I14_VERSION], "Version");	
+		_SPRINTF(lDpFtr.sItm[MnFTR_I13_TIME], "Time");
+		_SPRINTF(lDpFtr.sItm[MnFTR_I14_VERSION], "Version");
 		_SPRINTF(lDpFtr.sItm[MnFTR_I15_CLEAN_TEST], "Clean Test");
 		_SPRINTF(lDpFtr.sItm[MnFTR_I16_RF_VERSION], "RF Module");
-		_SPRINTF(lDpFtr.sItm[MnFTR_I17_PROTOCOL], "Protocol");
-		_SPRINTF(lDpFtr.sItm[MnFTR_I18_FTR_RST], _sFtrRst);
+		_SPRINTF(lDpFtr.sItm[MnFTR_I17_SENSOR_TYPE], "Sensor Type");
+		_SPRINTF(lDpFtr.sItm[MnFTR_I18_PROTOCOL], "Protocol");
+		_SPRINTF(lDpFtr.sItm[MnFTR_I19_FTR_RST], _sFtrRst);
 
 		// Value #0 (Channel)
 		_SPRINTF(lDpFtr.sChn[MnFTR_SS_SINGLE], _sSingle);
@@ -530,7 +555,7 @@ void DpFTR_InitVari(void)
 		_SPRINTF(lDpFtr.sVal[MnFTR_I11_RELAY_TEST], "-");
 
 		val = MnSYS_PrGetBase_Item(MnSYS_OPT_SINGLE_LANG);
-		
+
 		switch(val)
 		{
 			case MnSYS_LANG_ENG:	_SPRINTF(lDpFtr.sVal[MnFTR_I12_LANG],	 "English");	break;
@@ -554,14 +579,21 @@ void DpFTR_InitVari(void)
 			default:				_SPRINTF(lDpFtr.sVal[MnFTR_I16_RF_VERSION], _sNG);		break;
 		}
 
-		switch(MnDAT_ComPrGet_Value(MnDS2_OPT_TYPE))
+		switch(MnFTR_PrGet_SensorType())
 		{
-			case MnDS2_TYPE_MDB:	_SPRINTF(lDpFtr.sVal[MnFTR_I17_PROTOCOL], "Modbus");	break;
-			case MnDS2_TYPE_RF:		_SPRINTF(lDpFtr.sVal[MnFTR_I17_PROTOCOL], "RF");		break;
-			default:				_SPRINTF(lDpFtr.sVal[MnFTR_I17_PROTOCOL], _sNG);		break;
+			case MnFTR_SENSOR_TYPE_S1:		_SPRINTF(lDpFtr.sVal[MnFTR_I17_SENSOR_TYPE], "S1");		break;
+			case MnFTR_SENSOR_TYPE_ATK50:	_SPRINTF(lDpFtr.sVal[MnFTR_I17_SENSOR_TYPE], "ATK50");	break;
+			default:						_SPRINTF(lDpFtr.sVal[MnFTR_I17_SENSOR_TYPE], _sNG);		break;
 		}
 
-		_SPRINTF(lDpFtr.sVal[MnFTR_I18_FTR_RST], "-");
+		switch(MnDAT_ComPrGet_Value(MnDS2_OPT_TYPE))
+		{
+			case MnDS2_TYPE_MDB:	_SPRINTF(lDpFtr.sVal[MnFTR_I18_PROTOCOL], "Modbus");	break;
+			case MnDS2_TYPE_RF:		_SPRINTF(lDpFtr.sVal[MnFTR_I18_PROTOCOL], "RF");		break;
+			default:				_SPRINTF(lDpFtr.sVal[MnFTR_I18_PROTOCOL], _sNG);		break;
+		}
+
+		_SPRINTF(lDpFtr.sVal[MnFTR_I19_FTR_RST], "-");
 	}
 	else if(MnFTR_PrGet_SsChn()==MnFTR_SS_SINGLE)
 	{
@@ -571,13 +603,14 @@ void DpFTR_InitVari(void)
 		_SPRINTF(lDpFtr.sItm[MnFTR_OPT_SINGLE_20mA], _sCH0_20mA);
 		_SPRINTF(lDpFtr.sItm[MnFTR_OPT_SINGLE_TRIM_12MA], _sCH1_Trm_12mA);
 		_SPRINTF(lDpFtr.sItm[MnFTR_OPT_SINGLE_TRIM_20MA], _sCH1_Trm_20mA);
-		_SPRINTF(lDpFtr.sItm[MnFTR_OPT_SINGLE_OUTPUT_4MA], _sCH1_OUT_04mA);	
+		_SPRINTF(lDpFtr.sItm[MnFTR_OPT_SINGLE_OUTPUT_4MA], _sCH1_OUT_04mA);
 		_SPRINTF(lDpFtr.sItm[MnFTR_OPT_SINGLE_RELAY_TEST], "Relay Test");
 		_SPRINTF(lDpFtr.sItm[MnFTR_OPT_SINGLE_LANG], "Lang");
-		_SPRINTF(lDpFtr.sItm[MnFTR_OPT_SINGLE_TIME], "Time");	
-		_SPRINTF(lDpFtr.sItm[MnFTR_OPT_SINGLE_VERSION], "Version");	
+		_SPRINTF(lDpFtr.sItm[MnFTR_OPT_SINGLE_TIME], "Time");
+		_SPRINTF(lDpFtr.sItm[MnFTR_OPT_SINGLE_VERSION], "Version");
 		_SPRINTF(lDpFtr.sItm[MnFTR_OPT_SINGLE_CLEAN_TEST], "Clean Test");
 		_SPRINTF(lDpFtr.sItm[MnFTR_OPT_SINGLE_RF_VERSION], "RF Module");
+		_SPRINTF(lDpFtr.sItm[MnFTR_OPT_SINGLE_SENSOR_TYPE], "Sensor Type");
 		_SPRINTF(lDpFtr.sItm[MnFTR_OPT_SINGLE_PROTOCOL], "Protocol");
 		_SPRINTF(lDpFtr.sItm[MnFTR_OPT_SINGLE_FTR_RST], _sFtrRst);
 
@@ -594,15 +627,15 @@ void DpFTR_InitVari(void)
 		val = MnFTR_PrGet_Value(MnFTR_OPT_SINGLE_04mA);	_SPRINTF(lDpFtr.sVal[MnFTR_OPT_SINGLE_04mA], "%d", val);
 		// Value #2 (Ch0 - Config. 20mA)
 		val = MnFTR_PrGet_Value(MnFTR_OPT_SINGLE_20mA);	_SPRINTF(lDpFtr.sVal[MnFTR_OPT_SINGLE_20mA], "%d", val);
-		
+
 		val = MnOUT_CurPrGet_Value(MnOS0_OPT_SINGLE_TRM_12mA); _SPRINTF(lDpFtr.sVal[MnFTR_OPT_SINGLE_TRIM_12MA], "%d", val);
 		val = MnOUT_CurPrGet_Value(MnOS0_OPT_SINGLE_TRM_20mA); _SPRINTF(lDpFtr.sVal[MnFTR_OPT_SINGLE_TRIM_20MA], "%d", val);
-		
+
 		_SPRINTF(lDpFtr.sVal[MnFTR_OPT_SINGLE_OUTPUT_4MA], "-");
-	
-		
+
+
 		_SPRINTF(lDpFtr.sVal[MnFTR_OPT_SINGLE_RELAY_TEST], "-");
-		
+
 		val = MnSYS_PrGetBase_Item(MnSYS_OPT_SINGLE_LANG);
 
 		switch(val)
@@ -612,9 +645,9 @@ void DpFTR_InitVari(void)
 			default:
 				break;
 		}
-		
+
 		_SPRINTF(lDpFtr.sVal[MnFTR_OPT_SINGLE_TIME], "-");
-		
+
 		_SPRINTF(lDpFtr.sVal[MnFTR_OPT_SINGLE_VERSION], _APP_VERISON);
 		_SPRINTF(lDpFtr.sVal[MnFTR_OPT_SINGLE_CLEAN_TEST], "-");
 
@@ -626,6 +659,13 @@ void DpFTR_InitVari(void)
 			case MnFTR_RF_VER_NEW:	_SPRINTF(lDpFtr.sVal[MnFTR_OPT_SINGLE_RF_VERSION], "NEW");		break;
 			case MnFTR_RF_VER_OLD:	_SPRINTF(lDpFtr.sVal[MnFTR_OPT_SINGLE_RF_VERSION], "OLD");		break;
 			default:				_SPRINTF(lDpFtr.sVal[MnFTR_OPT_SINGLE_RF_VERSION], _sNG);		break;
+		}
+
+		switch(MnFTR_PrGet_SensorType())
+		{
+			case MnFTR_SENSOR_TYPE_S1:		_SPRINTF(lDpFtr.sVal[MnFTR_OPT_SINGLE_SENSOR_TYPE], "S1");		break;
+			case MnFTR_SENSOR_TYPE_ATK50:	_SPRINTF(lDpFtr.sVal[MnFTR_OPT_SINGLE_SENSOR_TYPE], "ATK50");	break;
+			default:						_SPRINTF(lDpFtr.sVal[MnFTR_OPT_SINGLE_SENSOR_TYPE], _sNG);	break;
 		}
 
 		switch(MnDAT_ComPrGet_Value(MnDS2_OPT_TYPE))
@@ -658,7 +698,7 @@ void DpFT2_StrCntts(void)
 		n = MnFTR_ITM_NUM;
 	if(MnFTR_PrGet_SsChn()==MnFTR_SS_SINGLE)
 		n = MnFTR_OPT_SINGLE_NUM;
-	
+
 	if 	(iIt >= (DpMNU_ITM_PAGE*5)) 	page = DpMNU_PG_5;
 	else if	(iIt >= (DpMNU_ITM_PAGE*4))		page = DpMNU_PG_4;
 	else if (iIt >= (DpMNU_ITM_PAGE*3))		page = DpMNU_PG_3;
@@ -670,30 +710,30 @@ void DpFT2_StrCntts(void)
 
 	switch(page)
 	{
-		case DpMNU_PG_0:	
+		case DpMNU_PG_0:
 			if(n>DpMNU_ITM_PAGE)		iN=DpMNU_ITM_PAGE;
 			else						iN=n;
 			break;
 		case DpMNU_PG_1:
 			if(n>(DpMNU_ITM_PAGE*2))	iN=DpMNU_ITM_PAGE;
 			else						iN=n-DpMNU_ITM_PAGE;
-			break;			
+			break;
 		case DpMNU_PG_2:
 			if(n>(DpMNU_ITM_PAGE*3))	iN=DpMNU_ITM_PAGE;
 			else						iN=n-(DpMNU_ITM_PAGE*2);
-			break;		
+			break;
 		case DpMNU_PG_3:
 			if(n>(DpMNU_ITM_PAGE*4))	iN=DpMNU_ITM_PAGE;
 			else						iN=n-(DpMNU_ITM_PAGE*3);
-			break;			
+			break;
 		case DpMNU_PG_4:
 			if(n>(DpMNU_ITM_PAGE*5))	iN=DpMNU_ITM_PAGE;
 			else						iN=n-(DpMNU_ITM_PAGE*4);
-			break;		
+			break;
 		case DpMNU_PG_5:
 			if(n>(DpMNU_ITM_PAGE*6))	iN=DpMNU_ITM_PAGE;
 			else						iN=n-(DpMNU_ITM_PAGE*5);
-			break;					
+			break;
 		default:			return;
 	}
 
@@ -714,7 +754,7 @@ void DpFT2_StrCntts(void)
 			else
 			{
 				back_color = _cMNU_BOX_BG;
-				text_color = _cMNU_STR_IDLE;				
+				text_color = _cMNU_STR_IDLE;
 			}
 		}
 

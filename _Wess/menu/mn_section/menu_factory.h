@@ -38,8 +38,9 @@ enum {
 	MnFTR_I14_VERSION,
 	MnFTR_I15_CLEAN_TEST,
 	MnFTR_I16_RF_VERSION,
-	MnFTR_I17_PROTOCOL,
-	MnFTR_I18_FTR_RST,
+	MnFTR_I17_SENSOR_TYPE,
+	MnFTR_I18_PROTOCOL,
+	MnFTR_I19_FTR_RST,
 	// Number Max
 	MnFTR_ITM_NUM,
 };
@@ -58,6 +59,7 @@ enum {
 	MnFTR_OPT_SINGLE_VERSION,
 	MnFTR_OPT_SINGLE_CLEAN_TEST,
 	MnFTR_OPT_SINGLE_RF_VERSION,
+	MnFTR_OPT_SINGLE_SENSOR_TYPE,
 	MnFTR_OPT_SINGLE_PROTOCOL,
 	MnFTR_OPT_SINGLE_FTR_RST,
 	// Number Max
@@ -109,6 +111,19 @@ enum {
 #define MnFTR_RF_VER_MAX		(MnFTR_RF_VER_OLD)
 #define MnFTR_RF_VER_DEF		(MnFTR_RF_VER_NEW)
 
+// Sensor Type
+// 0=S1, 1=ATK50, 0xFF=unset/new board -> effective ATK50
+#define MnFTR_SENSOR_TYPE_UNSET	(0xFF)
+enum {
+	MnFTR_SENSOR_TYPE_S1 = 0,
+	MnFTR_SENSOR_TYPE_ATK50,
+	// Number Max
+	MnFTR_SENSOR_TYPE_NUM,
+};
+#define MnFTR_SENSOR_TYPE_MIN	(MnFTR_SENSOR_TYPE_S1)
+#define MnFTR_SENSOR_TYPE_MAX	(MnFTR_SENSOR_TYPE_ATK50)
+#define MnFTR_SENSOR_TYPE_DEF	(MnFTR_SENSOR_TYPE_ATK50)
+
 // Sensor Index
 enum {
 	MnFTR_CH_0 = 0,
@@ -127,6 +142,7 @@ typedef struct {
 	U16 cfg_4mA[APP_CH_NUM];
 	U16 cfg_20mA[APP_CH_NUM];
 	U08 rf_version;	// RF Version: 0=New, 1=Old(ENV110)
+	U08 sensor_type;	// Sensor Type: 0=S1, 1=ATK50, 0xFF effective ATK50
 } MnFTR_mPR;
 
 // Local Struct
@@ -147,6 +163,10 @@ typedef struct {
 //------------------------------------------------------------------------------------------------------------------------------
 extern U08 MnFTR_PrGet_SsChn(void);
 extern U08 MnFTR_PrGet_RfVersion(void);
+extern U08 MnFTR_PrGet_SensorType(void);
+extern U08 MnFTR_NormalizeSensorType(U08 sensor_type);
+extern U08 MnFTR_PrGet_DefaultFreq(void);
+extern U08 MnFTR_PrGet_DefaultFreqFromMram(void);
 extern S32 MnFTR_PrGet_Value(U08 iIt);
 extern S32 MnFTR_PrGet_CH_Value(U08 ch,U08 iIt);
 

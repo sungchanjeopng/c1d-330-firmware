@@ -66,22 +66,23 @@ void MsSEN_Cfg_FREQ(U08 val)
 		case MnMS1_FREQ_160K:	psc = 1;	per = 1250;		pulse = 625;	break;
 		case MnMS1_FREQ_270K:	psc = 1;	per = 740;		pulse = 370;	break;
 		case MnMS1_FREQ_380K:	psc = 1;	per = 526;		pulse = 263; 	break;
+		case MnMS1_FREQ_415K:	psc = 1;	per = 482;		pulse = 241; 	break;
 		default:				psc = 1;	per = 526;		pulse = 263; 	break;
 		// 130k : 0, 1537
 		// 270k : 0, 740
 	}
 	/* USER CODE BEGIN TIM1_Init 0 */
-	
+
 	/* USER CODE END TIM1_Init 0 */
-	
+
 	TIM_ClockConfigTypeDef sClockSourceConfig = {0};
 	TIM_MasterConfigTypeDef sMasterConfig = {0};
 	TIM_OC_InitTypeDef sConfigOC = {0};
 	TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig = {0};
-	
+
 	/* USER CODE BEGIN TIM1_Init 1 */
 
-	
+
 	/* USER CODE END TIM1_Init 1 */
 	htim1.Instance = TIM1;
 	htim1.Init.Prescaler = psc-1;
@@ -137,9 +138,9 @@ void MsSEN_Cfg_FREQ(U08 val)
 	  Error_Handler();
 	}
 	/* USER CODE BEGIN TIM1_Init 2 */
-	
+
 	/* USER CODE END TIM1_Init 2 */
-	HAL_TIM_MspPostInit(&htim1);	
+	HAL_TIM_MspPostInit(&htim1);
 	#else
 	U08 num;
 
@@ -150,16 +151,16 @@ void MsSEN_Cfg_FREQ(U08 val)
 		default:					num = 7;		break;
 	}
 	/* USER CODE BEGIN TIM1_Init 0 */
-	
+
 	/* USER CODE END TIM1_Init 0 */
-	
+
 	TIM_ClockConfigTypeDef sClockSourceConfig = {0};
 	TIM_MasterConfigTypeDef sMasterConfig = {0};
 	TIM_OC_InitTypeDef sConfigOC = {0};
 	TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig = {0};
-	
+
 	/* USER CODE BEGIN TIM1_Init 1 */
-	
+
 	/* USER CODE END TIM1_Init 1 */
 	htim1.Instance = TIM1;
 	htim1.Init.Prescaler = num-1;
@@ -214,9 +215,9 @@ void MsSEN_Cfg_FREQ(U08 val)
 	  Error_Handler();
 	}
 	/* USER CODE BEGIN TIM1_Init 2 */
-	
+
 	/* USER CODE END TIM1_Init 2 */
-	HAL_TIM_MspPostInit(&htim1);	
+	HAL_TIM_MspPostInit(&htim1);
 #endif
 }
 
@@ -227,7 +228,7 @@ void MsSEN_InitVari(void)
 	lMsSen.amp = ScCLB_RX_AMP_x100;
 
 	MsGAN_CfgRx(ScCLB_RX_AMP_x100, lMsSen.ch);
-	
+
 	MsSEN_Cfg_FREQ(lMsSen.freq);
 	DMX_SetIo(DMX_OUT_SEL_CH, lMsSen.ch);
 	DMX_SetIo(DMX_OUT_SEL_FREQ, MsSEN_Filiter_380);
@@ -239,7 +240,7 @@ void MsSEN_TxSona(U08 cnt, U08 ch)
 	cnt_TX_CLK = 0;
 
 	U64 val1;
-	
+
 	if(ch == MsSEN_C0_CH1)
 	{
 		val1 = 0x00000010;
@@ -259,16 +260,16 @@ void MsSEN_TxSona(U08 cnt, U08 ch)
 
 
 	while(cnt_TX_CLK < cnt);
-	//		set Low 	   /	 set High 
+	//		set Low 	   /	 set High
 	// 0000 0000 0001 0000	0000 0000 0000 0000
 	// PC4 Low
 
-	//		set Low 	   /	 set High 
+	//		set Low 	   /	 set High
 	// 0000 0000 0010 0000	0000 0000 0000 0000
 	// PC5 Low
 
 #if 0
-	GPIOC->BSRR = val2;	
+	GPIOC->BSRR = val2;
 	HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_4);
 #endif
 	HAL_TIM_Base_Stop_IT(&htim8);
@@ -305,6 +306,7 @@ void MsSEN_FieldProcMain(U08 ch)
 		{
 			case MnMS1_FREQ_380K:
 			case MnMS1_FREQ_270K:
+			case MnMS1_FREQ_415K:
 				DMX_SetIo(DMX_OUT_SEL_FREQ, MsSEN_Filiter_380);
 				break;
 			case MnMS1_FREQ_160K:
@@ -325,7 +327,7 @@ void MsSEN_FieldProcMain(U08 ch)
 
 	MsSEN_Sel_CH(ch);
 
-	
+
 	ISR_SetIrqEn();
 
 	HAL_NVIC_EnableIRQ(TIM6_DAC_IRQn);
@@ -341,7 +343,7 @@ void MsSEN_FREQ(U08 ch)
 	U08 FREQ   = MnMSR_CalGet_Ch_Value(ch, MnMS1_OPT_SINGLE_FREQ);
 
 	if(ScECH_GetLayer() == SCRN_L2_VALU)
-		
+
 	{
 		if(ScECH_GetType()==ScECO_TYPE_REAL)
 		{
@@ -359,6 +361,7 @@ void MsSEN_FREQ(U08 ch)
 		{
 			case MnMS1_FREQ_380K:
 			case MnMS1_FREQ_270K:
+			case MnMS1_FREQ_415K:
 				DMX_SetIo(DMX_OUT_SEL_FREQ, MsSEN_Filiter_380);
 				break;
 			case MnMS1_FREQ_160K:
@@ -379,10 +382,10 @@ void MsSEN_ProcMain(U08 ch)
 	switch(OuCUR_GetPCD_fRun())
 	{
 		case PCD_OFF:	break;
-		case PCD_ON:	
+		case PCD_ON:
 		case PCD_TEST:	return;
 		default:
-			return;	
+			return;
 	}
 
 
@@ -405,7 +408,7 @@ void MsSEN_ProcMain(U08 ch)
 
 	MsSEN_Sel_CH(ch);
 
-	
+
 	ISR_SetIrqEn();
 
 	HAL_NVIC_EnableIRQ(TIM6_DAC_IRQn);

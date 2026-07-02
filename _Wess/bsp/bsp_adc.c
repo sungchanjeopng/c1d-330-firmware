@@ -70,7 +70,7 @@ void AdcEcho_SetStart(void)
 void AdcTprt_SetStart(void)
 {
 	ADC_ChannelConfTypeDef sConfig = {0};
-	
+
 	/** Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion)
 	*/
 	hadc1.Instance = ADC1;
@@ -148,12 +148,12 @@ void ADC_InitVari(void)
 void ADC_ProcTprt(void)
 {
 	AdcTprt_SetStart();
-	
+
 	HAL_ADC_Start(&hadc1);
 	HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
 	lAdc.tprt_aVl[ADC_CH_SS0] = HAL_ADC_GetValue(&hadc1);
 	lAdc.tprt_aVt[ADC_CH_SS0] = 3300 * lAdc.tprt_aVl[ADC_CH_SS0] / 4096;
-	
+
 	HAL_ADC_Start(&hadc1);
 	HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
 	lAdc.tprt_aVl[ADC_CH_SS1] = HAL_ADC_GetValue(&hadc1);
@@ -171,15 +171,17 @@ void ADC_ProcEcho(U08 ch)
 	lAdc.filed_sel = 0;
 	if(FREQ == MnMS1_FREQ_380K)
 		lAdc.echo_idx = cWave/5;
+	else if(FREQ == MnMS1_FREQ_415K)
+		lAdc.echo_idx = cWave/5.6;
 	else if(FREQ == MnMS1_FREQ_270K)
-		lAdc.echo_idx = cWave/3.5;	
+		lAdc.echo_idx = cWave/3.5;
 	else if(FREQ == MnMS1_FREQ_160K)
 		lAdc.echo_idx = cWave/2.1;
 	else if(FREQ == MnMS1_FREQ_130K)
 		lAdc.echo_idx = cWave/1.7;
 
 	lAdc.echo_idx_max = lAdc.echo_idx;
-	
+
 	MsSEN_TxSona(cWave,ch);
 	DAC_OutpVolt(0);
 

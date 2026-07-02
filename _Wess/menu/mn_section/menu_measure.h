@@ -24,7 +24,7 @@ enum {
 	MnMSR_SUB_BASE = 0,		// Base
 	MnMSR_SUB_CAL,		// Calibration
 	// Number MAX
-	MnMSR_SUB_NUM,	
+	MnMSR_SUB_NUM,
 };
 #define MnMSR_SUB_MIN (MnMSR_SUB_BASE)
 #define MnMSR_SUB_MAX (MnMSR_SUB_NUM-1)
@@ -183,7 +183,7 @@ enum {
 #define MnMS1_AUTO_FAMP_MAX	(MnMS1_AUTO_FAMP_NUM-1)
 #define MnMS1_AUTO_FAMP_DEF	(MnMS1_AUTO_FAMP_OFF)
 
-	
+
 #define MnMS1_OPT_MIN	(MnMS1_OPT_CH1_FREQ)
 #define MnMS1_OPT_MAX	(MnMS1_OPT_NUM-1)
 
@@ -191,17 +191,19 @@ enum {
 #define MnMS1_OPT_SINGLE_MAX	(MnMS1_OPT_SINGLE_NUM-1)
 
 // Value Frequency
+// 0=380kHz, 1=legacy/reserved 270kHz, 2=160kHz, 3=130kHz, 4=415kHz
 enum {
 	MnMS1_FREQ_380K = 0,
-	MnMS1_FREQ_270K,
+	MnMS1_FREQ_270K,	// legacy/reserved: do not expose as a new selectable value
 	MnMS1_FREQ_160K,
 	MnMS1_FREQ_130K,
+	MnMS1_FREQ_415K,
 
 	MnMS1_FREQ_NUM,
 };
 
 #define MnMS1_FREQ_MIN	(MnMS1_FREQ_380K)
-#define MnMS1_FREQ_MAX	(MnMS1_FREQ_NUM-1)
+#define MnMS1_FREQ_MAX	(MnMS1_FREQ_415K)
 #define MnMS1_FREQ_DEF	(MnMS1_FREQ_380K)
 
 
@@ -220,10 +222,10 @@ enum {
 
 	MnMS1_THRESHOLD_TYPE_NUM,
 };
-	
+
 enum {
 	MnMS1_OPT_CH1_THR_LIGHT_VAL,
-	MnMS1_OPT_CH1_THR_HEAVY_VAL,	
+	MnMS1_OPT_CH1_THR_HEAVY_VAL,
 	MnMS1_OPT_CH2_THR_LIGHT_VAL,
 	MnMS1_OPT_CH2_THR_HEAVY_VAL,
 
@@ -264,7 +266,7 @@ enum {
 	// Number Max
 	MnMS0_IV0_VAL_NUM,
 };
-	
+
 #define MnMS0_IV0_MIN		(MnMS0_IV0_AUTO)
 #define MnMS0_IV0_MAX		(MnMS0_IV0_VAL_NUM-1)
 #define MnMS0_IV0_DEF		(MnMS0_IV0_AUTO)
@@ -276,7 +278,7 @@ enum {
 	// Number Max
 	MnMS0_IV1_VAL_NUM,
 };
-	
+
 #define MnMS0_IV1_MIN		(MnMS0_IV1_AUTO)
 #define MnMS0_IV1_MAX		(MnMS0_IV1_VAL_NUM-1)
 #define MnMS0_IV1_DEF		(MnMS0_IV1_AUTO)
@@ -296,7 +298,7 @@ enum {
 	// Number Max
 	MnMS0_IV3_VAL_NUM,
 };
-	
+
 #define MnMS0_IV3_MIN		(MnMS0_IV3_NO)
 #define MnMS0_IV3_MAX		(MnMS0_IV3_VAL_NUM-1)
 #define MnMS0_IV3_DEF		(MnMS0_IV3_NO)
@@ -310,7 +312,7 @@ enum {
 	// Number Max
 	MnMS0_IV4_VAL_NUM,
 };
-	
+
 #define MnMS0_IV4_MIN		(MnMS0_IV4_OFF)
 #define MnMS0_IV4_MAX		(MnMS0_IV4_VAL_NUM-1)
 #define MnMS0_IV4_DEF		(MnMS0_IV4_ON)
@@ -342,8 +344,8 @@ enum {
 #endif
 
 
-//TBD 
-#define MnMSI_I07_VEL_UNIT 		(2) 
+//TBD
+#define MnMSI_I07_VEL_UNIT 		(2)
 
 
 
@@ -432,6 +434,10 @@ extern S32 MnMSR_CalGet_Value(U08 iIt);
 extern S32 MnMSR_CalGet_Ch_Value(U08 ch,U08 iIt);
 extern S32 MnMSR_Get_Threshold_Value(U08 sel);
 extern S32 MnMSR_Get_Threshold_Ch_Value(U08 ch, U08 sel);
+extern U08 MnMSR_IsValidFreq(U08 freq);
+extern U08 MnMSR_GetDefaultFreq(void);
+extern U08 MnMSR_GetNextFreq(U08 freq);
+extern U08 MnMSR_GetPrevFreq(U08 freq);
 //------------------------------------------------------------------------------------------------------------------------------
 //  Extern global APIs - Parameters - Set
 //------------------------------------------------------------------------------------------------------------------------------

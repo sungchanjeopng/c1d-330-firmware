@@ -121,7 +121,7 @@ void ComStd_ProcMain(void)
 	U16 dist_2 = MsCAL_GetVl_RsltDist(COM_CH_1,1);
 	U16 sldg_1 = MsCAL_GetVl_RsltSldg(COM_CH_0,1);
 	U16 sldg_2 = MsCAL_GetVl_RsltSldg(COM_CH_1,1);
-	
+
 	U16 curr_1 = OuCUR_GetOutp_Value(COM_CH_0);
 	U16 curr_2 = OuCUR_GetOutp_Value(COM_CH_1);
 	S16 tmpr_1 = MsTPR_GetTprt(COM_CH_0);
@@ -144,7 +144,7 @@ void ComStd_ProcMain(void)
 
 
 
-	
+
 	buff[cnt++] = 0x0d;	// CR
 	buff[cnt++] = 0x0a;	// LF
 
@@ -181,12 +181,12 @@ void ComStd_ProcMain(void)
 			}
 			else
 				buff[cnt++] = 0x2b;	//'+'
-			
+
 			buff[cnt++] = (tmp2 / 100) % 10 + '0';
 			buff[cnt++] = (tmp2 /  10) % 10 + '0';
 			#endif
 			break;
-		case MnFTR_SS_DUAL:	
+		case MnFTR_SS_DUAL:
 			// CH-0
 			buff[cnt++] = 0x44;	// 'D'
 			buff[cnt++] = (dist_1 / 1000) % 10 + '0';
@@ -217,7 +217,7 @@ void ComStd_ProcMain(void)
 			}
 			else
 				buff[cnt++] = 0x2b;	//'+'
-			
+
 			buff[cnt++] = (tmp2 / 100) % 10 + '0';
 			buff[cnt++] = (tmp2 /  10) % 10 + '0';
 			#endif
@@ -243,8 +243,8 @@ void ComStd_ProcMain(void)
 		default:
 			break;
 	}
-	
-	
+
+
 	buff[cnt++] = 0x00;	// NULL
 
 	URT_TxPkt(URT_IDX_2, buff, cnt);
@@ -270,7 +270,7 @@ U16 Mdb_GetCrc16(U08 *buf, U08 size)
 	U16 crc16;
 
 	crc16 = 0xffff;
-	
+
 	for (i = 0; i < size; i++ )
 	{
 		/* Convert the received byte to an INTeger */
@@ -311,7 +311,7 @@ void DaMdb_SetLevel(U08 idx,U16 addr)
 
 	cnt = (lmdb.rx_buf[idx][MDB_RX_05_SIZE] * 2) + 3;
 
-	
+
 
 	memset(lmdb.value_buf, 0, sizeof(lmdb.value_buf));
 
@@ -337,13 +337,13 @@ void DaMdb_SetLevel(U08 idx,U16 addr)
 
 #if 1
 	lmdb.value_buf[0] = (U08)((valu[APP_CH_1][MsCAL_THR_LIGHT]>>8) & 0x00ff);
-	lmdb.value_buf[1] = (U08)((valu[APP_CH_1][MsCAL_THR_LIGHT]>>0) & 0x00ff); 
+	lmdb.value_buf[1] = (U08)((valu[APP_CH_1][MsCAL_THR_LIGHT]>>0) & 0x00ff);
 	lmdb.value_buf[2] = (U08)((valu[APP_CH_1][MsCAL_THR_HEAVY]>>8) & 0x00ff);
-	lmdb.value_buf[3] = (U08)((valu[APP_CH_1][MsCAL_THR_HEAVY]>>0) & 0x00ff); 
+	lmdb.value_buf[3] = (U08)((valu[APP_CH_1][MsCAL_THR_HEAVY]>>0) & 0x00ff);
 	lmdb.value_buf[4] = (U08)((valu[APP_CH_2][MsCAL_THR_LIGHT]>>8) & 0x00ff);
-	lmdb.value_buf[5] = (U08)((valu[APP_CH_2][MsCAL_THR_LIGHT]>>0) & 0x00ff); 
+	lmdb.value_buf[5] = (U08)((valu[APP_CH_2][MsCAL_THR_LIGHT]>>0) & 0x00ff);
 	lmdb.value_buf[6] = (U08)((valu[APP_CH_2][MsCAL_THR_HEAVY]>>8) & 0x00ff);
-	lmdb.value_buf[7] = (U08)((valu[APP_CH_2][MsCAL_THR_HEAVY]>>0) & 0x00ff); 
+	lmdb.value_buf[7] = (U08)((valu[APP_CH_2][MsCAL_THR_HEAVY]>>0) & 0x00ff);
 #else
 
 	lmdb.value_buf[0] = lmdb.rx_buf[URT_IDX_2][0];
@@ -361,10 +361,10 @@ void DaMdb_SetLevel(U08 idx,U16 addr)
 	lmdb.value_buf[21] = (S08)((MsTPR_GetTprt(APP_CH_2)>>0) & 0x00ff);
 
 
-	buff[MDB_TX_00_SLAVE] = MnDAT_ComPrGet_Value(MnDS2_OPT_ADDR); 	
+	buff[MDB_TX_00_SLAVE] = MnDAT_ComPrGet_Value(MnDS2_OPT_ADDR);
 	buff[MDB_TX_01_CMD] = lmdb.rx_buf[idx][MDB_RX_01_CMD];
-	buff[MDB_TX_02_SIZE] = lmdb.rx_buf[idx][MDB_RX_05_SIZE] * 2; 
-	
+	buff[MDB_TX_02_SIZE] = lmdb.rx_buf[idx][MDB_RX_05_SIZE] * 2;
+
 
     for(i=3; i<cnt; i++)
     {
@@ -379,7 +379,7 @@ void DaMdb_SetLevel(U08 idx,U16 addr)
 	tx_crc = Mdb_GetCrc16(buff, cnt);
 	buff[cnt] = (U08)((tx_crc & 0x00ff) >> 0);
 	buff[cnt+1] = (U08)((tx_crc & 0xff00) >> 8);
-	
+
 
 
 	DatComPr_BaudInit(MnDAT_ComPrGet_Value(MnDS2_OPT_BAUD));
@@ -392,14 +392,14 @@ void DaMdb_SetLevel(U08 idx,U16 addr)
 
 void DaMdb_SetTmprt(U08 addr)
 {
-	
+
 #if 0
 
 	U08 cnt, i;
 	U08 buff[64] = {0, };
 	U16 tx_crc;
 	U08 ch;
-	
+
 	cnt = (lmdb.rx_buf[URT_IDX_2][MDB_RX_05_SIZE] * 2) + 3;
 
 	if(lmdb.rx_buf[URT_IDX_2][MDB_RX_05_SIZE] >= 3)	return;
@@ -411,12 +411,12 @@ void DaMdb_SetTmprt(U08 addr)
 	}
 
 	lmdb.tx_tmprt[3] = (S08)((MsTPR_GetTprt(ch)>>8) & 0x00ff);
-	lmdb.tx_tmprt[4] = (S08)((MsTPR_GetTprt(ch)>>0) & 0x00ff); 
+	lmdb.tx_tmprt[4] = (S08)((MsTPR_GetTprt(ch)>>0) & 0x00ff);
 	lmdb.tx_tmprt[5] = 0x00;
 	lmdb.tx_tmprt[6] = 0x00;
 
 
-	buff[MDB_TX_00_SLAVE] = MnDAT_ComPrGet_Value(MnDS2_OPT_ADDR); 	
+	buff[MDB_TX_00_SLAVE] = MnDAT_ComPrGet_Value(MnDS2_OPT_ADDR);
 	buff[MDB_TX_01_CMD] = lmdb.rx_buf[URT_IDX_2][MDB_RX_01_CMD];
 	buff[MDB_TX_02_SIZE] = lmdb.rx_buf[URT_IDX_2][MDB_RX_05_SIZE] * 2;
 
@@ -444,7 +444,7 @@ void DaMdb_AutoGain(U08 ch)
 	U08 buff[2048] = {0, };
 	U16 buff_cnt = 0;
 	U16 range;
-	
+
 	buff[buff_cnt++] = 0x02; // SOF
 	URT_TxPkt(URT_IDX_1, buff, buff_cnt);
 	buff_cnt = 0;
@@ -463,12 +463,12 @@ void DaMdb_AutoGain(U08 ch)
 		block = 400+(24*ch)+(cnt*6)+j;
 		page = 0;
 
-		
+
 		for(i=0; i<nand_auto_calib_num[ch]; i++)
 		{
 			buff_cnt = 0;
 			if(i != 0 && i % 300 == 0)	cnt++;
-			
+
 			if(i != 0 && i % 6 == 0)
 			{
 				j=0;
@@ -499,7 +499,7 @@ void DaMdb_AutoGain(U08 ch)
 
 			}
 			URT_TxPkt(URT_IDX_1, buff, buff_cnt);
-			buff_cnt= 0;			
+			buff_cnt= 0;
 			j++;
 		}
 	}
@@ -519,7 +519,7 @@ void DaMdb_AutoGain(U08 ch)
 			{
 				j=0;
 				if(++page>=50)	page = 0;
-			}			
+			}
 
 			block = 400+(24*ch)+(cnt*6)+j;
 			HAL_Delay(5);
@@ -539,13 +539,13 @@ void DaMdb_AutoGain(U08 ch)
 				{
 					URT_TxPkt(URT_IDX_1, buff, buff_cnt);
 					buff_cnt= 0;
-				}		
+				}
 
 
 			}
 			URT_TxPkt(URT_IDX_1, buff, buff_cnt);
-			buff_cnt= 0;					
-			j++;			
+			buff_cnt= 0;
+			j++;
 		}
 	}
 
@@ -575,7 +575,7 @@ void DaMdb_SaveEcho(U08 ch)
 #if 0
 	buff[buff_cnt++] = (U08)((NND_Meta_GetEchocnt(APP_CH_1)>>8) & 0x00ff);
 	buff[buff_cnt++] = (U08)((NND_Meta_GetEchocnt(APP_CH_1)>>0) & 0x00ff);
-	
+
 	URT_TxPkt(URT_IDX_1, buff, buff_cnt);
 #endif
 
@@ -614,13 +614,13 @@ void DaMdb_SaveEcho(U08 ch)
 				URT_TxPkt(URT_IDX_1, buff, buff_cnt);
 				buff_cnt= 0;
 				HAL_Delay(50);
-			}	
+			}
 #endif
 
 		}
 
 		URT_TxPkt(URT_IDX_1, buff, buff_cnt);
-		buff_cnt = 0;			
+		buff_cnt = 0;
 	}
 
 
@@ -1558,8 +1558,8 @@ static U16 DaBT_ApplyAppSetting(U16 cmd, U16 data)
 			MnMSR_Set_Threshold_Ch_Value(ch, MnMS1_OPT_SINGLE_THR_HEAVY, data);
 			break;
 
-		case 6: // Frequency index: 0=380K, 1=270K, 2=160K, 3=130K
-			if(data < MnMS1_FREQ_MIN || data > MnMS1_FREQ_MAX) return 1;
+		case 6: // Frequency index: 0=380K, 1=legacy/reserved, 2=160K, 3=130K, 4=415K
+			if(!MnMSR_IsValidFreq((U08)data)) return 1;
 			MnMSR_CalSet_Ch_Value(ch, MnMS1_OPT_SINGLE_FREQ, data);
 			break;
 
@@ -1820,11 +1820,11 @@ void DaMdb_ProcMain(void)
 		Damdb_ClrRxBuff(URT_IDX_2);
 	}
 	else if(lmdb.f_rx[URT_IDX_1]==TRUE)
-	{	
+	{
 
 		crc16 = Mdb_GetCrc16(lmdb.rx_buf[URT_IDX_1],6);
 		lmdb.crc_lo = (U08)((crc16 & 0x00ff) >> 0);
-		lmdb.crc_hi = (U08)((crc16 & 0xff00) >> 8);		
+		lmdb.crc_hi = (U08)((crc16 & 0xff00) >> 8);
 
 		if(lmdb.rx_buf[URT_IDX_1][MDB_RX_06_CRC_LO] != lmdb.crc_lo)
 		{
@@ -1867,7 +1867,7 @@ void DaMdb_SetRxBuff(URT_IDX idx, U08 dr)
 			lmdb.interrupt_buf[idx][interrupt_cnt[idx]] = dr;
 			interrupt_cnt[idx]++;
 		}
-		else 
+		else
 			return;
 	}
 	else if(interrupt_cnt[idx]==1)
@@ -1879,10 +1879,10 @@ void DaMdb_SetRxBuff(URT_IDX idx, U08 dr)
 		}
 		else if(dr==addr)
 		{
-			lmdb.interrupt_buf[idx][0] = dr;		
+			lmdb.interrupt_buf[idx][0] = dr;
 		}
 		else
-			interrupt_cnt[idx] = 0;		
+			interrupt_cnt[idx] = 0;
 	}
 	else if(interrupt_cnt[idx]<8)
 	{
@@ -1904,7 +1904,7 @@ void DaMdb_SetRxBuff(URT_IDX idx, U08 dr)
 	{
 		U16 crc16;
 		crc16 = Mdb_GetCrc16(lmdb.interrupt_buf[URT_IDX_2],6);
-		
+
 		if((lmdb.interrupt_buf[URT_IDX_2][MDB_RX_06_CRC_LO]==((crc16 & 0x00ff) >> 0))
 			&& (lmdb.interrupt_buf[URT_IDX_2][MDB_RX_07_CRC_HI]==((crc16 & 0xff00) >> 8)))
 		{
@@ -1940,15 +1940,15 @@ void DaWrf_ProcMain(void)
 	assign[APP_CH_2] = MnDAT_ComPrGet_Value(MnDS2_OPT_RF_CH2_ASSIGN);
 
 	valu[APP_CH_1] = MsCAL_GetVl_RsltSldg(APP_CH_1,assign[APP_CH_1]);
-	valu[APP_CH_2] = MsCAL_GetVl_RsltSldg(APP_CH_2,assign[APP_CH_2]);	
-	
+	valu[APP_CH_2] = MsCAL_GetVl_RsltSldg(APP_CH_2,assign[APP_CH_2]);
+
 	curr[APP_CH_1] = OuCUR_GetOutp_Value(APP_CH_1);
-	curr[APP_CH_2] = OuCUR_GetOutp_Value(APP_CH_2);	
-	
+	curr[APP_CH_2] = OuCUR_GetOutp_Value(APP_CH_2);
+
 	rf_ch[APP_CH_1]  = MnDAT_ComPrGet_Value(MnDS2_OPT_RF_CH1_ADDRESS);
 	rf_ch[APP_CH_2]  = MnDAT_ComPrGet_Value(MnDS2_OPT_RF_CH2_ADDRESS);
 
-	
+
 	U08 buff[64] = {0, };
 	U08 cnt = 0;
 
@@ -1986,11 +1986,11 @@ void DaWrf_ProcMain(void)
 	buff[cnt++] = (curr[i] / 10)   % 10 + '0';
 	buff[cnt++] =  curr[i]         % 10 + '0';
 	buff[cnt++] = 0x04;	// Tail
-	buff[cnt++] = 0x0D;	// CR  
+	buff[cnt++] = 0x0D;	// CR
 
 	crc = Mdb_GetCrc16(buff,cnt);
 
-	buff[cnt++] = (U08)((crc & 0x00ff) >> 0); 
+	buff[cnt++] = (U08)((crc & 0x00ff) >> 0);
 	buff[cnt++] = (U08)((crc & 0xff00) >> 8);
 
 	URT_TxPkt(URT_IDX_RF, buff, cnt);

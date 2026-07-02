@@ -23,6 +23,7 @@
 #include "menu_lyr3_value.h"
 #include "menu_lyr4_addition.h"
 #include "menu_test.h"
+#include "menu_factory.h"
 // data
 #include "data_save.h"
 // self
@@ -49,6 +50,54 @@ MnMSR_LS lMnMsr;
 
 
 //------------------------------------------------------------------------------------------------------------------------------
+//  Global APIs - Frequency Helpers
+//------------------------------------------------------------------------------------------------------------------------------
+U08 MnMSR_IsValidFreq(U08 freq)
+{
+	switch(freq)
+	{
+		case MnMS1_FREQ_380K:
+		case MnMS1_FREQ_160K:
+		case MnMS1_FREQ_130K:
+		case MnMS1_FREQ_415K:	return TRUE;
+		case MnMS1_FREQ_270K:
+		default:				return FALSE;
+	}
+}
+
+U08 MnMSR_GetDefaultFreq(void)
+{
+	return MnFTR_PrGet_DefaultFreqFromMram();
+}
+
+U08 MnMSR_GetNextFreq(U08 freq)
+{
+	switch(freq)
+	{
+		case MnMS1_FREQ_380K:	return MnMS1_FREQ_160K;
+		case MnMS1_FREQ_160K:	return MnMS1_FREQ_130K;
+		case MnMS1_FREQ_130K:	return MnMS1_FREQ_415K;
+		case MnMS1_FREQ_415K:	return MnMS1_FREQ_380K;
+		case MnMS1_FREQ_270K:
+		default:				return MnMSR_GetDefaultFreq();
+	}
+}
+
+U08 MnMSR_GetPrevFreq(U08 freq)
+{
+	switch(freq)
+	{
+		case MnMS1_FREQ_380K:	return MnMS1_FREQ_415K;
+		case MnMS1_FREQ_415K:	return MnMS1_FREQ_130K;
+		case MnMS1_FREQ_130K:	return MnMS1_FREQ_160K;
+		case MnMS1_FREQ_160K:	return MnMS1_FREQ_380K;
+		case MnMS1_FREQ_270K:
+		default:				return MnMSR_GetDefaultFreq();
+	}
+}
+
+
+//------------------------------------------------------------------------------------------------------------------------------
 //  Global APIs - Parameters - Get
 //------------------------------------------------------------------------------------------------------------------------------
 S32  MnMSR_Get_Unit(void)	{	return lMnMsr.mBasePr.unit;		}
@@ -61,18 +110,18 @@ S32 MnMSR_BaseGet_Value(U08 iIt)
 	{
 		case MnMS0_OPT_UNIT:					val = lMnMsr.mBasePr.unit;						break;
 		case MnMS0_OPT_CH1_OPERATION:			val = lMnMsr.mBasePr.operation[MnMSR_CH_0];		break;
-		case MnMS0_OPT_CH1_EMPTY:				val = lMnMsr.mBasePr.empty[MnMSR_CH_0];			break;		
+		case MnMS0_OPT_CH1_EMPTY:				val = lMnMsr.mBasePr.empty[MnMSR_CH_0];			break;
 		case MnMS0_OPT_CH1_DEADZONE:			val = lMnMsr.mBasePr.deadzone[MnMSR_CH_0];		break;
 		case MnMS0_OPT_CH1_MEASURE_CYCLE:		val = lMnMsr.mBasePr.measure_cycle[MnMSR_CH_0];	break;
 		case MnMS0_OPT_CH1_MEASURE_RESET:		val = MENU_CHK_NO;								break;
-		case MnMS0_OPT_CH2_OPERATION:			val = lMnMsr.mBasePr.operation[MnMSR_CH_1];		break;	
+		case MnMS0_OPT_CH2_OPERATION:			val = lMnMsr.mBasePr.operation[MnMSR_CH_1];		break;
 		case MnMS0_OPT_CH2_EMPTY:				val = lMnMsr.mBasePr.empty[MnMSR_CH_1];			break;
 		case MnMS0_OPT_CH2_DEADZONE:			val = lMnMsr.mBasePr.deadzone[MnMSR_CH_1];		break;
 		case MnMS0_OPT_CH2_MEASURE_CYCLE:		val = lMnMsr.mBasePr.measure_cycle[MnMSR_CH_1];	break;
 		case MnMS0_OPT_CH2_MEASURE_RESET:		val = MENU_CHK_NO;								break;
 		default:								break;
 	}
-	
+
 	return val;
 }
 
@@ -84,17 +133,17 @@ S32 MnMSR_BaseGet_Ch_Value(U08 ch,U08 iIt)
 	{
 		case MnMS0_OPT_SINGLE_UNIT:				val = lMnMsr.mBasePr.unit;				break;
 		case MnMS0_OPT_SINGLE_OPERATION:		val = lMnMsr.mBasePr.operation[ch];		break;
-		case MnMS0_OPT_SINGLE_EMPTY:			val = lMnMsr.mBasePr.empty[ch];			break;		
+		case MnMS0_OPT_SINGLE_EMPTY:			val = lMnMsr.mBasePr.empty[ch];			break;
 		case MnMS0_OPT_SINGLE_DEADZONE:			val = lMnMsr.mBasePr.deadzone[ch];		break;
 		case MnMS0_OPT_SINGLE_MEASURE_CYCLE:	val = lMnMsr.mBasePr.measure_cycle[ch];	break;
 		case MnMS0_OPT_SINGLE_MEASURE_RESET:	val = MENU_CHK_NO;						break;
 		default:								break;
 	}
-	
-	return val;	
+
+	return val;
 
 }
-	
+
 S32 MnMSR_CalGet_Ch_Value(U08 ch,U08 iIt)
 {
 	S32 val = MENU_VAL_INVALID;
@@ -130,7 +179,7 @@ S32 MnMSR_CalGet_Value(U08 iIt)
 		case MnMS1_OPT_CH1_THR_LIGHT:		val = lMnMsr.mCalPr.thr_light_mod[APP_CH_1];		break;
 		case MnMS1_OPT_CH1_THR_HEAVY:		val = lMnMsr.mCalPr.thr_heavy_mod[APP_CH_1];		break;
 		case MnMS1_OPT_CH1_ASF_HEAVY:		val = lMnMsr.mCalPr.asf[APP_CH_1][MsCAL_THR_HEAVY];		break;
-		case MnMS1_OPT_CH1_ASF_LIGHT:		val = lMnMsr.mCalPr.asf[APP_CH_1][MsCAL_THR_LIGHT];		break;		
+		case MnMS1_OPT_CH1_ASF_LIGHT:		val = lMnMsr.mCalPr.asf[APP_CH_1][MsCAL_THR_LIGHT];		break;
 		case MnMS1_OPT_CH1_DAMPING:			val = lMnMsr.mCalPr.damp[APP_CH_1];				break;
 		case MnMS1_OPT_CH1_OFFSET:			val = lMnMsr.mCalPr.offset[APP_CH_1];				break;
 		case MnMS1_OPT_CH2_FREQ:			val = lMnMsr.mCalPr.freq[APP_CH_2];				break;
@@ -159,7 +208,7 @@ S32 MnMSR_Get_Threshold_Value(U08 sel)
 		case MnMS1_OPT_CH1_THR_LIGHT:		val = lMnMsr.mCalPr.thr_val[APP_CH_1][MsCAL_THR_LIGHT];		break;
 		case MnMS1_OPT_CH1_THR_HEAVY:		val = lMnMsr.mCalPr.thr_val[APP_CH_1][MsCAL_THR_HEAVY];		break;
 		case MnMS1_OPT_CH2_THR_LIGHT:		val = lMnMsr.mCalPr.thr_val[APP_CH_2][MsCAL_THR_LIGHT];		break;
-		case MnMS1_OPT_CH2_THR_HEAVY:		val = lMnMsr.mCalPr.thr_val[APP_CH_2][MsCAL_THR_HEAVY];		break;		
+		case MnMS1_OPT_CH2_THR_HEAVY:		val = lMnMsr.mCalPr.thr_val[APP_CH_2][MsCAL_THR_HEAVY];		break;
 		default:							break;
 	}
 
@@ -175,7 +224,7 @@ S32 MnMSR_Get_Threshold_Ch_Value(U08 ch, U08 sel)
 	switch(sel)
 	{
 		case MnMS1_OPT_SINGLE_THR_LIGHT:	val = lMnMsr.mCalPr.thr_val[ch][MsCAL_THR_LIGHT];		break;
-		case MnMS1_OPT_SINGLE_THR_HEAVY:	val = lMnMsr.mCalPr.thr_val[ch][MsCAL_THR_HEAVY];		break;		
+		case MnMS1_OPT_SINGLE_THR_HEAVY:	val = lMnMsr.mCalPr.thr_val[ch][MsCAL_THR_HEAVY];		break;
 		default:							break;
 	}
 
@@ -191,9 +240,9 @@ void MnMSR_BaseSet_Value(U08 iIt,S32 val)
 	{
 		case MnMS0_OPT_UNIT:					lMnMsr.mBasePr.unit = val;						break;
 		case MnMS0_OPT_CH1_OPERATION:			lMnMsr.mBasePr.operation[APP_CH_1] = val;		break;
-		case MnMS0_OPT_CH1_EMPTY:				lMnMsr.mBasePr.empty[APP_CH_1] = val;			CalPrc_ResetFlag(APP_CH_1);	lMsCal.auto_gain_fslope[APP_CH_1] = 1;break;		
-		case MnMS0_OPT_CH1_DEADZONE:			lMnMsr.mBasePr.deadzone[APP_CH_1] = val;		CalPrc_ResetFlag(APP_CH_1);	lMsCal.auto_gain_fslope[APP_CH_1] = 1;break;	
-		case MnMS0_OPT_CH1_MEASURE_CYCLE:		lMnMsr.mBasePr.measure_cycle[APP_CH_1] = val;	 break;	
+		case MnMS0_OPT_CH1_EMPTY:				lMnMsr.mBasePr.empty[APP_CH_1] = val;			CalPrc_ResetFlag(APP_CH_1);	lMsCal.auto_gain_fslope[APP_CH_1] = 1;break;
+		case MnMS0_OPT_CH1_DEADZONE:			lMnMsr.mBasePr.deadzone[APP_CH_1] = val;		CalPrc_ResetFlag(APP_CH_1);	lMsCal.auto_gain_fslope[APP_CH_1] = 1;break;
+		case MnMS0_OPT_CH1_MEASURE_CYCLE:		lMnMsr.mBasePr.measure_cycle[APP_CH_1] = val;	 break;
 		case MnMS0_OPT_CH1_MEASURE_RESET:
 			switch(MnLY3_GetValue())
 			{
@@ -202,10 +251,10 @@ void MnMSR_BaseSet_Value(U08 iIt,S32 val)
 				default:													break;
 			}
 			break;
-		case MnMS0_OPT_CH2_OPERATION:			lMnMsr.mBasePr.operation[APP_CH_2] = val;		break;	
-		case MnMS0_OPT_CH2_EMPTY:				lMnMsr.mBasePr.empty[APP_CH_2] = val;			CalPrc_ResetFlag(APP_CH_2);	lMsCal.auto_gain_fslope[APP_CH_2] = 1;break;	
-		case MnMS0_OPT_CH2_DEADZONE:			lMnMsr.mBasePr.deadzone[APP_CH_2] = val;		CalPrc_ResetFlag(APP_CH_2);	lMsCal.auto_gain_fslope[APP_CH_2] = 1;break;	
-		case MnMS0_OPT_CH2_MEASURE_CYCLE:		lMnMsr.mBasePr.measure_cycle[APP_CH_2] = val;	break;	
+		case MnMS0_OPT_CH2_OPERATION:			lMnMsr.mBasePr.operation[APP_CH_2] = val;		break;
+		case MnMS0_OPT_CH2_EMPTY:				lMnMsr.mBasePr.empty[APP_CH_2] = val;			CalPrc_ResetFlag(APP_CH_2);	lMsCal.auto_gain_fslope[APP_CH_2] = 1;break;
+		case MnMS0_OPT_CH2_DEADZONE:			lMnMsr.mBasePr.deadzone[APP_CH_2] = val;		CalPrc_ResetFlag(APP_CH_2);	lMsCal.auto_gain_fslope[APP_CH_2] = 1;break;
+		case MnMS0_OPT_CH2_MEASURE_CYCLE:		lMnMsr.mBasePr.measure_cycle[APP_CH_2] = val;	break;
 		case MnMS0_OPT_CH2_MEASURE_RESET:
 			switch(MnLY3_GetValue())
 			{
@@ -214,26 +263,26 @@ void MnMSR_BaseSet_Value(U08 iIt,S32 val)
 				default:						break;
 			}
 			break;
-		default:								
+		default:
 			break;
-	}	
+	}
 
 	switch(iIt)
 	{
 		case MnMS0_OPT_UNIT:					MRM_WrByte(_mUNIT, lMnMsr.mBasePr.unit);								break;
 		case MnMS0_OPT_CH1_OPERATION:			MRM_WrByte(_mCH1_OPERATION, lMnMsr.mBasePr.operation[APP_CH_1]);		break;
-		case MnMS0_OPT_CH1_EMPTY:				MRM_WrWord(_mCH1_EMPTY_L, lMnMsr.mBasePr.empty[APP_CH_1]);				break;	
+		case MnMS0_OPT_CH1_EMPTY:				MRM_WrWord(_mCH1_EMPTY_L, lMnMsr.mBasePr.empty[APP_CH_1]);				break;
 		case MnMS0_OPT_CH1_DEADZONE:			MRM_WrWord(_mCH1_DEADZONE_L, lMnMsr.mBasePr.deadzone[APP_CH_1]);		break;
 		case MnMS0_OPT_CH1_MEASURE_CYCLE:		MRM_WrByte(_mCH1_MSR_CYC, lMnMsr.mBasePr.measure_cycle[APP_CH_1]);		break;
 		case MnMS0_OPT_CH1_MEASURE_RESET:		break;
-		case MnMS0_OPT_CH2_OPERATION:			MRM_WrByte(_mCH2_OPERATION, lMnMsr.mBasePr.operation[APP_CH_2]);		break;	
-		case MnMS0_OPT_CH2_EMPTY:				MRM_WrWord(_mCH2_EMPTY_L, lMnMsr.mBasePr.empty[APP_CH_2]);				break;	
+		case MnMS0_OPT_CH2_OPERATION:			MRM_WrByte(_mCH2_OPERATION, lMnMsr.mBasePr.operation[APP_CH_2]);		break;
+		case MnMS0_OPT_CH2_EMPTY:				MRM_WrWord(_mCH2_EMPTY_L, lMnMsr.mBasePr.empty[APP_CH_2]);				break;
 		case MnMS0_OPT_CH2_DEADZONE:			MRM_WrWord(_mCH2_DEADZONE_L, lMnMsr.mBasePr.deadzone[APP_CH_2]);		break;
 		case MnMS0_OPT_CH2_MEASURE_CYCLE:		MRM_WrByte(_mCH2_MSR_CYC, lMnMsr.mBasePr.measure_cycle[APP_CH_2]);		break;
 		case MnMS0_OPT_CH2_MEASURE_RESET:		break;
-		default:								
+		default:
 			break;
-	}	
+	}
 
 }
 
@@ -244,9 +293,9 @@ void MnMSR_BaseSet_Ch_Value(U08 ch,U08 iIt,S32 val)
 	{
 		case MnMS0_OPT_SINGLE_UNIT:					lMnMsr.mBasePr.unit = val;						break;
 		case MnMS0_OPT_SINGLE_OPERATION:			lMnMsr.mBasePr.operation[ch] = val;		break;
-		case MnMS0_OPT_SINGLE_EMPTY:				lMnMsr.mBasePr.empty[ch] = val;			CalPrc_ResetFlag(ch);	lMsCal.auto_gain_fslope[ch] = 1;break;		
-		case MnMS0_OPT_SINGLE_DEADZONE:				lMnMsr.mBasePr.deadzone[ch] = val;		CalPrc_ResetFlag(ch);	lMsCal.auto_gain_fslope[ch] = 1;break;	
-		case MnMS0_OPT_SINGLE_MEASURE_CYCLE:		lMnMsr.mBasePr.measure_cycle[ch] = val;	 break;	
+		case MnMS0_OPT_SINGLE_EMPTY:				lMnMsr.mBasePr.empty[ch] = val;			CalPrc_ResetFlag(ch);	lMsCal.auto_gain_fslope[ch] = 1;break;
+		case MnMS0_OPT_SINGLE_DEADZONE:				lMnMsr.mBasePr.deadzone[ch] = val;		CalPrc_ResetFlag(ch);	lMsCal.auto_gain_fslope[ch] = 1;break;
+		case MnMS0_OPT_SINGLE_MEASURE_CYCLE:		lMnMsr.mBasePr.measure_cycle[ch] = val;	 break;
 		case MnMS0_OPT_SINGLE_MEASURE_RESET:
 			switch(MnLY3_GetValue())
 			{
@@ -255,9 +304,9 @@ void MnMSR_BaseSet_Ch_Value(U08 ch,U08 iIt,S32 val)
 				default:												  break;
 			}
 			break;
-		default:								
+		default:
 			break;
-	}	
+	}
 
 	if(ch==APP_CH_1)
 	{
@@ -265,13 +314,13 @@ void MnMSR_BaseSet_Ch_Value(U08 ch,U08 iIt,S32 val)
 		{
 			case MnMS0_OPT_SINGLE_UNIT:					MRM_WrByte(_mUNIT, lMnMsr.mBasePr.unit);								break;
 			case MnMS0_OPT_SINGLE_OPERATION:			MRM_WrByte(_mCH1_OPERATION, lMnMsr.mBasePr.operation[APP_CH_1]);		break;
-			case MnMS0_OPT_SINGLE_EMPTY:				MRM_WrWord(_mCH1_EMPTY_L, lMnMsr.mBasePr.empty[APP_CH_1]);				break;	
+			case MnMS0_OPT_SINGLE_EMPTY:				MRM_WrWord(_mCH1_EMPTY_L, lMnMsr.mBasePr.empty[APP_CH_1]);				break;
 			case MnMS0_OPT_SINGLE_DEADZONE:				MRM_WrWord(_mCH1_DEADZONE_L, lMnMsr.mBasePr.deadzone[APP_CH_1]);		break;
 			case MnMS0_OPT_SINGLE_MEASURE_CYCLE:		MRM_WrByte(_mCH1_MSR_CYC, lMnMsr.mBasePr.measure_cycle[APP_CH_1]);		break;
-			case MnMS0_OPT_SINGLE_MEASURE_RESET:		break;			
-			default:								
+			case MnMS0_OPT_SINGLE_MEASURE_RESET:		break;
+			default:
 				break;
-		}	
+		}
 	}
 	else if(ch==APP_CH_2)
 	{
@@ -279,13 +328,13 @@ void MnMSR_BaseSet_Ch_Value(U08 ch,U08 iIt,S32 val)
 		{
 			case MnMS0_OPT_SINGLE_UNIT:					MRM_WrByte(_mUNIT, lMnMsr.mBasePr.unit);								break;
 			case MnMS0_OPT_SINGLE_OPERATION:			MRM_WrByte(_mCH2_OPERATION, lMnMsr.mBasePr.operation[APP_CH_2]);		break;
-			case MnMS0_OPT_SINGLE_EMPTY:				MRM_WrWord(_mCH2_EMPTY_L, lMnMsr.mBasePr.empty[APP_CH_2]);				break;	
+			case MnMS0_OPT_SINGLE_EMPTY:				MRM_WrWord(_mCH2_EMPTY_L, lMnMsr.mBasePr.empty[APP_CH_2]);				break;
 			case MnMS0_OPT_SINGLE_DEADZONE:				MRM_WrWord(_mCH2_DEADZONE_L, lMnMsr.mBasePr.deadzone[APP_CH_2]);		break;
 			case MnMS0_OPT_SINGLE_MEASURE_CYCLE:		MRM_WrByte(_mCH2_MSR_CYC, lMnMsr.mBasePr.measure_cycle[APP_CH_2]);		break;
-			case MnMS0_OPT_SINGLE_MEASURE_RESET:		break;			
-			default:								
+			case MnMS0_OPT_SINGLE_MEASURE_RESET:		break;
+			default:
 				break;
-		}	
+		}
 	}
 
 }
@@ -327,7 +376,7 @@ void MnMSR_CalSet_Value(U08 iIt, S32 val)
 		case MnMS1_OPT_CH1_THR_LIGHT:		MRM_WrByte(_mCH1_THR_LIGHT_MODE, lMnMsr.mCalPr.thr_light_mod[APP_CH_1]);		break;
 		case MnMS1_OPT_CH1_THR_HEAVY:		MRM_WrByte(_mCH1_THR_HEAVY_MODE, lMnMsr.mCalPr.thr_heavy_mod[APP_CH_1]);		break;
 		case MnMS1_OPT_CH1_ASF_LIGHT:		MRM_WrWord(_mCH1_ASF_LIGHT_L, lMnMsr.mCalPr.asf[APP_CH_1][MsCAL_THR_LIGHT]);	break;
-		case MnMS1_OPT_CH1_ASF_HEAVY:		MRM_WrWord(_mCH1_ASF_HEAVY_L, lMnMsr.mCalPr.asf[APP_CH_1][MsCAL_THR_HEAVY]);	break;		
+		case MnMS1_OPT_CH1_ASF_HEAVY:		MRM_WrWord(_mCH1_ASF_HEAVY_L, lMnMsr.mCalPr.asf[APP_CH_1][MsCAL_THR_HEAVY]);	break;
 		case MnMS1_OPT_CH1_DAMPING:			MRM_WrWord(_mCH1_DAMP_L, lMnMsr.mCalPr.damp[APP_CH_1]);							break;
 		case MnMS1_OPT_CH1_OFFSET:			MRM_WrWord(_mCH1_OFFSET_L, lMnMsr.mCalPr.offset[APP_CH_1]);						break;
 		case MnMS1_OPT_CH2_FREQ:			MRM_WrByte(_mCH2_FREQ, lMnMsr.mCalPr.freq[APP_CH_2]);							break;
@@ -336,11 +385,11 @@ void MnMSR_CalSet_Value(U08 iIt, S32 val)
 		case MnMS1_OPT_CH2_THR_LIGHT:		MRM_WrByte(_mCH2_THR_LIGHT_MODE, lMnMsr.mCalPr.thr_light_mod[APP_CH_2]);		break;
 		case MnMS1_OPT_CH2_THR_HEAVY:		MRM_WrByte(_mCH2_THR_HEAVY_MODE, lMnMsr.mCalPr.thr_heavy_mod[APP_CH_2]);		break;
 		case MnMS1_OPT_CH2_ASF_LIGHT:		MRM_WrWord(_mCH2_ASF_LIGHT_L, lMnMsr.mCalPr.asf[APP_CH_2][MsCAL_THR_LIGHT]);	break;
-		case MnMS1_OPT_CH2_ASF_HEAVY:		MRM_WrWord(_mCH2_ASF_HEAVY_L, lMnMsr.mCalPr.asf[APP_CH_2][MsCAL_THR_HEAVY]);	break;	
+		case MnMS1_OPT_CH2_ASF_HEAVY:		MRM_WrWord(_mCH2_ASF_HEAVY_L, lMnMsr.mCalPr.asf[APP_CH_2][MsCAL_THR_HEAVY]);	break;
 		case MnMS1_OPT_CH2_DAMPING:			MRM_WrWord(_mCH2_DAMP_L, lMnMsr.mCalPr.damp[APP_CH_2]);							break;
 		case MnMS1_OPT_CH2_OFFSET:			MRM_WrWord(_mCH2_OFFSET_L, lMnMsr.mCalPr.offset[APP_CH_2]);						break;
 		default:							break;
-	}	
+	}
 }
 
 void MnMSR_CalSet_Ch_Value(U08 ch, U08 iIt, S32 val)
@@ -354,7 +403,7 @@ void MnMSR_CalSet_Ch_Value(U08 ch, U08 iIt, S32 val)
 		case MnMS1_OPT_SINGLE_THR_LIGHT:	lMnMsr.mCalPr.thr_light_mod[ch] = val;		break;
 		case MnMS1_OPT_SINGLE_THR_HEAVY:	lMnMsr.mCalPr.thr_heavy_mod[ch] = val;		break;
 		case MnMS1_OPT_SINGLE_ASF_LIGHT:	lMnMsr.mCalPr.asf[ch][MsCAL_THR_LIGHT]= val; 		break;
-		case MnMS1_OPT_SINGLE_ASF_HEAVY:	lMnMsr.mCalPr.asf[ch][MsCAL_THR_HEAVY]= val; 		break;		
+		case MnMS1_OPT_SINGLE_ASF_HEAVY:	lMnMsr.mCalPr.asf[ch][MsCAL_THR_HEAVY]= val; 		break;
 		case MnMS1_OPT_SINGLE_DAMPING:		lMnMsr.mCalPr.damp[ch]			= val;		break;
 		case MnMS1_OPT_SINGLE_OFFSET:		lMnMsr.mCalPr.offset[ch]		= val; 		break;
 		default:							break;
@@ -371,7 +420,7 @@ void MnMSR_CalSet_Ch_Value(U08 ch, U08 iIt, S32 val)
 				case MnMS1_OPT_SINGLE_THR_LIGHT:	MRM_WrByte(_mCH1_THR_LIGHT_MODE, lMnMsr.mCalPr.thr_light_mod[ch]);		break;
 				case MnMS1_OPT_SINGLE_THR_HEAVY:	MRM_WrByte(_mCH1_THR_HEAVY_MODE, lMnMsr.mCalPr.thr_heavy_mod[ch]);		break;
 				case MnMS1_OPT_SINGLE_ASF_LIGHT:	MRM_WrWord(_mCH1_ASF_LIGHT_L, lMnMsr.mCalPr.asf[ch][MsCAL_THR_LIGHT]);	break;
-				case MnMS1_OPT_SINGLE_ASF_HEAVY:	MRM_WrWord(_mCH1_ASF_HEAVY_L, lMnMsr.mCalPr.asf[ch][MsCAL_THR_HEAVY]);	break;				
+				case MnMS1_OPT_SINGLE_ASF_HEAVY:	MRM_WrWord(_mCH1_ASF_HEAVY_L, lMnMsr.mCalPr.asf[ch][MsCAL_THR_HEAVY]);	break;
 				case MnMS1_OPT_SINGLE_DAMPING:		MRM_WrWord(_mCH1_DAMP_L, lMnMsr.mCalPr.damp[ch]);						break;
 				case MnMS1_OPT_SINGLE_OFFSET:		MRM_WrWord(_mCH1_OFFSET_L, lMnMsr.mCalPr.offset[ch]);					break;
 				default:
@@ -394,10 +443,10 @@ void MnMSR_CalSet_Ch_Value(U08 ch, U08 iIt, S32 val)
 					break;
 			}
 			break;
-		default:	
+		default:
 			break;
 	}
-	
+
 }
 
 
@@ -408,7 +457,7 @@ void MnMSR_Set_Threshold_Ch_Value(U08 ch,U08 sel, S32 val)
 	switch(sel)
 	{
 		case MnMS1_OPT_SINGLE_THR_LIGHT:		lMnMsr.mCalPr.thr_val[ch][MsCAL_THR_LIGHT]  = val;	break;
-		case MnMS1_OPT_SINGLE_THR_HEAVY:		lMnMsr.mCalPr.thr_val[ch][MsCAL_THR_HEAVY]  = val;	break;		
+		case MnMS1_OPT_SINGLE_THR_HEAVY:		lMnMsr.mCalPr.thr_val[ch][MsCAL_THR_HEAVY]  = val;	break;
 		default:								break;
 	}
 
@@ -418,18 +467,18 @@ void MnMSR_Set_Threshold_Ch_Value(U08 ch,U08 sel, S32 val)
 			switch(sel)
 			{
 				case MnMS1_OPT_SINGLE_THR_LIGHT:		MRM_WrWord(_mCH1_THR_LIGHT_VAL_L, lMnMsr.mCalPr.thr_val[APP_CH_1][MsCAL_THR_LIGHT]);	break;
-				case MnMS1_OPT_SINGLE_THR_HEAVY:		MRM_WrWord(_mCH1_THR_HEAVY_VAL_L, lMnMsr.mCalPr.thr_val[APP_CH_1][MsCAL_THR_HEAVY]);	break;	
+				case MnMS1_OPT_SINGLE_THR_HEAVY:		MRM_WrWord(_mCH1_THR_HEAVY_VAL_L, lMnMsr.mCalPr.thr_val[APP_CH_1][MsCAL_THR_HEAVY]);	break;
 				default:								break;
-			}			
+			}
 			break;
 		case APP_CH_2:
 			switch(sel)
 			{
 				case MnMS1_OPT_SINGLE_THR_LIGHT:		MRM_WrWord(_mCH2_THR_LIGHT_VAL_L, lMnMsr.mCalPr.thr_val[APP_CH_2][MsCAL_THR_LIGHT]);	break;
-				case MnMS1_OPT_SINGLE_THR_HEAVY:		MRM_WrWord(_mCH2_THR_HEAVY_VAL_L, lMnMsr.mCalPr.thr_val[APP_CH_2][MsCAL_THR_HEAVY]);	break;	
+				case MnMS1_OPT_SINGLE_THR_HEAVY:		MRM_WrWord(_mCH2_THR_HEAVY_VAL_L, lMnMsr.mCalPr.thr_val[APP_CH_2][MsCAL_THR_HEAVY]);	break;
 				default:								break;
-			}			
-			break;			
+			}
+			break;
 		default:			break;
 	}
 
@@ -441,9 +490,9 @@ void MnMSR_Set_Threshold_Value(U08 sel, S32 val)
 	switch(sel)
 	{
 		case MnMS1_OPT_CH1_THR_LIGHT:		lMnMsr.mCalPr.thr_val[APP_CH_1][MsCAL_THR_LIGHT]  = val;	break;
-		case MnMS1_OPT_CH1_THR_HEAVY:		lMnMsr.mCalPr.thr_val[APP_CH_1][MsCAL_THR_HEAVY]  = val;	break;	
+		case MnMS1_OPT_CH1_THR_HEAVY:		lMnMsr.mCalPr.thr_val[APP_CH_1][MsCAL_THR_HEAVY]  = val;	break;
 		case MnMS1_OPT_CH2_THR_LIGHT:		lMnMsr.mCalPr.thr_val[APP_CH_2][MsCAL_THR_LIGHT]  = val;	break;
-		case MnMS1_OPT_CH2_THR_HEAVY:		lMnMsr.mCalPr.thr_val[APP_CH_2][MsCAL_THR_HEAVY]  = val;	break;	
+		case MnMS1_OPT_CH2_THR_HEAVY:		lMnMsr.mCalPr.thr_val[APP_CH_2][MsCAL_THR_HEAVY]  = val;	break;
 		default:							break;
 	}
 
@@ -459,9 +508,9 @@ void MnMSR_Set_Threshold_Value(U08 sel, S32 val)
 	switch(sel)
 	{
 		case MnMS1_OPT_CH1_THR_LIGHT:		break;
-		case MnMS1_OPT_CH1_THR_HEAVY:		CalPrc_Threshold_Value(APP_CH_1);	break;	
+		case MnMS1_OPT_CH1_THR_HEAVY:		CalPrc_Threshold_Value(APP_CH_1);	break;
 		case MnMS1_OPT_CH2_THR_LIGHT:		break;
-		case MnMS1_OPT_CH2_THR_HEAVY:		CalPrc_Threshold_Value(APP_CH_2);	break;	
+		case MnMS1_OPT_CH2_THR_HEAVY:		CalPrc_Threshold_Value(APP_CH_2);	break;
 		default:							break;
 	}
 
@@ -493,13 +542,15 @@ void MnMSR_PrSet_Value(U08 iIt,S32 val)
 #endif
 
 void MnMSR_PrRst_Factory(void)
-{	
+{
+	U08 freq_def = MnMSR_GetDefaultFreq();
+
 	// Sub-Seciton #0 (Base)
 	MRM_WrByte(_mUNIT,	MnMS0_UNIT_DEF);
 	MRM_WrByte(_mCH1_OPERATION,	MnMS0_OPERATION_DEF);
 	MRM_WrByte(_mCH2_OPERATION,	MnMS0_OPERATION_DEF);
 	MRM_WrWord(_mCH1_EMPTY_L,   MnMS0_EMPTY_DEF);
-	MRM_WrWord(_mCH2_EMPTY_L,   MnMS0_EMPTY_DEF);	
+	MRM_WrWord(_mCH2_EMPTY_L,   MnMS0_EMPTY_DEF);
 	MRM_WrWord(_mCH1_DEADZONE_L,   MnMS0_DEADZONE_DEF);
 	MRM_WrWord(_mCH2_DEADZONE_L,   MnMS0_DEADZONE_DEF);
 	MRM_WrByte(_mCH1_MSR_CYC,	MnMS0_MSR_CYC_DEF);
@@ -507,30 +558,30 @@ void MnMSR_PrRst_Factory(void)
 
 
 	// Sub-Section (Calibration)
-	MRM_WrByte(_mCH1_FREQ,	MnMS1_FREQ_DEF);
-	MRM_WrByte(_mCH2_FREQ,	MnMS1_FREQ_DEF);	
+	MRM_WrByte(_mCH1_FREQ,	freq_def);
+	MRM_WrByte(_mCH2_FREQ,	freq_def);
 	MRM_WrByte(_mCH1_ECHO_AMP,	MnMS1_ECHO_AMP_DEF);
 	MRM_WrByte(_mCH2_ECHO_AMP,	MnMS1_ECHO_AMP_DEF);
 	MRM_WrByte(_mCH1_AUTO_FAMP,	MnMS1_AUTO_FAMP_DEF);
 	MRM_WrByte(_mCH2_AUTO_FAMP,	MnMS1_AUTO_FAMP_DEF);
 	MRM_WrByte(_mCH1_THR_HEAVY_MODE,	MnMS1_THRESHOLD_DEF);
-	MRM_WrByte(_mCH2_THR_HEAVY_MODE,	MnMS1_THRESHOLD_DEF);		
+	MRM_WrByte(_mCH2_THR_HEAVY_MODE,	MnMS1_THRESHOLD_DEF);
 	MRM_WrByte(_mCH1_THR_LIGHT_MODE,	MnMS1_THRESHOLD_DEF);
-	MRM_WrByte(_mCH2_THR_LIGHT_MODE,	MnMS1_THRESHOLD_DEF);		
+	MRM_WrByte(_mCH2_THR_LIGHT_MODE,	MnMS1_THRESHOLD_DEF);
 	MRM_WrWord(_mCH1_ASF_LIGHT_L,	MnMS1_ASF_DEF);
-	MRM_WrWord(_mCH2_ASF_LIGHT_L,	MnMS1_ASF_DEF);	
+	MRM_WrWord(_mCH2_ASF_LIGHT_L,	MnMS1_ASF_DEF);
 	MRM_WrWord(_mCH1_ASF_HEAVY_L,	MnMS1_ASF_DEF);
-	MRM_WrWord(_mCH2_ASF_HEAVY_L,	MnMS1_ASF_DEF);		
+	MRM_WrWord(_mCH2_ASF_HEAVY_L,	MnMS1_ASF_DEF);
 	MRM_WrWord(_mCH1_DAMP_L,	MnMS1_DAMPING_DEF);
-	MRM_WrWord(_mCH2_DAMP_L,	MnMS1_DAMPING_DEF);	
+	MRM_WrWord(_mCH2_DAMP_L,	MnMS1_DAMPING_DEF);
 	MRM_WrWord(_mCH1_OFFSET_L,	MnMS1_OFFSET_DEF);
-	MRM_WrWord(_mCH2_OFFSET_L,	MnMS1_OFFSET_DEF);		
+	MRM_WrWord(_mCH2_OFFSET_L,	MnMS1_OFFSET_DEF);
 
-	MRM_WrWord(_mCH1_THR_LIGHT_VAL_L,	MnMS1_THR_VAL_AUTO_DEF);	
-	MRM_WrWord(_mCH1_THR_HEAVY_VAL_L,	MnMS1_THR_VAL_AUTO_DEF);	
-	MRM_WrWord(_mCH2_THR_LIGHT_VAL_L,	MnMS1_THR_VAL_AUTO_DEF);	
-	MRM_WrWord(_mCH2_THR_HEAVY_VAL_L,	MnMS1_THR_VAL_AUTO_DEF);	
-}	
+	MRM_WrWord(_mCH1_THR_LIGHT_VAL_L,	MnMS1_THR_VAL_AUTO_DEF);
+	MRM_WrWord(_mCH1_THR_HEAVY_VAL_L,	MnMS1_THR_VAL_AUTO_DEF);
+	MRM_WrWord(_mCH2_THR_LIGHT_VAL_L,	MnMS1_THR_VAL_AUTO_DEF);
+	MRM_WrWord(_mCH2_THR_HEAVY_VAL_L,	MnMS1_THR_VAL_AUTO_DEF);
+}
 
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -584,38 +635,38 @@ void MnMSR_PrInitMain(void)
 	lMnMsr.mCalPr.asf[APP_CH_1][MsCAL_THR_LIGHT]				= MRM_RdWord(_mCH1_ASF_LIGHT_L);
 	lMnMsr.mCalPr.asf[APP_CH_2][MsCAL_THR_LIGHT]				= MRM_RdWord(_mCH2_ASF_LIGHT_L);
 	lMnMsr.mCalPr.asf[APP_CH_1][MsCAL_THR_HEAVY]				= MRM_RdWord(_mCH1_ASF_HEAVY_L);
-	lMnMsr.mCalPr.asf[APP_CH_2][MsCAL_THR_HEAVY]				= MRM_RdWord(_mCH2_ASF_HEAVY_L);	
+	lMnMsr.mCalPr.asf[APP_CH_2][MsCAL_THR_HEAVY]				= MRM_RdWord(_mCH2_ASF_HEAVY_L);
 	lMnMsr.mCalPr.damp[APP_CH_1]			= MRM_RdWord(_mCH1_DAMP_L);
 	lMnMsr.mCalPr.damp[APP_CH_2]			= MRM_RdWord(_mCH2_DAMP_L);
 	lMnMsr.mCalPr.offset[APP_CH_1]			= MRM_RdWord(_mCH1_OFFSET_L);
 	lMnMsr.mCalPr.offset[APP_CH_2]			= MRM_RdWord(_mCH2_OFFSET_L);
-	
+
 	lMnMsr.mCalPr.thr_val[APP_CH_1][MsCAL_THR_LIGHT] 		= MRM_RdWord(_mCH1_THR_LIGHT_VAL_L);
 	lMnMsr.mCalPr.thr_val[APP_CH_1][MsCAL_THR_HEAVY] 		= MRM_RdWord(_mCH1_THR_HEAVY_VAL_L);
 	lMnMsr.mCalPr.thr_val[APP_CH_2][MsCAL_THR_LIGHT] 		= MRM_RdWord(_mCH2_THR_LIGHT_VAL_L);
 	lMnMsr.mCalPr.thr_val[APP_CH_2][MsCAL_THR_HEAVY] 		= MRM_RdWord(_mCH2_THR_HEAVY_VAL_L);
 
-	if(lMnMsr.mCalPr.freq[APP_CH_1]	> MnMS1_FREQ_MAX)				lMnMsr.mCalPr.freq[APP_CH_1] = MnMS1_FREQ_DEF;
-	if(lMnMsr.mCalPr.freq[APP_CH_2]	> MnMS1_FREQ_MAX)				lMnMsr.mCalPr.freq[APP_CH_2] = MnMS1_FREQ_DEF;
-	
+	if(!MnMSR_IsValidFreq(lMnMsr.mCalPr.freq[APP_CH_1]))	lMnMsr.mCalPr.freq[APP_CH_1] = MnMSR_GetDefaultFreq();
+	if(!MnMSR_IsValidFreq(lMnMsr.mCalPr.freq[APP_CH_2]))	lMnMsr.mCalPr.freq[APP_CH_2] = MnMSR_GetDefaultFreq();
+
 	if(lMnMsr.mCalPr.echo_amp[APP_CH_1]	> MnMS1_ECHO_AMP_MAX)			lMnMsr.mCalPr.echo_amp[APP_CH_1] = MnMS1_ECHO_AMP_DEF;
 	if(lMnMsr.mCalPr.echo_amp[APP_CH_2]	> MnMS1_ECHO_AMP_MAX)			lMnMsr.mCalPr.echo_amp[APP_CH_2] = MnMS1_ECHO_AMP_DEF;
 	if(lMnMsr.mCalPr.auto_famp[APP_CH_1] > MnMS1_AUTO_FAMP_MAX)			lMnMsr.mCalPr.auto_famp[APP_CH_1] = MnMS1_AUTO_FAMP_DEF;
 	if(lMnMsr.mCalPr.auto_famp[APP_CH_2] > MnMS1_AUTO_FAMP_MAX)			lMnMsr.mCalPr.auto_famp[APP_CH_2] = MnMS1_AUTO_FAMP_DEF;
-	
+
 	if(lMnMsr.mCalPr.thr_heavy_mod[APP_CH_1]	> MnMS1_THRESHOLD_MAX)		lMnMsr.mCalPr.thr_heavy_mod[APP_CH_1] = MnMS1_THRESHOLD_DEF;
 	if(lMnMsr.mCalPr.thr_heavy_mod[APP_CH_2]	> MnMS1_THRESHOLD_MAX)		lMnMsr.mCalPr.thr_heavy_mod[APP_CH_2] = MnMS1_THRESHOLD_DEF;
 	if(lMnMsr.mCalPr.thr_light_mod[APP_CH_1]	> MnMS1_THRESHOLD_MAX)		lMnMsr.mCalPr.thr_light_mod[APP_CH_1] = MnMS1_THRESHOLD_DEF;
 	if(lMnMsr.mCalPr.thr_light_mod[APP_CH_2]	> MnMS1_THRESHOLD_MAX)		lMnMsr.mCalPr.thr_light_mod[APP_CH_2] = MnMS1_THRESHOLD_DEF;
-	
+
 	if(lMnMsr.mCalPr.asf[APP_CH_1][MsCAL_THR_LIGHT]	> MnMS1_ASF_MAX)		lMnMsr.mCalPr.asf[APP_CH_1][MsCAL_THR_LIGHT] = MnMS1_ASF_DEF;
 	if(lMnMsr.mCalPr.asf[APP_CH_2][MsCAL_THR_LIGHT]	> MnMS1_ASF_MAX)		lMnMsr.mCalPr.asf[APP_CH_2][MsCAL_THR_LIGHT] = MnMS1_ASF_DEF;
 	if(lMnMsr.mCalPr.asf[APP_CH_1][MsCAL_THR_HEAVY]	> MnMS1_ASF_MAX)		lMnMsr.mCalPr.asf[APP_CH_1][MsCAL_THR_HEAVY] = MnMS1_ASF_DEF;
-	if(lMnMsr.mCalPr.asf[APP_CH_2][MsCAL_THR_HEAVY]	> MnMS1_ASF_MAX)		lMnMsr.mCalPr.asf[APP_CH_2][MsCAL_THR_HEAVY] = MnMS1_ASF_DEF;	
-	
+	if(lMnMsr.mCalPr.asf[APP_CH_2][MsCAL_THR_HEAVY]	> MnMS1_ASF_MAX)		lMnMsr.mCalPr.asf[APP_CH_2][MsCAL_THR_HEAVY] = MnMS1_ASF_DEF;
+
 	if(lMnMsr.mCalPr.damp[APP_CH_1]	> MnMS1_DAMPING_MAX)				lMnMsr.mCalPr.damp[APP_CH_1] = MnMS1_DAMPING_DEF;
 	if(lMnMsr.mCalPr.damp[APP_CH_2]	> MnMS1_DAMPING_MAX)				lMnMsr.mCalPr.damp[APP_CH_2] = MnMS1_DAMPING_DEF;
-	
+
 	if(lMnMsr.mCalPr.offset[APP_CH_1]	> MnMS1_OFFSET_MAX)			lMnMsr.mCalPr.offset[APP_CH_1] = MnMS1_OFFSET_DEF;
 	if(lMnMsr.mCalPr.offset[APP_CH_2]	> MnMS1_OFFSET_MAX)			lMnMsr.mCalPr.offset[APP_CH_2] = MnMS1_OFFSET_DEF;
 	if(lMnMsr.mCalPr.offset[APP_CH_1]	< MnMS1_OFFSET_MIN)			lMnMsr.mCalPr.offset[APP_CH_1] = MnMS1_OFFSET_DEF;
@@ -625,27 +676,27 @@ void MnMSR_PrInitMain(void)
 	{
 		switch(lMnMsr.mCalPr.thr_light_mod[i])
 		{
-			case MnMS1_THRESHOLD_AUTO:		
-				if(lMnMsr.mCalPr.thr_val[i][MsCAL_THR_LIGHT] > MnMS1_THR_VAL_AUTO_MAX)	
+			case MnMS1_THRESHOLD_AUTO:
+				if(lMnMsr.mCalPr.thr_val[i][MsCAL_THR_LIGHT] > MnMS1_THR_VAL_AUTO_MAX)
 				lMnMsr.mCalPr.thr_val[i][MsCAL_THR_LIGHT]= MnMS1_THR_VAL_AUTO_DEF;
 				break;
 			case MnMS1_THRESHOLD_MANUAL:
-				if(lMnMsr.mCalPr.thr_val[i][MsCAL_THR_LIGHT] > MnMS1_THR_VAL_MANUAL_MAX)	
+				if(lMnMsr.mCalPr.thr_val[i][MsCAL_THR_LIGHT] > MnMS1_THR_VAL_MANUAL_MAX)
 				lMnMsr.mCalPr.thr_val[i][MsCAL_THR_LIGHT]= MnMS1_THR_VAL_MANUAL_DEF;
-				break;			
+				break;
 			default:						break;
 		}
-		
+
 		switch(lMnMsr.mCalPr.thr_heavy_mod[i])
 		{
-			case MnMS1_THRESHOLD_AUTO:		
-				if(lMnMsr.mCalPr.thr_val[i][MsCAL_THR_HEAVY] > MnMS1_THR_VAL_AUTO_MAX)	
+			case MnMS1_THRESHOLD_AUTO:
+				if(lMnMsr.mCalPr.thr_val[i][MsCAL_THR_HEAVY] > MnMS1_THR_VAL_AUTO_MAX)
 				lMnMsr.mCalPr.thr_val[i][MsCAL_THR_HEAVY]= MnMS1_THR_VAL_AUTO_DEF;
 				break;
 			case MnMS1_THRESHOLD_MANUAL:
-				if(lMnMsr.mCalPr.thr_val[i][MsCAL_THR_HEAVY] > MnMS1_THR_VAL_MANUAL_MAX)	
+				if(lMnMsr.mCalPr.thr_val[i][MsCAL_THR_HEAVY] > MnMS1_THR_VAL_MANUAL_MAX)
 				lMnMsr.mCalPr.thr_val[i][MsCAL_THR_HEAVY]= MnMS1_THR_VAL_MANUAL_DEF;
-				break;			
+				break;
 			default:						break;
 		}
 	}

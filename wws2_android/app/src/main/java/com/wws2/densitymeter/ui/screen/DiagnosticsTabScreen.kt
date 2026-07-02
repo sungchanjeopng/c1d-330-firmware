@@ -49,6 +49,7 @@ private data class ConfigEdit(
     val step: Int,
     val allowTextInput: Boolean = true,
     val decimalScale: Int = 1,
+    val allowedValues: List<Int>? = null,
     val formatter: (Int) -> String,
 )
 
@@ -120,8 +121,8 @@ private fun InterfaceParametersPanel(state: MainUiState, onEdit: (ConfigEdit) ->
         Text("CONFIGURATION", modifier = Modifier.padding(start = 16.dp, top = 14.dp, bottom = 6.dp),
             fontSize = 18.sp, fontWeight = FontWeight.W700, color = AppColors.DarkText)
         EditableDiagRow("Freq", "%d kHz".format((state.freqMHz * 1000).roundToInt())) {
-            val current = when ((state.freqMHz * 1000).roundToInt()) { 380 -> 0; 270 -> 1; 160 -> 2; 130 -> 3; else -> 0 }
-            onEdit(ConfigEdit("Frequency", 6, current, 0, 3, 1, allowTextInput = false) { v -> when (v) { 0 -> "380 kHz"; 1 -> "270 kHz"; 2 -> "160 kHz"; 3 -> "130 kHz"; else -> "--" } })
+            val current = when ((state.freqMHz * 1000).roundToInt()) { 380 -> 0; 160 -> 2; 130 -> 3; 415 -> 4; else -> 4 }
+            onEdit(ConfigEdit("Frequency", 6, current, 0, 4, 1, allowTextInput = false, allowedValues = listOf(0, 2, 3, 4)) { v -> when (v) { 0 -> "380 kHz"; 2 -> "160 kHz"; 3 -> "130 kHz"; 4 -> "415 kHz"; else -> "--" } })
         }
         EditableDiagRow("Offset", "%.2f m".format(state.offset)) {
             onEdit(ConfigEdit("Offset", 7, (state.offset * 100).roundToInt(), -100, 100, 1, decimalScale = 100) { v -> "%.2f m".format(v / 100.0) })
@@ -189,17 +190,32 @@ private fun ConfigEditDialog(config: ConfigEdit, onDismiss: () -> Unit, onApply:
         return if (negative) -rawAbs else rawAbs
     }
 
-    var value by remember(config) { mutableIntStateOf(config.value.coerceIn(config.min, config.max)) }
-    var intText by remember(config) { mutableStateOf(TextFieldValue(integerText(config.value.coerceIn(config.min, config.max)), selection = TextRange(integerText(config.value.coerceIn(config.min, config.max)).length))) }
-    var fracText by remember(config) { mutableStateOf(TextFieldValue(fractionText(config.value.coerceIn(config.min, config.max)), selection = TextRange(fractionText(config.value.coerceIn(config.min, config.max)).length))) }
+    fun normalizeAllowed(raw: Int, reference: Int = raw): Int {
+        val bounded = raw.coerceIn(config.min, config.max)
+        val allowed = config.allowedValues?.filter { it in config.min..config.max } ?: return bounded
+        if (allowed.isEmpty()) return bounded
+        if (bounded in allowed) return bounded
+        return when {
+            raw > reference -> allowed.firstOrNull { it > reference } ?: allowed.first()
+            raw < reference -> allowed.lastOrNull { it < reference } ?: allowed.last()
+            else -> allowed.minByOrNull { kotlin.math.abs(it - bounded) } ?: allowed.first()
+        }
+    }
+    fun isValidRaw(raw: Int): Boolean {
+        return raw in config.min..config.max && (config.allowedValues == null || raw in config.allowedValues)
+    }
+
+    var value by remember(config) { mutableIntStateOf(normalizeAllowed(config.value)) }
+    var intText by remember(config) { mutableStateOf(TextFieldValue(integerText(normalizeAllowed(config.value)), selection = TextRange(integerText(normalizeAllowed(config.value)).length))) }
+    var fracText by remember(config) { mutableStateOf(TextFieldValue(fractionText(normalizeAllowed(config.value)), selection = TextRange(fractionText(normalizeAllowed(config.value)).length))) }
     val parsed = if (config.allowTextInput) parseRaw(intText.text, fracText.text) else value
-    val validValue = parsed?.takeIf { it in config.min..config.max }
+    val validValue = parsed?.takeIf { isValidRaw(it) }
 
     var sendingState by remember(config) { mutableStateOf(DiagSendingState.IDLE) }
     val scope = rememberCoroutineScope()
 
     fun setValue(newValue: Int) {
-        value = newValue.coerceIn(config.min, config.max)
+        value = normalizeAllowed(newValue, value)
         intText = TextFieldValue(integerText(value), selection = TextRange(integerText(value).length))
         fracText = TextFieldValue(fractionText(value), selection = TextRange(fractionText(value).length))
     }

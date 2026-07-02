@@ -27,6 +27,7 @@
 #include "menu_output.h"
 #include "menu_engineer.h"
 #include "menu_data.h"
+#include "menu_measure.h"
 // function
 #include "output_current.h"
 
@@ -45,6 +46,15 @@ MnFTR_LS lMnFtr;
 //------------------------------------------------------------------------------------------------------------------------------
 //  Local Funtions
 //------------------------------------------------------------------------------------------------------------------------------
+static U08 MnFTR_GetDefaultFreqBySensor(U08 sensor_type)
+{
+	switch(MnFTR_NormalizeSensorType(sensor_type))
+	{
+		case MnFTR_SENSOR_TYPE_S1:		return MnMS1_FREQ_380K;
+		case MnFTR_SENSOR_TYPE_ATK50:
+		default:					return MnMS1_FREQ_415K;
+	}
+}
 
 
 //------------------------------------------------------------------------------------------------------------------------------
@@ -52,6 +62,19 @@ MnFTR_LS lMnFtr;
 //------------------------------------------------------------------------------------------------------------------------------
 U08 MnFTR_PrGet_SsChn(void)		{	return lMnFtr.mPr.chnl;		}
 U08 MnFTR_PrGet_RfVersion(void)	{	return lMnFtr.mPr.rf_version;	}
+U08 MnFTR_PrGet_SensorType(void)	{	return lMnFtr.mPr.sensor_type;	}
+U08 MnFTR_NormalizeSensorType(U08 sensor_type)
+{
+	switch(sensor_type)
+	{
+		case MnFTR_SENSOR_TYPE_S1:		return MnFTR_SENSOR_TYPE_S1;
+		case MnFTR_SENSOR_TYPE_ATK50:
+		case MnFTR_SENSOR_TYPE_UNSET:	return MnFTR_SENSOR_TYPE_ATK50;
+		default:					return MnFTR_SENSOR_TYPE_DEF;
+	}
+}
+U08 MnFTR_PrGet_DefaultFreq(void)			{	return MnFTR_GetDefaultFreqBySensor(lMnFtr.mPr.sensor_type);	}
+U08 MnFTR_PrGet_DefaultFreqFromMram(void)	{	return MnFTR_GetDefaultFreqBySensor(MRM_RdByte(_mSENSOR_TYPE));	}
 S32 MnFTR_PrGet_Value(U08 iIt)
 {
 	S32 val = MENU_VAL_INVALID;
@@ -60,9 +83,9 @@ S32 MnFTR_PrGet_Value(U08 iIt)
 	{
 		case MnFTR_I00_SS_CH:			val = lMnFtr.mPr.chnl;						break;
 		case MnFTR_I01_CH0_04mA:		val = lMnFtr.mPr.cfg_4mA[MnFTR_CH_0];		break;
-		case MnFTR_I02_CH0_20mA:   	 	val = lMnFtr.mPr.cfg_20mA[MnFTR_CH_0];		break;	
-		case MnFTR_I03_CH1_04mA:		val = lMnFtr.mPr.cfg_4mA[MnFTR_CH_1];		break;	
-		case MnFTR_I04_CH1_20mA:  	  	val = lMnFtr.mPr.cfg_20mA[MnFTR_CH_1];		break;	
+		case MnFTR_I02_CH0_20mA:   	 	val = lMnFtr.mPr.cfg_20mA[MnFTR_CH_0];		break;
+		case MnFTR_I03_CH1_04mA:		val = lMnFtr.mPr.cfg_4mA[MnFTR_CH_1];		break;
+		case MnFTR_I04_CH1_20mA:  	  	val = lMnFtr.mPr.cfg_20mA[MnFTR_CH_1];		break;
 		case MnFTR_I05_CH1_TRIM_12MA:	val = MnOUT_CurPrGet_Value(MnOS0_OPT_CH1_TRM_12mA);	break;
 		case MnFTR_I06_CH1_TRIM_20MA:	val = MnOUT_CurPrGet_Value(MnOS0_OPT_CH1_TRM_20mA);	break;
 		case MnFTR_I07_CH1_OUTPUT_4MA:	break;
@@ -75,11 +98,12 @@ S32 MnFTR_PrGet_Value(U08 iIt)
 		case MnFTR_I14_VERSION:			break;
 		case MnFTR_I15_CLEAN_TEST:		val =0;	break;
 		case MnFTR_I16_RF_VERSION:		val = lMnFtr.mPr.rf_version;	break;
-		case MnFTR_I17_PROTOCOL:		val = MnDAT_ComPrGet_Value(MnDS2_OPT_TYPE);	break;
-		case MnFTR_I18_FTR_RST:			break;
+		case MnFTR_I17_SENSOR_TYPE:	val = lMnFtr.mPr.sensor_type;	break;
+		case MnFTR_I18_PROTOCOL:		val = MnDAT_ComPrGet_Value(MnDS2_OPT_TYPE);	break;
+		case MnFTR_I19_FTR_RST:			break;
 		default:						break;
 	}
-	
+
 	return val;
 }
 
@@ -91,22 +115,23 @@ S32 MnFTR_PrGet_CH_Value(U08 ch,U08 iIt)
 	{
 		case MnFTR_OPT_SINGLE_SS_CH:		val = lMnFtr.mPr.chnl;				break;
 		case MnFTR_OPT_SINGLE_04mA:			val = lMnFtr.mPr.cfg_4mA[ch];		break;
-		case MnFTR_OPT_SINGLE_20mA:   		val = lMnFtr.mPr.cfg_20mA[ch];		break;	
+		case MnFTR_OPT_SINGLE_20mA:   		val = lMnFtr.mPr.cfg_20mA[ch];		break;
 		case MnFTR_OPT_SINGLE_TRIM_12MA:	val = MnOUT_CurPrGet_CH_Value(ch,MnOS0_OPT_SINGLE_TRM_12mA);	break;
 		case MnFTR_OPT_SINGLE_TRIM_20MA:	val = MnOUT_CurPrGet_CH_Value(ch,MnOS0_OPT_SINGLE_TRM_20mA);	break;
-		case MnFTR_OPT_SINGLE_OUTPUT_4MA:	break;		
+		case MnFTR_OPT_SINGLE_OUTPUT_4MA:	break;
 		case MnFTR_OPT_SINGLE_RELAY_TEST:	val = 0;	break;
 		case MnFTR_OPT_SINGLE_LANG:			val =MnSYS_PrGetBase_Item(MnSYS_OPT_LANG);	break;
 		case MnFTR_OPT_SINGLE_TIME:			break;
 		case MnFTR_OPT_SINGLE_VERSION:		break;
 		case MnFTR_OPT_SINGLE_CLEAN_TEST:	val =0;	break;
 		case MnFTR_OPT_SINGLE_RF_VERSION:	val = lMnFtr.mPr.rf_version;	break;
+		case MnFTR_OPT_SINGLE_SENSOR_TYPE:	val = lMnFtr.mPr.sensor_type;	break;
 		case MnFTR_OPT_SINGLE_PROTOCOL:		val = MnDAT_ComPrGet_Value(MnDS2_OPT_TYPE);	break;
 		case MnFTR_OPT_SINGLE_FTR_RST:		break;
 
 		default:							break;
 	}
-	
+
 	return val;
 }
 
@@ -134,8 +159,9 @@ void MnFTR_PrSet_Value(S32 val)
 		case MnFTR_I14_VERSION:			break;
 		case MnFTR_I15_CLEAN_TEST:		break;
 		case MnFTR_I16_RF_VERSION:		lMnFtr.mPr.rf_version = val;	break;
-		case MnFTR_I17_PROTOCOL:		MnDAT_ComPrSet_Value(MnDS2_OPT_TYPE, val);	break;
-		case MnFTR_I18_FTR_RST:			break;
+		case MnFTR_I17_SENSOR_TYPE:	lMnFtr.mPr.sensor_type = MnFTR_NormalizeSensorType(val);	break;
+		case MnFTR_I18_PROTOCOL:		MnDAT_ComPrSet_Value(MnDS2_OPT_TYPE, val);	break;
+		case MnFTR_I19_FTR_RST:			break;
 	}
 
 	if(MnLY2_GetIdxItem()==MnFTR_I00_SS_CH)
@@ -152,6 +178,7 @@ void MnFTR_PrSet_Value(S32 val)
 		case MnFTR_I03_CH1_04mA:	MRM_WrWord(_mDAC_CH2_04MA_L, 	lMnFtr.mPr.cfg_4mA[MnFTR_CH_1]);	break;
 		case MnFTR_I04_CH1_20mA:	MRM_WrWord(_mDAC_CH2_20MA_L, 	lMnFtr.mPr.cfg_20mA[MnFTR_CH_1]);	break;
 		case MnFTR_I16_RF_VERSION:	MRM_WrByte(_mRF_VERSION, lMnFtr.mPr.rf_version);	break;
+		case MnFTR_I17_SENSOR_TYPE:	MRM_WrByte(_mSENSOR_TYPE, lMnFtr.mPr.sensor_type);	break;
 	}
 }
 
@@ -171,6 +198,7 @@ void MnFTR_PrSet_CH_Value(U08 ch,S32 val)
 		case MnFTR_OPT_SINGLE_VERSION:		break;
 		case MnFTR_OPT_SINGLE_CLEAN_TEST:	break;
 		case MnFTR_OPT_SINGLE_RF_VERSION:	lMnFtr.mPr.rf_version = val;	break;
+		case MnFTR_OPT_SINGLE_SENSOR_TYPE:	lMnFtr.mPr.sensor_type = MnFTR_NormalizeSensorType(val);	break;
 		case MnFTR_OPT_SINGLE_PROTOCOL:		MnDAT_ComPrSet_Value(MnDS2_OPT_TYPE, val);	break;
 		case MnFTR_OPT_SINGLE_FTR_RST:		break;
 	}
@@ -189,6 +217,7 @@ void MnFTR_PrSet_CH_Value(U08 ch,S32 val)
 		case MnFTR_OPT_SINGLE_04mA:	MRM_WrWord(_mDAC_CH1_04MA_L, 	lMnFtr.mPr.cfg_4mA[MnFTR_CH_0]);	break;
 		case MnFTR_OPT_SINGLE_20mA:	MRM_WrWord(_mDAC_CH1_20MA_L, 	lMnFtr.mPr.cfg_20mA[MnFTR_CH_0]);	break;
 		case MnFTR_OPT_SINGLE_RF_VERSION:	MRM_WrByte(_mRF_VERSION, lMnFtr.mPr.rf_version);	break;
+		case MnFTR_OPT_SINGLE_SENSOR_TYPE:	MRM_WrByte(_mSENSOR_TYPE, lMnFtr.mPr.sensor_type);	break;
 	}
 }
 
@@ -227,23 +256,25 @@ void MnFTR_PrInitMain(void)
 	lMnFtr.mPr.cfg_4mA [MnFTR_CH_1]	= MRM_RdWord(_mDAC_CH2_04MA_L);
 	lMnFtr.mPr.cfg_20mA[MnFTR_CH_1] = MRM_RdWord(_mDAC_CH2_20MA_L);
 	lMnFtr.mPr.rf_version = MRM_RdByte(_mRF_VERSION);
+	lMnFtr.mPr.sensor_type = MnFTR_NormalizeSensorType(MRM_RdByte(_mSENSOR_TYPE));
 	// Check Parameters
-	if(lMnFtr.mPr.chnl >= MnFTR_SS_NUM)				lMnFtr.mPr.chnl 	= MnFTR_CH_DEF;
-	if(lMnFtr.mPr.rf_version >= MnFTR_RF_VER_NUM)		lMnFtr.mPr.rf_version = MnFTR_RF_VER_DEF;
+	if(lMnFtr.mPr.chnl >= MnFTR_SS_NUM)				 lMnFtr.mPr.chnl 	= MnFTR_CH_DEF;
+	if(lMnFtr.mPr.rf_version >= MnFTR_RF_VER_NUM)		 lMnFtr.mPr.rf_version = MnFTR_RF_VER_DEF;
+	lMnFtr.mPr.sensor_type = MnFTR_NormalizeSensorType(lMnFtr.mPr.sensor_type);
 
 	for(i=0; i<MnFTR_CH_NUM; i++)
 	{
 		if(lMnFtr.mPr.cfg_4mA[i]  < MnFTR_CFG_04mA_MIN)		lMnFtr.mPr.cfg_4mA[i] 	= MnFTR_CFG_04mA_DEF;
 		if(lMnFtr.mPr.cfg_4mA[i]  > MnFTR_CFG_04mA_MAX)		lMnFtr.mPr.cfg_4mA[i]	= MnFTR_CFG_04mA_DEF;
 		if(lMnFtr.mPr.cfg_20mA[i] < MnFTR_CFG_20mA_MIN)		lMnFtr.mPr.cfg_20mA[i] 	= MnFTR_CFG_20mA_DEF;
-		if(lMnFtr.mPr.cfg_20mA[i] > MnFTR_CFG_20mA_MAX)		lMnFtr.mPr.cfg_20mA[i] 	= MnFTR_CFG_20mA_DEF;		
+		if(lMnFtr.mPr.cfg_20mA[i] > MnFTR_CFG_20mA_MAX)		lMnFtr.mPr.cfg_20mA[i] 	= MnFTR_CFG_20mA_DEF;
 	}
 
 }
 
 
 void MnFTR_InitMain(void)
-{	
+{
 	lMnFtr.lyr = MENU_L0_SECTION;
 
 	MnLY0_InitSection();

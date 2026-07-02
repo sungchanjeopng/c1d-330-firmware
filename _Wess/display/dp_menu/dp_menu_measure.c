@@ -154,7 +154,7 @@ void DpMSRBase_DualPopIntro(void)
 				case MnMS0_OPT_CH2_EMPTY:			_SPRINTF(lDpMsr.pStr, _sCH2_EMPTY); 			break;
 				case MnMS0_OPT_CH2_DEADZONE:		_SPRINTF(lDpMsr.pStr, _sCH2_DEADZONE);			break;
 				case MnMS0_OPT_CH2_MEASURE_CYCLE:	_SPRINTF(lDpMsr.pStr, _sCH2_MEASURE_CYCLE); 	break;
-				case MnMS0_OPT_CH2_MEASURE_RESET:	_SPRINTF(lDpMsr.pStr, _sCH2_MEASURE_RESET); 	break;		
+				case MnMS0_OPT_CH2_MEASURE_RESET:	_SPRINTF(lDpMsr.pStr, _sCH2_MEASURE_RESET); 	break;
 				default:							_SPRINTF(lDpMsr.pStr, _sNG);					break;
 			}
 			break;
@@ -170,7 +170,7 @@ void DpMSRBase_DualPopIntro(void)
 	// Old Value
 	switch(iIt)
 	{	// Page #0
-		case MnMS0_OPT_UNIT:		
+		case MnMS0_OPT_UNIT:
 			switch(val)
 			{
 				case MnMS0_UNIT_METER:		_SPRINTF(lDpMsr.pStr, "Meter");				break;
@@ -181,7 +181,7 @@ void DpMSRBase_DualPopIntro(void)
 		case MnMS0_OPT_CH1_OPERATION:
 			switch(lang)
 			{
-				case MnSYS_LANG_ENG:	
+				case MnSYS_LANG_ENG:
 					switch(val)
 					{
 						case MnMS0_OPERATION_SLUDGE:	_SPRINTF(lDpMsr.pStr, "Sludge");			break;
@@ -192,13 +192,13 @@ void DpMSRBase_DualPopIntro(void)
 				case MnSYS_LANG_KOR:
 					switch(val)
 					{
-						case MnMS0_OPERATION_SLUDGE:	DpSTR_GuiList(TEXT_LIST_SLUDGE);				break;	
+						case MnMS0_OPERATION_SLUDGE:	DpSTR_GuiList(TEXT_LIST_SLUDGE);				break;
 						case MnMS0_OPERATION_DISTANCE:	DpSTR_GuiList(TEXT_LIST_DISTANCE);				break;
 						default:						break;
-					}				
+					}
 					DpSTR_GuiLeft(DpPOP_MIN_X0, DpPOP_OLD_Y0+3, _cPOP_ST_VAL_IDL, _cPOP_BG_WND, _fE17HsB, _sNOW_);
 					DpSTR_GuiLeft_KOR(DpPOP_OLD_X0, DpPOP_OLD_Y0,	_cPOP_ST_OLD,	  _cPOP_BG_WND, _fE22HsBKOR, gDpStr.Text_list);
-					fDp = _F_F;	
+					fDp = _F_F;
 					break;
 			}
 			break;
@@ -209,7 +209,7 @@ void DpMSRBase_DualPopIntro(void)
 		case MnMS0_OPT_CH2_OPERATION:
 			switch(lang)
 			{
-				case MnSYS_LANG_ENG:	
+				case MnSYS_LANG_ENG:
 					switch(val)
 					{
 						case MnMS0_OPERATION_SLUDGE:	_SPRINTF(lDpMsr.pStr, "Sludge");			break;
@@ -220,13 +220,13 @@ void DpMSRBase_DualPopIntro(void)
 				case MnSYS_LANG_KOR:
 					switch(val)
 					{
-						case MnMS0_OPERATION_SLUDGE:	DpSTR_GuiList(TEXT_LIST_SLUDGE);				break;	
+						case MnMS0_OPERATION_SLUDGE:	DpSTR_GuiList(TEXT_LIST_SLUDGE);				break;
 						case MnMS0_OPERATION_DISTANCE:	DpSTR_GuiList(TEXT_LIST_DISTANCE);				break;
 						default:						break;
-					}				
+					}
 					DpSTR_GuiLeft(DpPOP_MIN_X0, DpPOP_OLD_Y0+3, _cPOP_ST_VAL_IDL, _cPOP_BG_WND, _fE17HsB, _sNOW_);
 					DpSTR_GuiLeft_KOR(DpPOP_OLD_X0, DpPOP_OLD_Y0,	_cPOP_ST_OLD,	  _cPOP_BG_WND, _fE22HsBKOR, gDpStr.Text_list);
-					fDp = _F_F;	
+					fDp = _F_F;
 					break;
 			}
 			break;
@@ -236,25 +236,25 @@ void DpMSRBase_DualPopIntro(void)
 		case MnMS0_OPT_CH2_MEASURE_RESET:		fDp = _F_F;									break;
 		default:																			break;
 	}
-	
+
 	if(fDp)	DpPOP_UdtOldVl(lDpMsr.pStr);
 
 	fDp = _F_T;
-	
+
 	// Range (Min. / Max.)
 
 	switch(iIt)
 	{	// Page #0
 		case MnMS0_OPT_UNIT:					fDp = _F_F;					break;
-		case MnMS0_OPT_CH1_OPERATION:		
+		case MnMS0_OPT_CH1_OPERATION:
 		case MnMS0_OPT_CH2_OPERATION:			fDp = _F_F;					break;
-		case MnMS0_OPT_CH1_EMPTY:				
+		case MnMS0_OPT_CH1_EMPTY:
 		case MnMS0_OPT_CH2_EMPTY:				min = MnMS0_EMPTY_MIN;		max = MnMS0_EMPTY_MAX;		break;
-		case MnMS0_OPT_CH1_DEADZONE:			
+		case MnMS0_OPT_CH1_DEADZONE:
 		case MnMS0_OPT_CH2_DEADZONE:			min = MnMS0_DEADZONE_MIN;	max = MnMS0_DEADZONE_MAX;	break;
-		case MnMS0_OPT_CH1_MEASURE_CYCLE:		
+		case MnMS0_OPT_CH1_MEASURE_CYCLE:
 		case MnMS0_OPT_CH2_MEASURE_CYCLE:		min = MnMS0_MSR_CYC_MIN;	max = MnMS0_MSR_CYC_MAX;	break;
-		case MnMS0_OPT_CH1_MEASURE_RESET:		
+		case MnMS0_OPT_CH1_MEASURE_RESET:
 		case MnMS0_OPT_CH2_MEASURE_RESET:		fDp = _F_F;									break;
 		default:																			break;
 	}
@@ -262,15 +262,15 @@ void DpMSRBase_DualPopIntro(void)
 	switch(iIt)
 	{	// Page #0
 		case MnMS0_OPT_UNIT:																break;
-		case MnMS0_OPT_CH1_OPERATION:		
+		case MnMS0_OPT_CH1_OPERATION:
 		case MnMS0_OPT_CH2_OPERATION:														break;
-		case MnMS0_OPT_CH1_EMPTY:				
+		case MnMS0_OPT_CH1_EMPTY:
 		case MnMS0_OPT_CH2_EMPTY:				_SPRINTF(lDpMsr.pStr, "%2d.%02d m", (U16)(min/100), (U16)(min%100));	break;
-		case MnMS0_OPT_CH1_DEADZONE:			
+		case MnMS0_OPT_CH1_DEADZONE:
 		case MnMS0_OPT_CH2_DEADZONE:			_SPRINTF(lDpMsr.pStr, "%2d.%02d m", (U16)(min/100), (U16)(min%100));	break;
-		case MnMS0_OPT_CH1_MEASURE_CYCLE:		
+		case MnMS0_OPT_CH1_MEASURE_CYCLE:
 		case MnMS0_OPT_CH2_MEASURE_CYCLE:		_SPRINTF(lDpMsr.pStr, "%d sec", min);			break;
-		case MnMS0_OPT_CH1_MEASURE_RESET:		
+		case MnMS0_OPT_CH1_MEASURE_RESET:
 		case MnMS0_OPT_CH2_MEASURE_RESET:													break;
 		default:																			break;
 	}
@@ -283,15 +283,15 @@ void DpMSRBase_DualPopIntro(void)
 	switch(iIt)
 	{	// Page #0
 		case MnMS0_OPT_UNIT:					fDp = _F_F;					break;
-		case MnMS0_OPT_CH1_OPERATION:		
+		case MnMS0_OPT_CH1_OPERATION:
 		case MnMS0_OPT_CH2_OPERATION:			fDp = _F_F;					break;
-		case MnMS0_OPT_CH1_EMPTY:				
+		case MnMS0_OPT_CH1_EMPTY:
 		case MnMS0_OPT_CH2_EMPTY:				_SPRINTF(lDpMsr.pStr, "%2d.%02d m", (U16)(max/100), (U16)(max%100));	break;
-		case MnMS0_OPT_CH1_DEADZONE:			
+		case MnMS0_OPT_CH1_DEADZONE:
 		case MnMS0_OPT_CH2_DEADZONE:			_SPRINTF(lDpMsr.pStr, "%2d.%02d m", (U16)(max/100), (U16)(max%100));	break;
-		case MnMS0_OPT_CH1_MEASURE_CYCLE:		
+		case MnMS0_OPT_CH1_MEASURE_CYCLE:
 		case MnMS0_OPT_CH2_MEASURE_CYCLE:		_SPRINTF(lDpMsr.pStr, "%d sec", max);			break;
-		case MnMS0_OPT_CH1_MEASURE_RESET:		
+		case MnMS0_OPT_CH1_MEASURE_RESET:
 		case MnMS0_OPT_CH2_MEASURE_RESET:		fDp = _F_F;									break;
 		default:																			break;
 	}
@@ -331,7 +331,7 @@ void DpMSRBase_SinglePopIntro(void)
 	// Old Value
 	switch(iIt)
 	{	// Page #0
-		case MnMS0_OPT_SINGLE_UNIT:		
+		case MnMS0_OPT_SINGLE_UNIT:
 			switch(val)
 			{
 				case MnMS0_UNIT_METER:		_SPRINTF(lDpMsr.pStr, "Meter");				break;
@@ -342,7 +342,7 @@ void DpMSRBase_SinglePopIntro(void)
 		case MnMS0_OPT_SINGLE_OPERATION:
 			switch(lang)
 			{
-				case MnSYS_LANG_ENG:	
+				case MnSYS_LANG_ENG:
 					switch(val)
 					{
 						case MnMS0_OPERATION_SLUDGE:	_SPRINTF(lDpMsr.pStr, "Sludge");			break;
@@ -353,13 +353,13 @@ void DpMSRBase_SinglePopIntro(void)
 				case MnSYS_LANG_KOR:
 					switch(val)
 					{
-						case MnMS0_OPERATION_SLUDGE:	DpSTR_GuiList(TEXT_LIST_SLUDGE);				break;	
+						case MnMS0_OPERATION_SLUDGE:	DpSTR_GuiList(TEXT_LIST_SLUDGE);				break;
 						case MnMS0_OPERATION_DISTANCE:	DpSTR_GuiList(TEXT_LIST_DISTANCE);				break;
 						default:						break;
-					}				
+					}
 					DpSTR_GuiLeft(DpPOP_MIN_X0, DpPOP_OLD_Y0+3, _cPOP_ST_VAL_IDL, _cPOP_BG_WND, _fE17HsB, _sNOW_);
 					DpSTR_GuiLeft_KOR(DpPOP_OLD_X0, DpPOP_OLD_Y0,	_cPOP_ST_OLD,	  _cPOP_BG_WND, _fE22HsBKOR, gDpStr.Text_list);
-					fDp = _F_F;	
+					fDp = _F_F;
 					break;
 			}
 			break;
@@ -369,20 +369,20 @@ void DpMSRBase_SinglePopIntro(void)
 		case MnMS0_OPT_SINGLE_MEASURE_RESET:		fDp = _F_F;										break;
 		default:																					break;
 	}
-	
+
 	if(fDp)	DpPOP_UdtOldVl(lDpMsr.pStr);
 
 	fDp = _F_T;
-	
+
 	// Range (Min. / Max.)
 
 	switch(iIt)
 	{	// Page #0
 		case MnMS0_OPT_SINGLE_UNIT:					fDp = _F_F;					break;
-		case MnMS0_OPT_SINGLE_OPERATION:			fDp = _F_F;					break;			
-		case MnMS0_OPT_SINGLE_EMPTY:				min = MnMS0_EMPTY_MIN;		max = MnMS0_EMPTY_MAX;		break;		
-		case MnMS0_OPT_SINGLE_DEADZONE:				min = MnMS0_DEADZONE_MIN;	max = MnMS0_DEADZONE_MAX;		break;	
-		case MnMS0_OPT_SINGLE_MEASURE_CYCLE:		min = MnMS0_MSR_CYC_MIN;	max = MnMS0_MSR_CYC_MAX;	break;	
+		case MnMS0_OPT_SINGLE_OPERATION:			fDp = _F_F;					break;
+		case MnMS0_OPT_SINGLE_EMPTY:				min = MnMS0_EMPTY_MIN;		max = MnMS0_EMPTY_MAX;		break;
+		case MnMS0_OPT_SINGLE_DEADZONE:				min = MnMS0_DEADZONE_MIN;	max = MnMS0_DEADZONE_MAX;		break;
+		case MnMS0_OPT_SINGLE_MEASURE_CYCLE:		min = MnMS0_MSR_CYC_MIN;	max = MnMS0_MSR_CYC_MAX;	break;
 		case MnMS0_OPT_SINGLE_MEASURE_RESET:		fDp = _F_F;												break;
 		default:																							break;
 	}
@@ -390,10 +390,10 @@ void DpMSRBase_SinglePopIntro(void)
 	switch(iIt)
 	{	// Page #0
 		case MnMS0_OPT_SINGLE_UNIT:																break;
-		case MnMS0_OPT_SINGLE_OPERATION:														break;	
-		case MnMS0_OPT_SINGLE_EMPTY:				_SPRINTF(lDpMsr.pStr, "%2d.%02d m", (U16)(min/100), (U16)(min%100));	break;	
+		case MnMS0_OPT_SINGLE_OPERATION:														break;
+		case MnMS0_OPT_SINGLE_EMPTY:				_SPRINTF(lDpMsr.pStr, "%2d.%02d m", (U16)(min/100), (U16)(min%100));	break;
 		case MnMS0_OPT_SINGLE_DEADZONE:				_SPRINTF(lDpMsr.pStr, "%2d.%02d m", (U16)(min/100), (U16)(min%100));	break;
-		case MnMS0_OPT_SINGLE_MEASURE_CYCLE:		_SPRINTF(lDpMsr.pStr, "%d sec", min);		break;	
+		case MnMS0_OPT_SINGLE_MEASURE_CYCLE:		_SPRINTF(lDpMsr.pStr, "%d sec", min);		break;
 		case MnMS0_OPT_SINGLE_MEASURE_RESET:													break;
 		default:																				break;
 	}
@@ -405,11 +405,11 @@ void DpMSRBase_SinglePopIntro(void)
 
 	switch(iIt)
 	{	// Page #0
-		case MnMS0_OPT_SINGLE_UNIT:					fDp = _F_F;					break;	
-		case MnMS0_OPT_SINGLE_OPERATION:			fDp = _F_F;					break;		
-		case MnMS0_OPT_SINGLE_EMPTY:				_SPRINTF(lDpMsr.pStr, "%2d.%02d m", (U16)(max/100), (U16)(max%100));	break;		
-		case MnMS0_OPT_SINGLE_DEADZONE:				_SPRINTF(lDpMsr.pStr, "%2d.%02d m", (U16)(max/100), (U16)(max%100));	break;		
-		case MnMS0_OPT_SINGLE_MEASURE_CYCLE:		_SPRINTF(lDpMsr.pStr, "%d sec", max);			break;		
+		case MnMS0_OPT_SINGLE_UNIT:					fDp = _F_F;					break;
+		case MnMS0_OPT_SINGLE_OPERATION:			fDp = _F_F;					break;
+		case MnMS0_OPT_SINGLE_EMPTY:				_SPRINTF(lDpMsr.pStr, "%2d.%02d m", (U16)(max/100), (U16)(max%100));	break;
+		case MnMS0_OPT_SINGLE_DEADZONE:				_SPRINTF(lDpMsr.pStr, "%2d.%02d m", (U16)(max/100), (U16)(max%100));	break;
+		case MnMS0_OPT_SINGLE_MEASURE_CYCLE:		_SPRINTF(lDpMsr.pStr, "%d sec", max);			break;
 		case MnMS0_OPT_SINGLE_MEASURE_RESET:		fDp = _F_F;										break;
 		default:																					break;
 	}
@@ -455,7 +455,7 @@ void DpMSRBase_DualPopUpdat(void)
 
 	switch(iIt)
 	{	// Page #0
-		case MnMS0_OPT_UNIT:		
+		case MnMS0_OPT_UNIT:
 			switch(val)
 			{
 				case MnMS0_UNIT_METER:		_SPRINTF(pSt0, "Meter");			break;
@@ -466,7 +466,7 @@ void DpMSRBase_DualPopUpdat(void)
 		case MnMS0_OPT_CH1_OPERATION:
 			switch(lang)
 			{
-				case MnSYS_LANG_ENG:	
+				case MnSYS_LANG_ENG:
 					switch(val)
 					{
 						case MnMS0_OPERATION_SLUDGE:	_SPRINTF(pSt0, "Sludge");			break;
@@ -477,10 +477,10 @@ void DpMSRBase_DualPopUpdat(void)
 				case MnSYS_LANG_KOR:
 					switch(val)
 					{
-						case MnMS0_OPERATION_SLUDGE:	DpSTR_GuiList(TEXT_LIST_SLUDGE);				break;	
+						case MnMS0_OPERATION_SLUDGE:	DpSTR_GuiList(TEXT_LIST_SLUDGE);				break;
 						case MnMS0_OPERATION_DISTANCE:	DpSTR_GuiList(TEXT_LIST_DISTANCE);				break;
 						default:						break;
-					}				
+					}
 					DpSTR_GuiLeft_KOR(x0, y0, _cPOP_ST_VAL_SEL, cBg, _fE22HsBKOR, gDpStr.Text_list);
 					return;
 			}
@@ -496,7 +496,7 @@ void DpMSRBase_DualPopUpdat(void)
 		case MnMS0_OPT_CH2_OPERATION:
 			switch(lang)
 			{
-				case MnSYS_LANG_ENG:	
+				case MnSYS_LANG_ENG:
 					switch(val)
 					{
 						case MnMS0_OPERATION_SLUDGE:	_SPRINTF(pSt0, "Sludge");			break;
@@ -507,10 +507,10 @@ void DpMSRBase_DualPopUpdat(void)
 				case MnSYS_LANG_KOR:
 					switch(val)
 					{
-						case MnMS0_OPERATION_SLUDGE:	DpSTR_GuiList(TEXT_LIST_SLUDGE);				break;	
+						case MnMS0_OPERATION_SLUDGE:	DpSTR_GuiList(TEXT_LIST_SLUDGE);				break;
 						case MnMS0_OPERATION_DISTANCE:	DpSTR_GuiList(TEXT_LIST_DISTANCE);				break;
 						default:						break;
-					}				
+					}
 					DpSTR_GuiLeft_KOR(x0, y0, _cPOP_ST_VAL_SEL, cBg, _fE22HsBKOR, gDpStr.Text_list);
 					return;
 			}
@@ -525,7 +525,7 @@ void DpMSRBase_DualPopUpdat(void)
 		default:																				break;
 	}
 
-	
+
 	switch(updn_mod)
 	{
 		case MENU_V3_UPDN_IDLE:			DpSTR_GuiLeft(x0, y0, _cPOP_ST_VAL_SEL, cBg, _fE22HsB, pSt0);	break;
@@ -536,11 +536,11 @@ void DpMSRBase_DualPopUpdat(void)
 
 	if(MnLY3_GetUpdnMod() != MENU_V3_UPDN_DIG_VALUE)
 		return;
-	DpFIG_DrwRect(x0, y1, 500, 30, cBg, DpFIG_FILL);	
+	DpFIG_DrwRect(x0, y1, 500, 30, cBg, DpFIG_FILL);
 
 	switch(dig)
 	{
-		case 4:	
+		case 4:
 			_SPRINTF(pSt0, "%d", (val/10000)%10);	DpSTR_GuiLeft(x0, y1, _cMNU_SEL_SCT, cBg, _fE22HsB, pSt0);
 			break;
 		case 3:
@@ -579,7 +579,7 @@ void DpMSRBase_SinglePopUpdat(void)
 
 	switch(iIt)
 	{	// Page #0
-		case MnMS0_OPT_SINGLE_UNIT:		
+		case MnMS0_OPT_SINGLE_UNIT:
 			switch(val)
 			{
 				case MnMS0_UNIT_METER:		_SPRINTF(pSt0, "Meter");			break;
@@ -590,7 +590,7 @@ void DpMSRBase_SinglePopUpdat(void)
 		case MnMS0_OPT_SINGLE_OPERATION:
 			switch(lang)
 			{
-				case MnSYS_LANG_ENG:	
+				case MnSYS_LANG_ENG:
 					switch(val)
 					{
 						case MnMS0_OPERATION_SLUDGE:	_SPRINTF(pSt0, "Sludge");			break;
@@ -601,10 +601,10 @@ void DpMSRBase_SinglePopUpdat(void)
 				case MnSYS_LANG_KOR:
 					switch(val)
 					{
-						case MnMS0_OPERATION_SLUDGE:	DpSTR_GuiList(TEXT_LIST_SLUDGE);				break;	
+						case MnMS0_OPERATION_SLUDGE:	DpSTR_GuiList(TEXT_LIST_SLUDGE);				break;
 						case MnMS0_OPERATION_DISTANCE:	DpSTR_GuiList(TEXT_LIST_DISTANCE);				break;
 						default:						break;
-					}				
+					}
 					DpSTR_GuiLeft_KOR(x0, y0, _cPOP_ST_VAL_SEL, cBg, _fE22HsBKOR, gDpStr.Text_list);
 					return;
 			}
@@ -618,11 +618,11 @@ void DpMSRBase_SinglePopUpdat(void)
 			DpPOP_UdtValue(1,	_F_F, gDpStr.sYnN[1]);
 			DpPOP_UdtValue(val, _F_T, gDpStr.sYnN[val]);
 			return;
-		default:		
+		default:
 			break;
 	}
 
-	
+
 	switch(updn_mod)
 	{
 		case MENU_V3_UPDN_IDLE:			DpSTR_GuiLeft(x0, y0, _cPOP_ST_VAL_SEL, cBg, _fE22HsB, pSt0);	break;
@@ -633,11 +633,11 @@ void DpMSRBase_SinglePopUpdat(void)
 
 	if(MnLY3_GetUpdnMod() != MENU_V3_UPDN_DIG_VALUE)
 		return;
-	DpFIG_DrwRect(x0, y1, 500, 30, cBg, DpFIG_FILL);	
+	DpFIG_DrwRect(x0, y1, 500, 30, cBg, DpFIG_FILL);
 
 	switch(dig)
 	{
-		case 4:	
+		case 4:
 			_SPRINTF(pSt0, "%d", (val/10000)%10);	DpSTR_GuiLeft(x0, y1, _cMNU_SEL_SCT, cBg, _fE22HsB, pSt0);
 			break;
 		case 3:
@@ -668,15 +668,15 @@ void DpMSRBase_PopUpdat(void)
 
 
 void DpMSR_CalcReseultAutoGain(void)
-{	
+{
 	U16 x0 = DpPOP_CT1_X0;
 	U16 y0 = DpPOP_CT1_Y0;
 	U16 y1 = DpPOP_CT2_Y0;
-	//U16 y2 = DpPOP_CT3_Y0;	
+	//U16 y2 = DpPOP_CT3_Y0;
 	U32 cBg = _cPOP_BG_WND;
 	I08 pSt0[64] = {0, };
 	U08 iIt = MnLY2_GetIdxItem();
-	U08 fauto_calib = MsCAL_GetFAutoGain();	
+	U08 fauto_calib = MsCAL_GetFAutoGain();
 	U08 ch;
 	U16 val;
 	U16 thr;
@@ -697,7 +697,7 @@ void DpMSR_CalcReseultAutoGain(void)
 	val = MnMSR_CalGet_Ch_Value(ch,MnMS1_OPT_SINGLE_ECHO_AMP);
 	thr = MnMSR_Get_Threshold_Ch_Value(ch, MnMS1_OPT_SINGLE_THR_HEAVY);
 	volt_diff = (lMsCal.auto_calib_result_slope*2*auto_range_x*330)/4095;
-	
+
 	_SPRINTF(pSt0, "Auto Calibration - Result");
 	DpSTR_GuiLeft(DpPOP_TIT_X0, DpPOP_OLD_Y0, _cPOP_ST_TIT, _cPOP_BG_WND, _fE22HsB, pSt0);
 
@@ -717,31 +717,31 @@ void DpMSR_CalcReseultAutoGain(void)
 		DpSTR_GuiLeft(x0, y0, _cPOP_ST_VAL_SEL, cBg, _fE22HsB, pSt0);
 		_SPRINTF(pSt0, "Threshold : %d %c      volt diff : %2d.%02d V", thr,37 ,volt_diff/100,volt_diff%100);
 		DpFIG_DrwRect(x0, y1, 200, 30, cBg, DpFIG_FILL);
-		DpSTR_GuiLeft(x0, y1, _cPOP_ST_VAL_SEL, cBg, _fE22HsB, pSt0);		
+		DpSTR_GuiLeft(x0, y1, _cPOP_ST_VAL_SEL, cBg, _fE22HsB, pSt0);
 		#if 0
 		_SPRINTF(pSt0, "Slope : %2d.%02d",(U16)(lMsCal.auto_calib_result_slope*8.05)/100,(U16)(lMsCal.auto_calib_result_slope*8.05)%100);
 		DpFIG_DrwRect(x0+300, y0, 200, 30, cBg, DpFIG_FILL);
 		DpSTR_GuiLeft(x0+300, y0, _cPOP_ST_VAL_SEL, cBg, _fE22HsB, pSt0);
 		_SPRINTF(pSt0, "volt diff : %2d.%02d V",volt_diff/100,volt_diff%100);
 		DpFIG_DrwRect(x0+300, y1, 200, 30, cBg, DpFIG_FILL);
-		DpSTR_GuiLeft(x0+300, y1, _cPOP_ST_VAL_SEL, cBg, _fE22HsB, pSt0);		
+		DpSTR_GuiLeft(x0+300, y1, _cPOP_ST_VAL_SEL, cBg, _fE22HsB, pSt0);
 		#endif
 
-		
+
 		_SPRINTF(pSt0, "Level : %2d.%02d m", lMsCal.auto_calib_result_val/100, lMsCal.auto_calib_result_val%100);
 		DpFIG_DrwRect(x0, DpPOP_EXP_Y0, 200, 30, cBg, DpFIG_FILL);
-		DpSTR_GuiLeft(x0, DpPOP_EXP_Y0, _cPOP_ST_VAL_SEL, cBg, _fE22HsB, pSt0);				
+		DpSTR_GuiLeft(x0, DpPOP_EXP_Y0, _cPOP_ST_VAL_SEL, cBg, _fE22HsB, pSt0);
 	}
 	else
 	{
-		_SPRINTF(pSt0, "Fail");	
+		_SPRINTF(pSt0, "Fail");
 		DpFIG_DrwRect(x0, y0, 200, 30, cBg, DpFIG_FILL);
 		DpSTR_GuiLeft(x0, y0, _cPOP_ST_VAL_SEL, cBg, _fE22HsB, pSt0);
 		DpFIG_DrwRect(DpPOP_EXP_X0-5,	DpPOP_EXP_Y0, 400, 20,_cPOP_BG_WND, DpFIG_FILL);		// Clear
 		DpPOP_UdtExpla(_sExit_Prskey);
 
 	}
-	//_SPRINTF(pSt0, "%d %%", MnLy4_GetPercent());	
+	//_SPRINTF(pSt0, "%d %%", MnLy4_GetPercent());
 
 }
 
@@ -755,7 +755,7 @@ void DpMSR_Cal_DualPopAddintro(void)
 	S32 val2 = MnMSR_Get_Threshold_Value(iIt);
 	S32 val = MnLY3_GetValue();
 	S32 min = -1, max = -1;
-	U08 fDp = _F_T; 							
+	U08 fDp = _F_T;
 	U16 lang = MnSYS_PrGetBase_Item(MnSYS_OPT_LANG);
 
 	switch(lang)
@@ -768,7 +768,7 @@ void DpMSR_Cal_DualPopAddintro(void)
 				case MnMS1_OPT_CH2_THR_LIGHT:		_SPRINTF(lDpMsr.pStr, _sCH2_THR_LIGHT);		break;
 				case MnMS1_OPT_CH2_THR_HEAVY:		_SPRINTF(lDpMsr.pStr, _sCH2_THR_HEAVY);		break;
 				default:							_SPRINTF(lDpMsr.pStr, _sNG);				break;
-			}			
+			}
 			break;
 		case MnSYS_LANG_KOR:
 			_SPRINTF(lDpMsr.pStr, lDpMsr.sIt1[iIt]);
@@ -781,7 +781,7 @@ void DpMSR_Cal_DualPopAddintro(void)
 	switch(iIt)
 	{	// Page #0
 
-		case MnMS1_OPT_CH1_THR_LIGHT:		
+		case MnMS1_OPT_CH1_THR_LIGHT:
 		case MnMS1_OPT_CH2_THR_LIGHT:
 		case MnMS1_OPT_CH1_THR_HEAVY:
 		case MnMS1_OPT_CH2_THR_HEAVY:
@@ -800,7 +800,7 @@ void DpMSR_Cal_DualPopAddintro(void)
 
 	switch(iIt)
 	{	// Page #0
-		case MnMS1_OPT_CH1_THR_LIGHT:		
+		case MnMS1_OPT_CH1_THR_LIGHT:
 		case MnMS1_OPT_CH2_THR_LIGHT:
 		case MnMS1_OPT_CH1_THR_HEAVY:
 		case MnMS1_OPT_CH2_THR_HEAVY:
@@ -817,7 +817,7 @@ void DpMSR_Cal_DualPopAddintro(void)
 	switch(iIt)
 	{	// Page #0
 
-		case MnMS1_OPT_CH1_THR_LIGHT:		
+		case MnMS1_OPT_CH1_THR_LIGHT:
 		case MnMS1_OPT_CH2_THR_LIGHT:
 		case MnMS1_OPT_CH1_THR_HEAVY:
 		case MnMS1_OPT_CH2_THR_HEAVY:
@@ -836,11 +836,11 @@ void DpMSR_Cal_DualPopAddintro(void)
 	if(fDp)	DpPOP_UdtRangeMin(lDpMsr.pStr);
 
 	fDp = _F_T;
-	
+
 	switch(iIt)
 	{	// Page #0
 
-		case MnMS1_OPT_CH1_THR_LIGHT:		
+		case MnMS1_OPT_CH1_THR_LIGHT:
 		case MnMS1_OPT_CH2_THR_LIGHT:
 		case MnMS1_OPT_CH1_THR_HEAVY:
 		case MnMS1_OPT_CH2_THR_HEAVY:
@@ -872,7 +872,7 @@ void DpMSR_Cal_SinglePopAddintro(void)
 	S32 val2 = MnMSR_Get_Threshold_Value(iIt);
 	S32 val = MnLY3_GetValue();
 	S32 min = -1, max = -1;
-	U08 fDp = _F_T; 							
+	U08 fDp = _F_T;
 	U16 lang = MnSYS_PrGetBase_Item(MnSYS_OPT_LANG);
 
 	switch(lang)
@@ -883,7 +883,7 @@ void DpMSR_Cal_SinglePopAddintro(void)
 				case MnMS1_OPT_SINGLE_THR_LIGHT:		_SPRINTF(lDpMsr.pStr, _sThr_light);		break;
 				case MnMS1_OPT_SINGLE_THR_HEAVY:		_SPRINTF(lDpMsr.pStr, _sThr_heavy);		break;
 				default:								_SPRINTF(lDpMsr.pStr, _sNG);				break;
-			}			
+			}
 			break;
 		case MnSYS_LANG_KOR:
 			_SPRINTF(lDpMsr.pStr, lDpMsr.sIt1[iIt]);
@@ -894,7 +894,7 @@ void DpMSR_Cal_SinglePopAddintro(void)
 
 	// Old Value
 	switch(iIt)
-	{	// Page #0		
+	{	// Page #0
 		case MnMS1_OPT_SINGLE_THR_LIGHT:
 		case MnMS1_OPT_SINGLE_THR_HEAVY:
 			switch(val3)
@@ -912,7 +912,7 @@ void DpMSR_Cal_SinglePopAddintro(void)
 
 	switch(iIt)
 	{	// Page #0
-		case MnMS1_OPT_SINGLE_THR_LIGHT:		
+		case MnMS1_OPT_SINGLE_THR_LIGHT:
 		case MnMS1_OPT_SINGLE_THR_HEAVY:
 			switch(val)
 			{
@@ -926,7 +926,7 @@ void DpMSR_Cal_SinglePopAddintro(void)
 
 	switch(iIt)
 	{	// Page #0
-	
+
 		case MnMS1_OPT_SINGLE_THR_LIGHT:
 		case MnMS1_OPT_SINGLE_THR_HEAVY:
 			switch(val)
@@ -944,11 +944,11 @@ void DpMSR_Cal_SinglePopAddintro(void)
 	if(fDp)	DpPOP_UdtRangeMin(lDpMsr.pStr);
 
 	fDp = _F_T;
-	
+
 	switch(iIt)
 	{	// Page #0
 
-		case MnMS1_OPT_SINGLE_THR_LIGHT:		
+		case MnMS1_OPT_SINGLE_THR_LIGHT:
 		case MnMS1_OPT_SINGLE_THR_HEAVY:
 			switch(val)
 			{
@@ -978,7 +978,7 @@ void DpMSR_Cal_PopAddintro(void)
 	if(MnFTR_PrGet_SsChn()==MnFTR_SS_DUAL)
 		DpMSR_Cal_DualPopAddintro();
 	else if(MnFTR_PrGet_SsChn()==MnFTR_SS_SINGLE)
-		DpMSR_Cal_SinglePopAddintro();	
+		DpMSR_Cal_SinglePopAddintro();
 
 
 }
@@ -994,7 +994,7 @@ void DpMSR_Cal_DualPopAddupdat(void)
 
 	U08 iIt = MnLY2_GetIdxItem();
 	S32 val = MnLY3_GetValue();
-	S32 val2 = MnLY4_GetValue();	
+	S32 val2 = MnLY4_GetValue();
 	S32 dig = MnLY3_GetUpdnDig();
 	S32 updn_mod = MnLY3_GetUpdnMod();
 	S32 max  = MnLY3_GetMax();
@@ -1006,7 +1006,7 @@ void DpMSR_Cal_DualPopAddupdat(void)
 	switch(iIt)
 	{	// Page #0
 
-		case MnMS1_OPT_CH1_THR_LIGHT:		
+		case MnMS1_OPT_CH1_THR_LIGHT:
 		case MnMS1_OPT_CH2_THR_LIGHT:
 		case MnMS1_OPT_CH1_THR_HEAVY:
 		case MnMS1_OPT_CH2_THR_HEAVY:
@@ -1020,7 +1020,7 @@ void DpMSR_Cal_DualPopAddupdat(void)
 		default:								_SPRINTF(pSt0, _sNG);				break;
 	}
 
-	
+
 	switch(updn_mod)
 	{
 		case MENU_V3_UPDN_IDLE:			DpSTR_GuiLeft(x0, y0, _cPOP_ST_VAL_SEL, cBg, _fE22HsB, pSt0);	break;
@@ -1034,7 +1034,7 @@ void DpMSR_Cal_DualPopAddupdat(void)
 
 	switch(dig)
 	{
-		case 4:	
+		case 4:
 			_SPRINTF(pSt0, "%d", (abs(val)/10000)%10);	DpSTR_GuiLeft(x0, y1, _cMNU_SEL_SCT, cBg, _fE22HsB, pSt0);
 			break;
 		case 3:
@@ -1063,7 +1063,7 @@ void DpMSR_Cal_SinglePopAddupdat(void)
 
 	U08 iIt = MnLY2_GetIdxItem();
 	S32 val = MnLY3_GetValue();
-	S32 val2 = MnLY4_GetValue();	
+	S32 val2 = MnLY4_GetValue();
 	S32 dig = MnLY3_GetUpdnDig();
 	S32 updn_mod = MnLY3_GetUpdnMod();
 	S32 max  = MnLY3_GetMax();
@@ -1086,7 +1086,7 @@ void DpMSR_Cal_SinglePopAddupdat(void)
 		default:								_SPRINTF(pSt0, _sNG);				break;
 	}
 
-	
+
 	switch(updn_mod)
 	{
 		case MENU_V3_UPDN_IDLE:			DpSTR_GuiLeft(x0, y0, _cPOP_ST_VAL_SEL, cBg, _fE22HsB, pSt0);	break;
@@ -1100,7 +1100,7 @@ void DpMSR_Cal_SinglePopAddupdat(void)
 
 	switch(dig)
 	{
-		case 4:	
+		case 4:
 			_SPRINTF(pSt0, "%d", (abs(val)/10000)%10);	DpSTR_GuiLeft(x0, y1, _cMNU_SEL_SCT, cBg, _fE22HsB, pSt0);
 			break;
 		case 3:
@@ -1124,7 +1124,7 @@ void DpMSRCal_PopAddupdat(void)
 	if(MnFTR_PrGet_SsChn()==MnFTR_SS_DUAL)
 		DpMSR_Cal_DualPopAddupdat();
 	else if(MnFTR_PrGet_SsChn()==MnFTR_SS_SINGLE)
-		DpMSR_Cal_SinglePopAddupdat();	
+		DpMSR_Cal_SinglePopAddupdat();
 }
 
 
@@ -1133,7 +1133,7 @@ void DpMSRCal_DualPopIntro(void)
 	U08 iIt = MnLY2_GetIdxItem();
 	S32 val = MnMSR_CalGet_Value(iIt);
 	S32 min = -1, max = -1;
-	U08 fDp = _F_T; 							
+	U08 fDp = _F_T;
 	U08 lang = MnSYS_PrGetBase_Item(MnSYS_OPT_LANG);
 
 
@@ -1145,38 +1145,38 @@ void DpMSRCal_DualPopIntro(void)
 		case MnSYS_LANG_KOR:
 			switch(iIt)
 			{	// Page #0
-				case MnMS1_OPT_CH1_ASF_LIGHT: 			
-					DpSTR_GuiList(TEXT_LIST_CH1_LIGHT); 
+				case MnMS1_OPT_CH1_ASF_LIGHT:
+					DpSTR_GuiList(TEXT_LIST_CH1_LIGHT);
 					DpSTR_GuiLeft_KOR(DpPOP_TIT_X0,DpPOP_OLD_Y0, _cPOP_ST_TIT, _cPOP_BG_WND, _fE22HsBKOR, gDpStr.Text_list);
 					DpSTR_GuiLeft(DpPOP_TIT_X0+190, DpPOP_OLD_Y0-2, _cPOP_ST_TIT, _cPOP_BG_WND, _fE22HsB, "ASF");
-					DpSTR_GuiList(TEXT_LIST_SET);	
+					DpSTR_GuiList(TEXT_LIST_SET);
 					DpSTR_GuiLeft_KOR(DpPOP_TIT_X0+250, DpPOP_OLD_Y0, _cPOP_ST_TIT, _cPOP_BG_WND, _fE22HsBKOR, gDpStr.Text_list);
 					fDp = _F_F;
 					break;
-				case MnMS1_OPT_CH1_ASF_HEAVY: 			
-					DpSTR_GuiList(TEXT_LIST_CH1_HEAVY); 
+				case MnMS1_OPT_CH1_ASF_HEAVY:
+					DpSTR_GuiList(TEXT_LIST_CH1_HEAVY);
 					DpSTR_GuiLeft_KOR(DpPOP_TIT_X0,DpPOP_OLD_Y0, _cPOP_ST_TIT, _cPOP_BG_WND, _fE22HsBKOR, gDpStr.Text_list);
 					DpSTR_GuiLeft(DpPOP_TIT_X0+190, DpPOP_OLD_Y0-2, _cPOP_ST_TIT, _cPOP_BG_WND, _fE22HsB, "ASF");
-					DpSTR_GuiList(TEXT_LIST_SET);	
-					DpSTR_GuiLeft_KOR(DpPOP_TIT_X0+250, DpPOP_OLD_Y0, _cPOP_ST_TIT, _cPOP_BG_WND, _fE22HsBKOR, gDpStr.Text_list);
-					fDp = _F_F;
-					break;					
-				case MnMS1_OPT_CH2_ASF_LIGHT: 			
-					DpSTR_GuiList(TEXT_LIST_CH2_LIGHT); 
-					DpSTR_GuiLeft_KOR(DpPOP_TIT_X0,DpPOP_OLD_Y0, _cPOP_ST_TIT, _cPOP_BG_WND, _fE22HsBKOR, gDpStr.Text_list);
-					DpSTR_GuiLeft(DpPOP_TIT_X0+190, DpPOP_OLD_Y0-2, _cPOP_ST_TIT, _cPOP_BG_WND, _fE22HsB, "ASF");
-					DpSTR_GuiList(TEXT_LIST_SET);	
+					DpSTR_GuiList(TEXT_LIST_SET);
 					DpSTR_GuiLeft_KOR(DpPOP_TIT_X0+250, DpPOP_OLD_Y0, _cPOP_ST_TIT, _cPOP_BG_WND, _fE22HsBKOR, gDpStr.Text_list);
 					fDp = _F_F;
 					break;
-				case MnMS1_OPT_CH2_ASF_HEAVY: 			
-					DpSTR_GuiList(TEXT_LIST_CH2_HEAVY); 
+				case MnMS1_OPT_CH2_ASF_LIGHT:
+					DpSTR_GuiList(TEXT_LIST_CH2_LIGHT);
 					DpSTR_GuiLeft_KOR(DpPOP_TIT_X0,DpPOP_OLD_Y0, _cPOP_ST_TIT, _cPOP_BG_WND, _fE22HsBKOR, gDpStr.Text_list);
 					DpSTR_GuiLeft(DpPOP_TIT_X0+190, DpPOP_OLD_Y0-2, _cPOP_ST_TIT, _cPOP_BG_WND, _fE22HsB, "ASF");
-					DpSTR_GuiList(TEXT_LIST_SET);	
+					DpSTR_GuiList(TEXT_LIST_SET);
 					DpSTR_GuiLeft_KOR(DpPOP_TIT_X0+250, DpPOP_OLD_Y0, _cPOP_ST_TIT, _cPOP_BG_WND, _fE22HsBKOR, gDpStr.Text_list);
 					fDp = _F_F;
-					break;		
+					break;
+				case MnMS1_OPT_CH2_ASF_HEAVY:
+					DpSTR_GuiList(TEXT_LIST_CH2_HEAVY);
+					DpSTR_GuiLeft_KOR(DpPOP_TIT_X0,DpPOP_OLD_Y0, _cPOP_ST_TIT, _cPOP_BG_WND, _fE22HsBKOR, gDpStr.Text_list);
+					DpSTR_GuiLeft(DpPOP_TIT_X0+190, DpPOP_OLD_Y0-2, _cPOP_ST_TIT, _cPOP_BG_WND, _fE22HsB, "ASF");
+					DpSTR_GuiList(TEXT_LIST_SET);
+					DpSTR_GuiLeft_KOR(DpPOP_TIT_X0+250, DpPOP_OLD_Y0, _cPOP_ST_TIT, _cPOP_BG_WND, _fE22HsBKOR, gDpStr.Text_list);
+					fDp = _F_F;
+					break;
 				default:
 					_SPRINTF(lDpMsr.pStr, lDpMsr.sIt1[iIt]);
 					break;
@@ -1186,7 +1186,7 @@ void DpMSRCal_DualPopIntro(void)
 	}
 
 
-	
+
 	if(fDp)	 DpPOP_UdtTitle(lDpMsr.pStr);
 
 	fDp = _F_T;
@@ -1202,6 +1202,7 @@ void DpMSRCal_DualPopIntro(void)
 				case MnMS1_FREQ_270K:		_SPRINTF(lDpMsr.pStr, "270kHz");		break;
 				case MnMS1_FREQ_160K:		_SPRINTF(lDpMsr.pStr, "160kHz");		break;
 				case MnMS1_FREQ_130K:		_SPRINTF(lDpMsr.pStr, "130kHz");		break;
+				case MnMS1_FREQ_415K:		_SPRINTF(lDpMsr.pStr, "415kHz");		break;
 				default:					break;
 			}
 			break;
@@ -1237,14 +1238,14 @@ void DpMSRCal_DualPopIntro(void)
 		case MnMS1_OPT_CH2_THR_HEAVY:
 			switch(lang)
 			{
-				case MnSYS_LANG_ENG:	
+				case MnSYS_LANG_ENG:
 					switch(val)
 					{
 						case MnMS1_THRESHOLD_AUTO:		_SPRINTF(lDpMsr.pStr, _sAUTO);			break;
 						case MnMS1_THRESHOLD_MANUAL:	_SPRINTF(lDpMsr.pStr, _sMANUAL);		break;
 						default:						break;
 					}
-					break;	
+					break;
 				case MnSYS_LANG_KOR:
 					switch(val)
 					{
@@ -1253,21 +1254,21 @@ void DpMSRCal_DualPopIntro(void)
 						default:						break;
 					}
 					DpSTR_GuiLeft(DpPOP_MIN_X0, DpPOP_OLD_Y0+3, _cPOP_ST_VAL_IDL, _cPOP_BG_WND, _fE17HsB, _sNOW_);
-					DpSTR_GuiLeft_KOR(DpPOP_OLD_X0, DpPOP_OLD_Y0,	_cPOP_ST_OLD,	  _cPOP_BG_WND, _fE22HsBKOR, gDpStr.Text_list);					
-					break;						
+					DpSTR_GuiLeft_KOR(DpPOP_OLD_X0, DpPOP_OLD_Y0,	_cPOP_ST_OLD,	  _cPOP_BG_WND, _fE22HsBKOR, gDpStr.Text_list);
+					break;
 			}
 			break;
-		case MnMS1_OPT_CH1_ASF_LIGHT:	
-		case MnMS1_OPT_CH1_ASF_HEAVY:		
-		case MnMS1_OPT_CH2_ASF_LIGHT:	
+		case MnMS1_OPT_CH1_ASF_LIGHT:
+		case MnMS1_OPT_CH1_ASF_HEAVY:
+		case MnMS1_OPT_CH2_ASF_LIGHT:
 		case MnMS1_OPT_CH2_ASF_HEAVY:		_SPRINTF(lDpMsr.pStr, "%d", val);			break;
-		case MnMS1_OPT_CH1_DAMPING:			
+		case MnMS1_OPT_CH1_DAMPING:
 		case MnMS1_OPT_CH2_DAMPING:			_SPRINTF(lDpMsr.pStr, "%d", val);			break;
-		case MnMS1_OPT_CH1_OFFSET:			
-		case MnMS1_OPT_CH2_OFFSET:			
+		case MnMS1_OPT_CH1_OFFSET:
+		case MnMS1_OPT_CH2_OFFSET:
 			if(val>=0)	_SPRINTF(lDpMsr.pStr, "%01d.%02d m", val/100, val%100);
 			else		_SPRINTF(lDpMsr.pStr, "-%01d.%02d m", (abs(val)/100), (abs(val)%100));
-			break;			
+			break;
 		default:							_SPRINTF(lDpMsr.pStr, _sNG);				break;
 	}
 
@@ -1275,7 +1276,7 @@ void DpMSRCal_DualPopIntro(void)
 
 	fDp = _F_T;
 
-	
+
 	// Range (Min. / Max.)
 
 	switch(iIt)
@@ -1288,17 +1289,17 @@ void DpMSRCal_DualPopIntro(void)
 		case MnMS1_OPT_CH2_ECHO_AMP:		min = MnMS1_ECHO_AMP_MIN;	max	 = MnMS1_ECHO_AMP_MAX;	break;
 		case MnMS1_OPT_CH1_AUTO_CAL:
 		case MnMS1_OPT_CH2_AUTO_CAL:		min = MnMS1_AUTO_CAL_MIN;	max = MnMS1_AUTO_CAL_MAX;	break;
-		case MnMS1_OPT_CH1_THR_LIGHT:		
+		case MnMS1_OPT_CH1_THR_LIGHT:
 		case MnMS1_OPT_CH2_THR_LIGHT:
 		case MnMS1_OPT_CH1_THR_HEAVY:
 		case MnMS1_OPT_CH2_THR_HEAVY:		break;
-		case MnMS1_OPT_CH1_ASF_LIGHT:	
-		case MnMS1_OPT_CH1_ASF_HEAVY:		
-		case MnMS1_OPT_CH2_ASF_LIGHT:	
+		case MnMS1_OPT_CH1_ASF_LIGHT:
+		case MnMS1_OPT_CH1_ASF_HEAVY:
+		case MnMS1_OPT_CH2_ASF_LIGHT:
 		case MnMS1_OPT_CH2_ASF_HEAVY:		min = MnMS1_ASF_MIN;		max = MnMS1_ASF_MAX;		break;
-		case MnMS1_OPT_CH1_DAMPING:			
+		case MnMS1_OPT_CH1_DAMPING:
 		case MnMS1_OPT_CH2_DAMPING:			min = MnMS1_DAMPING_MIN;	max = MnMS1_DAMPING_MAX;	break;
-		case MnMS1_OPT_CH1_OFFSET:			
+		case MnMS1_OPT_CH1_OFFSET:
 		case MnMS1_OPT_CH2_OFFSET:			min = MnMS1_OFFSET_MIN;		max = MnMS1_OFFSET_MAX;		break;
 		default:							_SPRINTF(lDpMsr.pStr, _sNG);							break;
 	}
@@ -1313,15 +1314,15 @@ void DpMSRCal_DualPopIntro(void)
 		case MnMS1_OPT_CH2_ECHO_AMP:
 		case MnMS1_OPT_CH1_AUTO_CAL:
 		case MnMS1_OPT_CH2_AUTO_CAL:		_SPRINTF(lDpMsr.pStr, "%d", min);			break;
-		case MnMS1_OPT_CH1_THR_LIGHT:		
+		case MnMS1_OPT_CH1_THR_LIGHT:
 		case MnMS1_OPT_CH2_THR_LIGHT:
 		case MnMS1_OPT_CH1_THR_HEAVY:
 		case MnMS1_OPT_CH2_THR_HEAVY:		fDp = _F_F;									break;
-		case MnMS1_OPT_CH1_ASF_LIGHT:	
-		case MnMS1_OPT_CH1_ASF_HEAVY:		
-		case MnMS1_OPT_CH2_ASF_LIGHT:	
+		case MnMS1_OPT_CH1_ASF_LIGHT:
+		case MnMS1_OPT_CH1_ASF_HEAVY:
+		case MnMS1_OPT_CH2_ASF_LIGHT:
 		case MnMS1_OPT_CH2_ASF_HEAVY:		_SPRINTF(lDpMsr.pStr, "%d", min);			break;
-		case MnMS1_OPT_CH1_DAMPING:			
+		case MnMS1_OPT_CH1_DAMPING:
 		case MnMS1_OPT_CH2_DAMPING:			_SPRINTF(lDpMsr.pStr, "%d", min);			break;
 		case MnMS1_OPT_CH1_OFFSET:
 		case MnMS1_OPT_CH2_OFFSET:
@@ -1347,15 +1348,15 @@ void DpMSRCal_DualPopIntro(void)
 		case MnMS1_OPT_CH2_ECHO_AMP:
 		case MnMS1_OPT_CH1_AUTO_CAL:
 		case MnMS1_OPT_CH2_AUTO_CAL:		_SPRINTF(lDpMsr.pStr, "%d", max);			break;
-		case MnMS1_OPT_CH1_THR_LIGHT:		
+		case MnMS1_OPT_CH1_THR_LIGHT:
 		case MnMS1_OPT_CH2_THR_LIGHT:
 		case MnMS1_OPT_CH1_THR_HEAVY:
 		case MnMS1_OPT_CH2_THR_HEAVY:		fDp = _F_F;									break;
-		case MnMS1_OPT_CH1_ASF_LIGHT:	
-		case MnMS1_OPT_CH1_ASF_HEAVY:		
-		case MnMS1_OPT_CH2_ASF_LIGHT:	
+		case MnMS1_OPT_CH1_ASF_LIGHT:
+		case MnMS1_OPT_CH1_ASF_HEAVY:
+		case MnMS1_OPT_CH2_ASF_LIGHT:
 		case MnMS1_OPT_CH2_ASF_HEAVY:		_SPRINTF(lDpMsr.pStr, "%d", max);			break;
-		case MnMS1_OPT_CH1_DAMPING:			
+		case MnMS1_OPT_CH1_DAMPING:
 		case MnMS1_OPT_CH2_DAMPING:			_SPRINTF(lDpMsr.pStr, "%d", max);			break;
 		case MnMS1_OPT_CH1_OFFSET:
 		case MnMS1_OPT_CH2_OFFSET:
@@ -1369,7 +1370,7 @@ void DpMSRCal_DualPopIntro(void)
 	if(fDp)	DpPOP_UdtRangeMax(lDpMsr.pStr);
 
 	fDp = _F_T;
-	
+
 	if(DpMSRCal_IsAutoGainItem(iIt))
 		DpMSRCal_UdtAutoGainGuide();
 	else
@@ -1386,7 +1387,7 @@ void DpMSRCal_SinglePopintro(void)
 	U08 iIt = MnLY2_GetIdxItem();
 	S32 val = MnMSR_CalGet_Value(iIt);
 	S32 min = -1, max = -1;
-	U08 fDp = _F_T; 							
+	U08 fDp = _F_T;
 	U08 lang = MnSYS_PrGetBase_Item(MnSYS_OPT_LANG);
 
 
@@ -1398,22 +1399,22 @@ void DpMSRCal_SinglePopintro(void)
 		case MnSYS_LANG_KOR:
 			switch(iIt)
 			{	// Page #0
-				case MnMS1_OPT_SINGLE_ASF_LIGHT: 			
-					DpSTR_GuiList(TEXT_LIST_LIGHT); 
+				case MnMS1_OPT_SINGLE_ASF_LIGHT:
+					DpSTR_GuiList(TEXT_LIST_LIGHT);
 					DpSTR_GuiLeft_KOR(DpPOP_TIT_X0,DpPOP_OLD_Y0, _cPOP_ST_TIT, _cPOP_BG_WND, _fE22HsBKOR, gDpStr.Text_list);
 					DpSTR_GuiLeft(DpPOP_TIT_X0+100, DpPOP_OLD_Y0-2, _cPOP_ST_TIT, _cPOP_BG_WND, _fE22HsB, "ASF");
-					DpSTR_GuiList(TEXT_LIST_SET);	
+					DpSTR_GuiList(TEXT_LIST_SET);
 					DpSTR_GuiLeft_KOR(DpPOP_TIT_X0+170, DpPOP_OLD_Y0, _cPOP_ST_TIT, _cPOP_BG_WND, _fE22HsBKOR, gDpStr.Text_list);
 					fDp = _F_F;
 					break;
-				case MnMS1_OPT_SINGLE_ASF_HEAVY: 			
-					DpSTR_GuiList(TEXT_LIST_HEAVY); 
+				case MnMS1_OPT_SINGLE_ASF_HEAVY:
+					DpSTR_GuiList(TEXT_LIST_HEAVY);
 					DpSTR_GuiLeft_KOR(DpPOP_TIT_X0,DpPOP_OLD_Y0, _cPOP_ST_TIT, _cPOP_BG_WND, _fE22HsBKOR, gDpStr.Text_list);
 					DpSTR_GuiLeft(DpPOP_TIT_X0+100, DpPOP_OLD_Y0-2, _cPOP_ST_TIT, _cPOP_BG_WND, _fE22HsB, "ASF");
-					DpSTR_GuiList(TEXT_LIST_SET);	
+					DpSTR_GuiList(TEXT_LIST_SET);
 					DpSTR_GuiLeft_KOR(DpPOP_TIT_X0+170, DpPOP_OLD_Y0, _cPOP_ST_TIT, _cPOP_BG_WND, _fE22HsBKOR, gDpStr.Text_list);
 					fDp = _F_F;
-					break;					
+					break;
 				default:
 					_SPRINTF(lDpMsr.pStr, lDpMsr.sIt1[iIt]);
 					break;
@@ -1423,7 +1424,7 @@ void DpMSRCal_SinglePopintro(void)
 	}
 
 
-	
+
 	if(fDp)	 DpPOP_UdtTitle(lDpMsr.pStr);
 
 	fDp = _F_T;
@@ -1438,9 +1439,10 @@ void DpMSRCal_SinglePopintro(void)
 				case MnMS1_FREQ_270K:		_SPRINTF(lDpMsr.pStr, "270kHz");		break;
 				case MnMS1_FREQ_160K:		_SPRINTF(lDpMsr.pStr, "160kHz");		break;
 				case MnMS1_FREQ_130K:		_SPRINTF(lDpMsr.pStr, "130kHz");		break;
+				case MnMS1_FREQ_415K:		_SPRINTF(lDpMsr.pStr, "415kHz");		break;
 				default:					break;
 			}
-			break;	
+			break;
 		case MnMS1_OPT_SINGLE_AUTO_FAMP:
 			switch(lang)
 			{
@@ -1464,18 +1466,18 @@ void DpMSRCal_SinglePopintro(void)
 			break;
 		case MnMS1_OPT_SINGLE_ECHO_AMP:		_SPRINTF(lDpMsr.pStr, "%d", val);			break;
 		case MnMS1_OPT_SINGLE_AUTO_CAL:		_SPRINTF(lDpMsr.pStr, "%02d.%02d", (U16)(val/100), (U16)(val%100));	break;
-		case MnMS1_OPT_SINGLE_THR_LIGHT:		
+		case MnMS1_OPT_SINGLE_THR_LIGHT:
 		case MnMS1_OPT_SINGLE_THR_HEAVY:
 			switch(lang)
 			{
-				case MnSYS_LANG_ENG:	
+				case MnSYS_LANG_ENG:
 					switch(val)
 					{
 						case MnMS1_THRESHOLD_AUTO:		_SPRINTF(lDpMsr.pStr, _sAUTO);			break;
 						case MnMS1_THRESHOLD_MANUAL:	_SPRINTF(lDpMsr.pStr, _sMANUAL);		break;
 						default:						break;
 					}
-					break;	
+					break;
 				case MnSYS_LANG_KOR:
 					switch(val)
 					{
@@ -1484,17 +1486,17 @@ void DpMSRCal_SinglePopintro(void)
 						default:						break;
 					}
 					DpSTR_GuiLeft(DpPOP_MIN_X0, DpPOP_OLD_Y0+3, _cPOP_ST_VAL_IDL, _cPOP_BG_WND, _fE17HsB, _sNOW_);
-					DpSTR_GuiLeft_KOR(DpPOP_OLD_X0, DpPOP_OLD_Y0,	_cPOP_ST_OLD,	  _cPOP_BG_WND, _fE22HsBKOR, gDpStr.Text_list);					
-					break;						
+					DpSTR_GuiLeft_KOR(DpPOP_OLD_X0, DpPOP_OLD_Y0,	_cPOP_ST_OLD,	  _cPOP_BG_WND, _fE22HsBKOR, gDpStr.Text_list);
+					break;
 			}
 			break;
-		case MnMS1_OPT_SINGLE_ASF_LIGHT:	
-		case MnMS1_OPT_SINGLE_ASF_HEAVY:	_SPRINTF(lDpMsr.pStr, "%d", val);			break;		
+		case MnMS1_OPT_SINGLE_ASF_LIGHT:
+		case MnMS1_OPT_SINGLE_ASF_HEAVY:	_SPRINTF(lDpMsr.pStr, "%d", val);			break;
 		case MnMS1_OPT_SINGLE_DAMPING:		_SPRINTF(lDpMsr.pStr, "%d", val);			break;
-		case MnMS1_OPT_SINGLE_OFFSET:					
+		case MnMS1_OPT_SINGLE_OFFSET:
 			if(val>=0)	_SPRINTF(lDpMsr.pStr, "%01d.%02d m", val/100, val%100);
 			else		_SPRINTF(lDpMsr.pStr, "-%01d.%02d m", (abs(val)/100), (abs(val)%100));
-			break;			
+			break;
 		default:							_SPRINTF(lDpMsr.pStr, _sNG);				break;
 	}
 
@@ -1502,7 +1504,7 @@ void DpMSRCal_SinglePopintro(void)
 
 	fDp = _F_T;
 
-	
+
 	// Range (Min. / Max.)
 
 	switch(iIt)
@@ -1513,9 +1515,9 @@ void DpMSRCal_SinglePopintro(void)
 		case MnMS1_OPT_SINGLE_AUTO_CAL:		min = MnMS1_AUTO_CAL_MIN;	max = MnMS1_AUTO_CAL_MAX;	break;
 		case MnMS1_OPT_SINGLE_THR_LIGHT:
 		case MnMS1_OPT_SINGLE_THR_HEAVY:	break;
-		case MnMS1_OPT_SINGLE_ASF_LIGHT:	
-		case MnMS1_OPT_SINGLE_ASF_HEAVY:	min = MnMS1_ASF_MIN;		max = MnMS1_ASF_MAX;		break;		
-		case MnMS1_OPT_SINGLE_DAMPING:		min = MnMS1_DAMPING_MIN;	max = MnMS1_DAMPING_MAX;	break;			
+		case MnMS1_OPT_SINGLE_ASF_LIGHT:
+		case MnMS1_OPT_SINGLE_ASF_HEAVY:	min = MnMS1_ASF_MIN;		max = MnMS1_ASF_MAX;		break;
+		case MnMS1_OPT_SINGLE_DAMPING:		min = MnMS1_DAMPING_MIN;	max = MnMS1_DAMPING_MAX;	break;
 		case MnMS1_OPT_SINGLE_OFFSET:		min = MnMS1_OFFSET_MIN;		max = MnMS1_OFFSET_MAX;		break;
 		default:							_SPRINTF(lDpMsr.pStr, _sNG);							break;
 	}
@@ -1527,9 +1529,9 @@ void DpMSRCal_SinglePopintro(void)
 		case MnMS1_OPT_SINGLE_ECHO_AMP:		_SPRINTF(lDpMsr.pStr, "%d", min);			break;
 		case MnMS1_OPT_SINGLE_AUTO_CAL:		_SPRINTF(lDpMsr.pStr, "%02d.%02d", (U16)(min/100), (U16)(min%100));	break;
 		case MnMS1_OPT_SINGLE_THR_LIGHT:
-		case MnMS1_OPT_SINGLE_THR_HEAVY:		fDp = _F_F;									break;	
-		case MnMS1_OPT_SINGLE_ASF_LIGHT:	
-		case MnMS1_OPT_SINGLE_ASF_HEAVY:		_SPRINTF(lDpMsr.pStr, "%d", min);			break;	
+		case MnMS1_OPT_SINGLE_THR_HEAVY:		fDp = _F_F;									break;
+		case MnMS1_OPT_SINGLE_ASF_LIGHT:
+		case MnMS1_OPT_SINGLE_ASF_HEAVY:		_SPRINTF(lDpMsr.pStr, "%d", min);			break;
 		case MnMS1_OPT_SINGLE_DAMPING:			_SPRINTF(lDpMsr.pStr, "%d", min);			break;
 		case MnMS1_OPT_SINGLE_OFFSET:
 			if(val>=0)	_SPRINTF(lDpMsr.pStr, "%01d.%02d m", min/100, min%100);
@@ -1546,14 +1548,14 @@ void DpMSRCal_SinglePopintro(void)
 
 	switch(iIt)
 	{	// Page #0
-		case MnMS1_OPT_SINGLE_FREQ:			fDp = _F_F;									break;	
+		case MnMS1_OPT_SINGLE_FREQ:			fDp = _F_F;									break;
 		case MnMS1_OPT_SINGLE_AUTO_FAMP:	fDp = _F_F;									break;
 		case MnMS1_OPT_SINGLE_ECHO_AMP:		_SPRINTF(lDpMsr.pStr, "%d", max);			break;
 		case MnMS1_OPT_SINGLE_AUTO_CAL:		_SPRINTF(lDpMsr.pStr, "%02d.%02d", (U16)(max/100), (U16)(max%100));	break;
 		case MnMS1_OPT_SINGLE_THR_LIGHT:
-		case MnMS1_OPT_SINGLE_THR_HEAVY:		fDp = _F_F;									break;	
-		case MnMS1_OPT_SINGLE_ASF_LIGHT:	
-		case MnMS1_OPT_SINGLE_ASF_HEAVY:		_SPRINTF(lDpMsr.pStr, "%d", max);			break;		
+		case MnMS1_OPT_SINGLE_THR_HEAVY:		fDp = _F_F;									break;
+		case MnMS1_OPT_SINGLE_ASF_LIGHT:
+		case MnMS1_OPT_SINGLE_ASF_HEAVY:		_SPRINTF(lDpMsr.pStr, "%d", max);			break;
 		case MnMS1_OPT_SINGLE_DAMPING:			_SPRINTF(lDpMsr.pStr, "%d", max);			break;
 		case MnMS1_OPT_SINGLE_OFFSET:
 			if(val>=0)	_SPRINTF(lDpMsr.pStr, "%01d.%02d m", max/100, max%100);
@@ -1566,7 +1568,7 @@ void DpMSRCal_SinglePopintro(void)
 	if(fDp)	DpPOP_UdtRangeMax(lDpMsr.pStr);
 
 	fDp = _F_T;
-	
+
 	if(DpMSRCal_IsAutoGainItem(iIt))
 		DpMSRCal_UdtAutoGainGuide();
 	else
@@ -1586,7 +1588,7 @@ void DpMSRCal_PopIntro(void)
 	if(MnFTR_PrGet_SsChn()==MnFTR_SS_DUAL)
 		DpMSRCal_DualPopIntro();
 	else if(MnFTR_PrGet_SsChn()==MnFTR_SS_SINGLE)
-		DpMSRCal_SinglePopintro();	
+		DpMSRCal_SinglePopintro();
 }
 
 
@@ -1618,6 +1620,7 @@ void DpMSRCal_DualPopUpdat(void)
 				case MnMS1_FREQ_270K:		_SPRINTF(pSt0, "270kHz");		break;
 				case MnMS1_FREQ_160K:		_SPRINTF(pSt0, "160kHz");		break;
 				case MnMS1_FREQ_130K:		_SPRINTF(pSt0, "130kHz");		break;
+				case MnMS1_FREQ_415K:		_SPRINTF(pSt0, "415kHz");		break;
 				default:					break;
 			}
 			break;
@@ -1655,15 +1658,15 @@ void DpMSRCal_DualPopUpdat(void)
 		case MnMS1_OPT_CH2_THR_HEAVY:
 			switch(lang)
 			{
-				case MnSYS_LANG_ENG:	
+				case MnSYS_LANG_ENG:
 					switch(val)
 					{
 						case MnMS1_THRESHOLD_AUTO:		_SPRINTF(lDpMsr.pStr, _sAUTO);			break;
 						case MnMS1_THRESHOLD_MANUAL:	_SPRINTF(lDpMsr.pStr, _sMANUAL);		break;
 						default:						break;
 					}
-					DpSTR_GuiLeft(x0, y0,	_cPOP_ST_VAL_SEL,	  cBg, _fE22HsB, lDpMsr.pStr);	
-					break;	
+					DpSTR_GuiLeft(x0, y0,	_cPOP_ST_VAL_SEL,	  cBg, _fE22HsB, lDpMsr.pStr);
+					break;
 				case MnSYS_LANG_KOR:
 					switch(val)
 					{
@@ -1671,15 +1674,15 @@ void DpMSRCal_DualPopUpdat(void)
 						case MnMS1_THRESHOLD_MANUAL:	DpSTR_GuiList(TEXT_LIST_MANUAL);	break;
 						default:						break;
 					}
-					DpSTR_GuiLeft_KOR(x0, y0,	_cPOP_ST_VAL_SEL,	  cBg, _fE22HsBKOR, gDpStr.Text_list);					
-					break;						
+					DpSTR_GuiLeft_KOR(x0, y0,	_cPOP_ST_VAL_SEL,	  cBg, _fE22HsBKOR, gDpStr.Text_list);
+					break;
 			}
 			break;
-		case MnMS1_OPT_CH1_ASF_LIGHT:	
-		case MnMS1_OPT_CH1_ASF_HEAVY:		
-		case MnMS1_OPT_CH2_ASF_LIGHT:	
+		case MnMS1_OPT_CH1_ASF_LIGHT:
+		case MnMS1_OPT_CH1_ASF_HEAVY:
+		case MnMS1_OPT_CH2_ASF_LIGHT:
 		case MnMS1_OPT_CH2_ASF_HEAVY:		_SPRINTF(pSt0, "%04d", val);			break;
-		case MnMS1_OPT_CH1_DAMPING:			
+		case MnMS1_OPT_CH1_DAMPING:
 		case MnMS1_OPT_CH2_DAMPING:			_SPRINTF(pSt0, "%03d", val);			break;
 		case MnMS1_OPT_CH1_OFFSET:
 		case MnMS1_OPT_CH2_OFFSET:
@@ -1688,7 +1691,7 @@ void DpMSRCal_DualPopUpdat(void)
 			break;
 		default:							_SPRINTF(pSt0, _sNG);				break;
 	}
-	
+
 	switch(updn_mod)
 	{
 		case MENU_V3_UPDN_IDLE:			DpSTR_GuiLeft(x0, y0, _cPOP_ST_VAL_SEL, cBg, _fE22HsB, pSt0);	break;
@@ -1702,7 +1705,7 @@ void DpMSRCal_DualPopUpdat(void)
 
 	switch(dig)
 	{
-		case 4:	
+		case 4:
 			_SPRINTF(pSt0, "%d", (abs(val)/10000)%10);	DpSTR_GuiLeft(x0, y1, _cMNU_SEL_SCT, cBg, _fE22HsB, pSt0);
 			break;
 		case 3:
@@ -1749,9 +1752,10 @@ void DpMSRCal_SinglePopUpdat(void)
 				case MnMS1_FREQ_270K:		_SPRINTF(pSt0, "270kHz");		break;
 				case MnMS1_FREQ_160K:		_SPRINTF(pSt0, "160kHz");		break;
 				case MnMS1_FREQ_130K:		_SPRINTF(pSt0, "130kHz");		break;
+				case MnMS1_FREQ_415K:		_SPRINTF(pSt0, "415kHz");		break;
 				default:					break;
 			}
-			break;		
+			break;
 		case MnMS1_OPT_SINGLE_AUTO_FAMP:
 			switch(lang)
 			{
@@ -1781,15 +1785,15 @@ void DpMSRCal_SinglePopUpdat(void)
 		case MnMS1_OPT_SINGLE_THR_HEAVY:
 			switch(lang)
 			{
-				case MnSYS_LANG_ENG:	
+				case MnSYS_LANG_ENG:
 					switch(val)
 					{
 						case MnMS1_THRESHOLD_AUTO:		_SPRINTF(lDpMsr.pStr, _sAUTO);			break;
 						case MnMS1_THRESHOLD_MANUAL:	_SPRINTF(lDpMsr.pStr, _sMANUAL);		break;
 						default:						break;
 					}
-					DpSTR_GuiLeft(x0, y0,	_cPOP_ST_VAL_SEL,	  cBg, _fE22HsB, lDpMsr.pStr);	
-					break;	
+					DpSTR_GuiLeft(x0, y0,	_cPOP_ST_VAL_SEL,	  cBg, _fE22HsB, lDpMsr.pStr);
+					break;
 				case MnSYS_LANG_KOR:
 					switch(val)
 					{
@@ -1797,12 +1801,12 @@ void DpMSRCal_SinglePopUpdat(void)
 						case MnMS1_THRESHOLD_MANUAL:	DpSTR_GuiList(TEXT_LIST_MANUAL);	break;
 						default:						break;
 					}
-					DpSTR_GuiLeft_KOR(x0, y0,	_cPOP_ST_VAL_SEL,	  cBg, _fE22HsBKOR, gDpStr.Text_list);					
-					break;						
+					DpSTR_GuiLeft_KOR(x0, y0,	_cPOP_ST_VAL_SEL,	  cBg, _fE22HsBKOR, gDpStr.Text_list);
+					break;
 			}
-			break;	
-		case MnMS1_OPT_SINGLE_ASF_LIGHT:	
-		case MnMS1_OPT_SINGLE_ASF_HEAVY:		_SPRINTF(pSt0, "%04d", val);			break;			
+			break;
+		case MnMS1_OPT_SINGLE_ASF_LIGHT:
+		case MnMS1_OPT_SINGLE_ASF_HEAVY:		_SPRINTF(pSt0, "%04d", val);			break;
 		case MnMS1_OPT_SINGLE_DAMPING:			_SPRINTF(pSt0, "%03d", val);			break;
 		case MnMS1_OPT_SINGLE_OFFSET:
 			if(val>=0)						_SPRINTF(pSt0, "%01d.%02d", (U16)(abs(val)/100), (U16)(abs(val)%100));
@@ -1810,7 +1814,7 @@ void DpMSRCal_SinglePopUpdat(void)
 			break;
 		default:							_SPRINTF(pSt0, _sNG);				break;
 	}
-	
+
 	switch(updn_mod)
 	{
 		case MENU_V3_UPDN_IDLE:			DpSTR_GuiLeft(x0, y0, _cPOP_ST_VAL_SEL, cBg, _fE22HsB, pSt0);	break;
@@ -1824,7 +1828,7 @@ void DpMSRCal_SinglePopUpdat(void)
 
 	switch(dig)
 	{
-		case 4:	
+		case 4:
 			_SPRINTF(pSt0, "%d", (abs(val)/10000)%10);	DpSTR_GuiLeft(x0, y1, _cMNU_SEL_SCT, cBg, _fE22HsB, pSt0);
 			break;
 		case 3:
@@ -1850,7 +1854,7 @@ void DpMSRCal_PopUpdat(void)
 	if(MnFTR_PrGet_SsChn()==MnFTR_SS_DUAL)
 		DpMSRCal_DualPopUpdat();
 	else if(MnFTR_PrGet_SsChn()==MnFTR_SS_SINGLE)
-		DpMSRCal_SinglePopUpdat();	
+		DpMSRCal_SinglePopUpdat();
 
 
 }
@@ -1882,7 +1886,7 @@ void DpMSR_PopIntro(void)
 		default:
 			break;
 	}
-	
+
 	// Update API
 	DpMSR_PopUpdat();
 
@@ -1891,7 +1895,7 @@ void DpMSR_PopIntro(void)
 void DpMSR_AddIntro(void)
 {
 	U08 sub = MnLY1_GetSection();
-	
+
 	switch(sub)
 	{
 		case MnMSR_SUB_BASE:
@@ -1906,7 +1910,7 @@ void DpMSR_AddIntro(void)
 			DpMSR_Cal_PopAddintro();
 			DpMSRCal_PopAddupdat();
 			break;
-		default:	
+		default:
 			break;
 	}
 
@@ -1918,7 +1922,7 @@ void DpMSR_AddIntro(void)
 void DpMSR_InitDualVari(void)
 {
 	S32 val = 0;
-	// Item - Base 
+	// Item - Base
 	U08 lang = MnSYS_PrGetBase_Item(MnSYS_OPT_LANG);
 
 	switch(lang)
@@ -1952,7 +1956,7 @@ void DpMSR_InitDualVari(void)
 			DpSTR_GuiList(TEXT_LIST_CH2_MSR_RST);
 			_SPRINTF(lDpMsr.sIt0[MnMS0_OPT_CH2_MEASURE_RESET],   gDpStr.Text_list);
 
-				
+
 				// Item - FieldA
 				DpSTR_GuiList(TEXT_LIST_CH1_FREQ);
 				_SPRINTF(lDpMsr.sIt1[MnMS1_OPT_CH1_FREQ],  	     gDpStr.Text_list);
@@ -1969,12 +1973,12 @@ void DpMSR_InitDualVari(void)
 			DpSTR_GuiList(TEXT_LIST_CH1_LIGHT);
 			_SPRINTF(lDpMsr.sIt1[MnMS1_OPT_CH1_ASF_LIGHT],   gDpStr.Text_list);
 			DpSTR_GuiList(TEXT_LIST_CH1_HEAVY);
-			_SPRINTF(lDpMsr.sIt1[MnMS1_OPT_CH1_ASF_HEAVY],   gDpStr.Text_list);			
+			_SPRINTF(lDpMsr.sIt1[MnMS1_OPT_CH1_ASF_HEAVY],   gDpStr.Text_list);
 			DpSTR_GuiList(TEXT_LIST_CH1_DAMP);
 			_SPRINTF(lDpMsr.sIt1[MnMS1_OPT_CH1_DAMPING],     gDpStr.Text_list);
 			DpSTR_GuiList(TEXT_LIST_CH1_OFFSET);
 			_SPRINTF(lDpMsr.sIt1[MnMS1_OPT_CH1_OFFSET], 	 gDpStr.Text_list);
-			
+
 				DpSTR_GuiList(TEXT_LIST_CH2_FREQ);
 				_SPRINTF(lDpMsr.sIt1[MnMS1_OPT_CH2_FREQ],  	     gDpStr.Text_list);
 					_SPRINTF(lDpMsr.sIt1[MnMS1_OPT_CH2_AUTO_CAL],    _sCH2_AUTO_CAL);
@@ -1990,7 +1994,7 @@ void DpMSR_InitDualVari(void)
 			DpSTR_GuiList(TEXT_LIST_CH2_LIGHT);
 			_SPRINTF(lDpMsr.sIt1[MnMS1_OPT_CH2_ASF_LIGHT],   gDpStr.Text_list);
 			DpSTR_GuiList(TEXT_LIST_CH2_HEAVY);
-			_SPRINTF(lDpMsr.sIt1[MnMS1_OPT_CH2_ASF_HEAVY],   gDpStr.Text_list);		
+			_SPRINTF(lDpMsr.sIt1[MnMS1_OPT_CH2_ASF_HEAVY],   gDpStr.Text_list);
 			DpSTR_GuiList(TEXT_LIST_CH2_DAMP);
 			_SPRINTF(lDpMsr.sIt1[MnMS1_OPT_CH2_DAMPING],     gDpStr.Text_list);
 			DpSTR_GuiList(TEXT_LIST_CH2_OFFSET);
@@ -2012,7 +2016,7 @@ void DpMSR_InitDualVari(void)
 			_SPRINTF(lDpMsr.sIt0[MnMS0_OPT_CH2_DEADZONE], _sCH2_DEADZONE);
 			_SPRINTF(lDpMsr.sIt0[MnMS0_OPT_CH2_MEASURE_CYCLE], _sCH2_MEASURE_CYCLE);
 			_SPRINTF(lDpMsr.sIt0[MnMS0_OPT_CH2_MEASURE_RESET],   _sCH2_MEASURE_RESET);
-				
+
 				// Item - Calc
 				_SPRINTF(lDpMsr.sIt1[MnMS1_OPT_CH1_FREQ],  	     _sCH1_FREQ);
 				_SPRINTF(lDpMsr.sIt1[MnMS1_OPT_CH1_AUTO_FAMP],   _sCH1_AUTO_GAIN);
@@ -2021,7 +2025,7 @@ void DpMSR_InitDualVari(void)
 			_SPRINTF(lDpMsr.sIt1[MnMS1_OPT_CH1_THR_LIGHT],   _sCH1_THR_LIGHT);
 			_SPRINTF(lDpMsr.sIt1[MnMS1_OPT_CH1_THR_HEAVY],   _sCH1_THR_HEAVY);
 			_SPRINTF(lDpMsr.sIt1[MnMS1_OPT_CH1_ASF_LIGHT],   _sCH1_ASF_LIGHT);
-			_SPRINTF(lDpMsr.sIt1[MnMS1_OPT_CH1_ASF_HEAVY],   _sCH1_ASF_HEAVY);			
+			_SPRINTF(lDpMsr.sIt1[MnMS1_OPT_CH1_ASF_HEAVY],   _sCH1_ASF_HEAVY);
 				_SPRINTF(lDpMsr.sIt1[MnMS1_OPT_CH1_DAMPING],     _sCH1_DAMPING);
 				_SPRINTF(lDpMsr.sIt1[MnMS1_OPT_CH1_OFFSET], 	 _sCH1_OFFSET);
 				_SPRINTF(lDpMsr.sIt1[MnMS1_OPT_CH2_FREQ],  	     _sCH2_FREQ);
@@ -2040,29 +2044,29 @@ void DpMSR_InitDualVari(void)
 	// Value - Base
 	switch(MnMSR_BaseGet_Value(MnMS0_OPT_UNIT))
 	{
-		case MnMS0_UNIT_METER:		_SPRINTF(lDpMsr.sVl0[MnMS0_OPT_UNIT], "Meter"); 			break;	
+		case MnMS0_UNIT_METER:		_SPRINTF(lDpMsr.sVl0[MnMS0_OPT_UNIT], "Meter"); 			break;
 		case MnMS0_UNIT_PERCENT:	_SPRINTF(lDpMsr.sVl0[MnMS0_OPT_UNIT], "Percent");		break;
 		default:					_SPRINTF(lDpMsr.sVl0[MnMS0_OPT_UNIT], _sNG);				break;
 	}
 
 	switch(MnMSR_BaseGet_Value(MnMS0_OPT_CH1_OPERATION))
 	{
-		case MnMS0_OPERATION_SLUDGE:	_SPRINTF(lDpMsr.sVl0[MnMS0_OPT_CH1_OPERATION], "Sludge"); 			break;	
+		case MnMS0_OPERATION_SLUDGE:	_SPRINTF(lDpMsr.sVl0[MnMS0_OPT_CH1_OPERATION], "Sludge"); 			break;
 		case MnMS0_OPERATION_DISTANCE:	_SPRINTF(lDpMsr.sVl0[MnMS0_OPT_CH1_OPERATION], "Distance");			break;
 		default:						_SPRINTF(lDpMsr.sVl0[MnMS0_OPT_CH1_OPERATION], _sNG);				break;
 	}
-	
+
 	val = MnMSR_BaseGet_Value(MnMS0_OPT_CH1_EMPTY);		_SPRINTF(lDpMsr.sVl0[MnMS0_OPT_CH1_EMPTY], "%2d.%02d m", (U16)(val/100), (U16)(val%100));
 	val = MnMSR_BaseGet_Value(MnMS0_OPT_CH1_DEADZONE);	_SPRINTF(lDpMsr.sVl0[MnMS0_OPT_CH1_DEADZONE], "%2d.%02d m", (U16)(val/100), (U16)(val%100));
 	val = MnMSR_BaseGet_Value(MnMS0_OPT_CH1_MEASURE_CYCLE);		_SPRINTF(lDpMsr.sVl0[MnMS0_OPT_CH1_MEASURE_CYCLE], " %d sec",val);
 
 	switch(MnMSR_BaseGet_Value(MnMS0_OPT_CH2_OPERATION))
 	{
-		case MnMS0_OPERATION_SLUDGE:	_SPRINTF(lDpMsr.sVl0[MnMS0_OPT_CH2_OPERATION], "Sludge"); 			break;	
+		case MnMS0_OPERATION_SLUDGE:	_SPRINTF(lDpMsr.sVl0[MnMS0_OPT_CH2_OPERATION], "Sludge"); 			break;
 		case MnMS0_OPERATION_DISTANCE:	_SPRINTF(lDpMsr.sVl0[MnMS0_OPT_CH2_OPERATION], "Distance");			break;
 		default:						_SPRINTF(lDpMsr.sVl0[MnMS0_OPT_CH2_OPERATION], _sNG);				break;
 	}
-	
+
 	val = MnMSR_BaseGet_Value(MnMS0_OPT_CH2_EMPTY);		_SPRINTF(lDpMsr.sVl0[MnMS0_OPT_CH2_EMPTY], "%2d.%02d m", (U16)(val/100), (U16)(val%100));
 	val = MnMSR_BaseGet_Value(MnMS0_OPT_CH2_DEADZONE);	_SPRINTF(lDpMsr.sVl0[MnMS0_OPT_CH2_DEADZONE], "%2d.%02d m", (U16)(val/100), (U16)(val%100));
 	val = MnMSR_BaseGet_Value(MnMS0_OPT_CH2_MEASURE_CYCLE);		_SPRINTF(lDpMsr.sVl0[MnMS0_OPT_CH2_MEASURE_CYCLE], " %d sec", val);
@@ -2077,15 +2081,17 @@ void DpMSR_InitDualVari(void)
 		case MnMS1_FREQ_270K:			_SPRINTF(lDpMsr.sVl1[MnMS1_OPT_CH1_FREQ], " 270kHz");	break;
 		case MnMS1_FREQ_160K:			_SPRINTF(lDpMsr.sVl1[MnMS1_OPT_CH1_FREQ], " 160kHz");	break;
 		case MnMS1_FREQ_130K:			_SPRINTF(lDpMsr.sVl1[MnMS1_OPT_CH1_FREQ], " 130kHz");	break;
+		case MnMS1_FREQ_415K:			_SPRINTF(lDpMsr.sVl1[MnMS1_OPT_CH1_FREQ], " 415kHz");	break;
 		default:						break;
 	}
-	
+
 	switch(MnMSR_CalGet_Value(MnMS1_OPT_CH2_FREQ))
 	{
 		case MnMS1_FREQ_380K:			_SPRINTF(lDpMsr.sVl1[MnMS1_OPT_CH2_FREQ], " 380kHz");	break;
 		case MnMS1_FREQ_270K:			_SPRINTF(lDpMsr.sVl1[MnMS1_OPT_CH2_FREQ], " 270kHz");	break;
 		case MnMS1_FREQ_160K:			_SPRINTF(lDpMsr.sVl1[MnMS1_OPT_CH2_FREQ], " 160kHz");	break;
 		case MnMS1_FREQ_130K:			_SPRINTF(lDpMsr.sVl1[MnMS1_OPT_CH2_FREQ], " 130kHz");	break;
+		case MnMS1_FREQ_415K:			_SPRINTF(lDpMsr.sVl1[MnMS1_OPT_CH2_FREQ], " 415kHz");	break;
 		default:						break;
 	}
 
@@ -2140,11 +2146,11 @@ void DpMSR_InitDualVari(void)
 			break;
 	}
 
-	
+
 	val = MnMSR_CalGet_Value(MnMS1_OPT_CH1_ASF_LIGHT);		_SPRINTF(lDpMsr.sVl1[(MnMS1_OPT_CH1_ASF_LIGHT)], " %d", val);
-	val = MnMSR_CalGet_Value(MnMS1_OPT_CH1_ASF_HEAVY);		_SPRINTF(lDpMsr.sVl1[(MnMS1_OPT_CH1_ASF_HEAVY)], " %d", val);	
+	val = MnMSR_CalGet_Value(MnMS1_OPT_CH1_ASF_HEAVY);		_SPRINTF(lDpMsr.sVl1[(MnMS1_OPT_CH1_ASF_HEAVY)], " %d", val);
 	val = MnMSR_CalGet_Value(MnMS1_OPT_CH1_DAMPING);		_SPRINTF(lDpMsr.sVl1[(MnMS1_OPT_CH1_DAMPING)], " %d", val);
-	val = MnMSR_CalGet_Value(MnMS1_OPT_CH1_OFFSET);			
+	val = MnMSR_CalGet_Value(MnMS1_OPT_CH1_OFFSET);
 
 	if(val>=0)		_SPRINTF(lDpMsr.sVl1[(MnMS1_OPT_CH1_OFFSET)], "%01d.%02d m", (val/100), (val%100));
 	else			_SPRINTF(lDpMsr.sVl1[(MnMS1_OPT_CH1_OFFSET)], "-%01d.%02d m", (abs(val)/100), (abs(val)%100));
@@ -2158,7 +2164,7 @@ void DpMSR_InitDualVari(void)
 	}
 	val = MnMSR_CalGet_Value(MnMS1_OPT_CH2_ECHO_AMP);		_SPRINTF(lDpMsr.sVl1[MnMS1_OPT_CH2_ECHO_AMP], " %d", val);
 	val = MnMSR_CalGet_Value(MnMS1_OPT_CH2_ASF_LIGHT);		_SPRINTF(lDpMsr.sVl1[(MnMS1_OPT_CH2_ASF_LIGHT)], " %d", val);
-	val = MnMSR_CalGet_Value(MnMS1_OPT_CH2_ASF_HEAVY);		_SPRINTF(lDpMsr.sVl1[(MnMS1_OPT_CH2_ASF_HEAVY)], " %d", val);	
+	val = MnMSR_CalGet_Value(MnMS1_OPT_CH2_ASF_HEAVY);		_SPRINTF(lDpMsr.sVl1[(MnMS1_OPT_CH2_ASF_HEAVY)], " %d", val);
 	val = MnMSR_CalGet_Value(MnMS1_OPT_CH2_DAMPING);		_SPRINTF(lDpMsr.sVl1[(MnMS1_OPT_CH2_DAMPING)], " %d", val);
 	val = MnMSR_CalGet_Value(MnMS1_OPT_CH2_OFFSET);
 
@@ -2174,7 +2180,7 @@ void DpMSR_InitSingleVari(void)
 {
 
 	S32 val = 0;
-	// Item - Base 
+	// Item - Base
 	U08 lang = MnSYS_PrGetBase_Item(MnSYS_OPT_LANG);
 
 
@@ -2198,7 +2204,7 @@ void DpMSR_InitSingleVari(void)
 			DpSTR_GuiList(TEXT_LIST_MSR_RST);
 			_SPRINTF(lDpMsr.sIt0[MnMS0_OPT_SINGLE_MEASURE_RESET],   gDpStr.Text_list);
 
-				
+
 				// Item - calc
 				DpSTR_GuiList(TEXT_LIST_FREQ);
 				_SPRINTF(lDpMsr.sIt1[MnMS1_OPT_SINGLE_FREQ],  	     gDpStr.Text_list);
@@ -2215,7 +2221,7 @@ void DpMSR_InitSingleVari(void)
 			DpSTR_GuiList(TEXT_LIST_LIGHT);
 			_SPRINTF(lDpMsr.sIt1[MnMS1_OPT_SINGLE_ASF_LIGHT],   gDpStr.Text_list);
 			DpSTR_GuiList(TEXT_LIST_HEAVY);
-			_SPRINTF(lDpMsr.sIt1[MnMS1_OPT_SINGLE_ASF_HEAVY],   gDpStr.Text_list);			
+			_SPRINTF(lDpMsr.sIt1[MnMS1_OPT_SINGLE_ASF_HEAVY],   gDpStr.Text_list);
 			DpSTR_GuiList(TEXT_LIST_DAMPING);
 			_SPRINTF(lDpMsr.sIt1[MnMS1_OPT_SINGLE_DAMPING],     gDpStr.Text_list);
 			DpSTR_GuiList(TEXT_LIST_OFFSET);
@@ -2232,7 +2238,7 @@ void DpMSR_InitSingleVari(void)
 			_SPRINTF(lDpMsr.sIt0[MnMS0_OPT_SINGLE_MEASURE_CYCLE], _sMeasure_cycle);
 			_SPRINTF(lDpMsr.sIt0[MnMS0_OPT_SINGLE_MEASURE_RESET],   _sMeasure_reset);
 
-				
+
 				// Item - FieldA
 				_SPRINTF(lDpMsr.sIt1[MnMS1_OPT_SINGLE_FREQ],  	     _sFrequency);
 				_SPRINTF(lDpMsr.sIt1[MnMS1_OPT_SINGLE_AUTO_CAL],    _sAuto_Cal);
@@ -2241,28 +2247,28 @@ void DpMSR_InitSingleVari(void)
 			_SPRINTF(lDpMsr.sIt1[MnMS1_OPT_SINGLE_THR_LIGHT],   _sThr_light);
 			_SPRINTF(lDpMsr.sIt1[MnMS1_OPT_SINGLE_THR_HEAVY],   _sThr_heavy);
 			_SPRINTF(lDpMsr.sIt1[MnMS1_OPT_SINGLE_ASF_LIGHT],   _sASF_LIGHT);
-			_SPRINTF(lDpMsr.sIt1[MnMS1_OPT_SINGLE_ASF_HEAVY],   _sASF_HEAVY);			
+			_SPRINTF(lDpMsr.sIt1[MnMS1_OPT_SINGLE_ASF_HEAVY],   _sASF_HEAVY);
 			_SPRINTF(lDpMsr.sIt1[MnMS1_OPT_SINGLE_DAMPING],     _sDamping);
 			_SPRINTF(lDpMsr.sIt1[MnMS1_OPT_SINGLE_OFFSET], 	 	_sOffset);
 			break;
 	}
-	
-		   
+
+
 	// Value - Base
 	switch(MnMSR_BaseGet_Value(MnMS0_OPT_SINGLE_UNIT))
 	{
-		case MnMS0_UNIT_METER:		_SPRINTF(lDpMsr.sVl0[MnMS0_OPT_SINGLE_UNIT], "Meter"); 			break;	
+		case MnMS0_UNIT_METER:		_SPRINTF(lDpMsr.sVl0[MnMS0_OPT_SINGLE_UNIT], "Meter"); 			break;
 		case MnMS0_UNIT_PERCENT:	_SPRINTF(lDpMsr.sVl0[MnMS0_OPT_SINGLE_UNIT], "Percent");		break;
 		default:					_SPRINTF(lDpMsr.sVl0[MnMS0_OPT_SINGLE_UNIT], _sNG);				break;
 	}
 
 	switch(MnMSR_BaseGet_Value(MnMS0_OPT_SINGLE_OPERATION))
 	{
-		case MnMS0_OPERATION_SLUDGE:	_SPRINTF(lDpMsr.sVl0[MnMS0_OPT_SINGLE_OPERATION], "Sludge"); 			break;	
+		case MnMS0_OPERATION_SLUDGE:	_SPRINTF(lDpMsr.sVl0[MnMS0_OPT_SINGLE_OPERATION], "Sludge"); 			break;
 		case MnMS0_OPERATION_DISTANCE:	_SPRINTF(lDpMsr.sVl0[MnMS0_OPT_SINGLE_OPERATION], "Distance");			break;
 		default:						_SPRINTF(lDpMsr.sVl0[MnMS0_OPT_SINGLE_OPERATION], _sNG);				break;
 	}
-	
+
 	val = MnMSR_BaseGet_Value(MnMS0_OPT_SINGLE_EMPTY);		_SPRINTF(lDpMsr.sVl0[MnMS0_OPT_SINGLE_EMPTY], "%2d.%02d m", (U16)(val/100), (U16)(val%100));
 	val = MnMSR_BaseGet_Value(MnMS0_OPT_SINGLE_DEADZONE);	_SPRINTF(lDpMsr.sVl0[MnMS0_OPT_SINGLE_DEADZONE], "%2d.%02d m", (U16)(val/100), (U16)(val%100));
 	val = MnMSR_BaseGet_Value(MnMS0_OPT_SINGLE_MEASURE_CYCLE);		_SPRINTF(lDpMsr.sVl0[MnMS0_OPT_SINGLE_MEASURE_CYCLE], " %d sec",val);
@@ -2277,9 +2283,10 @@ void DpMSR_InitSingleVari(void)
 		case MnMS1_FREQ_270K:			_SPRINTF(lDpMsr.sVl1[MnMS1_OPT_SINGLE_FREQ], " 270kHz");	break;
 		case MnMS1_FREQ_160K:			_SPRINTF(lDpMsr.sVl1[MnMS1_OPT_SINGLE_FREQ], " 160kHz");	break;
 		case MnMS1_FREQ_130K:			_SPRINTF(lDpMsr.sVl1[MnMS1_OPT_SINGLE_FREQ], " 130kHz");	break;
+		case MnMS1_FREQ_415K:			_SPRINTF(lDpMsr.sVl1[MnMS1_OPT_SINGLE_FREQ], " 415kHz");	break;
 		default:						break;
 	}
-	
+
 	val = MnMSR_CalGet_Value(MnMS1_OPT_SINGLE_AUTO_CAL);		_SPRINTF(lDpMsr.sVl1[MnMS1_OPT_SINGLE_AUTO_CAL], "%2d.%02d m", (U16)(val/100), (U16)(val%100));
 	val = MnMSR_CalGet_Ch_Value(APP_CH_1, MnMS1_OPT_SINGLE_AUTO_FAMP);
 	switch(val) {
@@ -2291,7 +2298,7 @@ void DpMSR_InitSingleVari(void)
 	val = MnMSR_CalGet_Value(MnMS1_OPT_SINGLE_ECHO_AMP);		_SPRINTF(lDpMsr.sVl1[MnMS1_OPT_SINGLE_ECHO_AMP], " %d", val);
 
 	val = MnMSR_Get_Threshold_Value(MnMS1_OPT_SINGLE_THR_LIGHT);
-	
+
 	switch(MnMSR_CalGet_Value(MnMS1_OPT_SINGLE_THR_LIGHT))
 	{
 		case MnMS1_THRESHOLD_AUTO:		_SPRINTF(lDpMsr.sVl1[MnMS1_OPT_SINGLE_THR_LIGHT], " %d %c", val,37);	break;
@@ -2313,9 +2320,9 @@ void DpMSR_InitSingleVari(void)
 
 
 	val = MnMSR_CalGet_Value(MnMS1_OPT_SINGLE_ASF_LIGHT);		_SPRINTF(lDpMsr.sVl1[(MnMS1_OPT_SINGLE_ASF_LIGHT)], " %d", val);
-	val = MnMSR_CalGet_Value(MnMS1_OPT_SINGLE_ASF_HEAVY);		_SPRINTF(lDpMsr.sVl1[(MnMS1_OPT_SINGLE_ASF_HEAVY)], " %d", val);	
+	val = MnMSR_CalGet_Value(MnMS1_OPT_SINGLE_ASF_HEAVY);		_SPRINTF(lDpMsr.sVl1[(MnMS1_OPT_SINGLE_ASF_HEAVY)], " %d", val);
 	val = MnMSR_CalGet_Value(MnMS1_OPT_SINGLE_DAMPING);		_SPRINTF(lDpMsr.sVl1[(MnMS1_OPT_SINGLE_DAMPING)], " %d", val);
-	val = MnMSR_CalGet_Value(MnMS1_OPT_SINGLE_OFFSET);			
+	val = MnMSR_CalGet_Value(MnMS1_OPT_SINGLE_OFFSET);
 
 	if(val>=0)		_SPRINTF(lDpMsr.sVl1[(MnMS1_OPT_SINGLE_OFFSET)], "%01d.%02d m", (val/100), (val%100));
 	else			_SPRINTF(lDpMsr.sVl1[(MnMS1_OPT_SINGLE_OFFSET)], "-%01d.%02d m", (abs(val)/100), (abs(val)%100));
@@ -2333,7 +2340,7 @@ void DpMSR_InitVari(void)
 		DpMSR_InitDualVari();
 	else if(MnFTR_PrGet_SsChn()==MnFTR_SS_SINGLE)
 		DpMSR_InitSingleVari();
-	
+
 }
 
 
@@ -2352,7 +2359,7 @@ void DpMS1_StrSbSct(void)
 			DpSTR_GuiLeft_KOR(box_itm_x0, str_y0+(str_yg*MnMSR_SUB_BASE), _cMNU_STR_IDLE, _cMNU_BOX_BG, _fE17HsBKOR, gDpStr.Text_list);
 			DpSTR_GuiList(TEXT_LIST_CALIBRATION);
 			DpSTR_GuiLeft_KOR(box_itm_x0, str_y0+(str_yg*MnMSR_SUB_CAL), _cMNU_STR_IDLE, _cMNU_BOX_BG, _fE17HsBKOR, gDpStr.Text_list);
-			break;		
+			break;
 		case MnSYS_LANG_ENG:
 			for(i=0; i<MnMSR_SUB_NUM; i++)
 				DpSTR_GuiLeft(box_itm_x0, str_y0+(str_yg*i), _cMNU_STR_IDLE, _cMNU_BOX_BG, _fE17HsB, lDpMsr.sSct[i]);
@@ -2374,7 +2381,7 @@ void DpMSR_StrDualCntts(U08 idx)
 	U16 str_y0 = DpMNU_STR_Y0;
 	U16 str_yg = DpMNU_STR_YG;
 	U08 iIt = MnLY2_GetIdxItem();
-	U08 lang = MnSYS_PrGetBase_Item(MnSYS_OPT_LANG);	
+	U08 lang = MnSYS_PrGetBase_Item(MnSYS_OPT_LANG);
 	U08 sel;
 	U64 back_color = _cMNU_BOX_BG;
 	U64 text_color = _cMNU_STR_IDLE;
@@ -2393,14 +2400,14 @@ void DpMSR_StrDualCntts(U08 idx)
 
 	switch(page)
 	{
-		case DpMNU_PG_0:	
+		case DpMNU_PG_0:
 			if(n>DpMNU_ITM_PAGE)		iN=DpMNU_ITM_PAGE;
 			else						iN=n;
 			break;
 		case DpMNU_PG_1:
 			if(n>(DpMNU_ITM_PAGE*2))	iN=DpMNU_ITM_PAGE;
 			else						iN=n-DpMNU_ITM_PAGE;
-			break;			
+			break;
 		case DpMNU_PG_2:
 			if(n>(DpMNU_ITM_PAGE*3))	iN=DpMNU_ITM_PAGE;
 			else						iN=n-(DpMNU_ITM_PAGE*2);
@@ -2408,7 +2415,7 @@ void DpMSR_StrDualCntts(U08 idx)
 		case DpMNU_PG_3:
 			if(n>(DpMNU_ITM_PAGE*4))	iN=DpMNU_ITM_PAGE;
 			else						iN=n-(DpMNU_ITM_PAGE*3);
-			break;					
+			break;
 		default:			return;
 	}
 
@@ -2445,7 +2452,7 @@ void DpMSR_StrDualCntts(U08 idx)
 
 				DpSTR_GuiLeft(box_itm_x0, str_y0+(str_yg*i), text_color, back_color, _fE17HsB, pItm);
 				DpSTR_GuiLeft(box_val_x0, str_y0+(str_yg*i), _cMNU_STR_IDLE, _cMNU_BOX_BG, _fE17HsB, pVal);
-			}			
+			}
 			break;
 		case MnSYS_LANG_KOR:
 				for(i=0; i<iN; i++)
@@ -2465,74 +2472,74 @@ void DpMSR_StrDualCntts(U08 idx)
 						text_color = _cMNU_STR_IDLE;
 
 					}
-				}				
+				}
 				switch(idx)
 				{
-					case MnMSR_SUB_BASE:	
-						pItm = lDpMsr.sIt0[id]; 	pVal = lDpMsr.sVl0[id]; 
+					case MnMSR_SUB_BASE:
+						pItm = lDpMsr.sIt0[id]; 	pVal = lDpMsr.sVl0[id];
 						switch(id)
 						{
-							case MnMS0_OPT_CH1_OPERATION: 
+							case MnMS0_OPT_CH1_OPERATION:
 								switch(MnMSR_BaseGet_Value(MnMS0_OPT_CH1_OPERATION))
 								{
-									case MnMS0_OPERATION_SLUDGE:	DpSTR_GuiList(TEXT_LIST_SLUDGE);				break;	
+									case MnMS0_OPERATION_SLUDGE:	DpSTR_GuiList(TEXT_LIST_SLUDGE);				break;
 									case MnMS0_OPERATION_DISTANCE:	DpSTR_GuiList(TEXT_LIST_DISTANCE);				break;
 									default:						break;
-								}				
+								}
 								DpSTR_GuiLeft_KOR(box_val_x0, str_y0+(str_yg*i), _cMNU_STR_IDLE, _cMNU_BOX_BG, _fE17HsBKOR, gDpStr.Text_list);
-								DpSTR_GuiList(TEXT_LIST_CH1_OPERATION); 
+								DpSTR_GuiList(TEXT_LIST_CH1_OPERATION);
 								DpSTR_GuiLeft_KOR(box_itm_x0, str_y0+(str_yg*i), text_color, back_color, _fE17HsBKOR, gDpStr.Text_list);
 								break;
-							case MnMS0_OPT_CH2_OPERATION:								
+							case MnMS0_OPT_CH2_OPERATION:
 								switch(MnMSR_BaseGet_Value(MnMS0_OPT_CH2_OPERATION))
 								{
-									case MnMS0_OPERATION_SLUDGE:	DpSTR_GuiList(TEXT_LIST_SLUDGE);				break;	
+									case MnMS0_OPERATION_SLUDGE:	DpSTR_GuiList(TEXT_LIST_SLUDGE);				break;
 									case MnMS0_OPERATION_DISTANCE:	DpSTR_GuiList(TEXT_LIST_DISTANCE);				break;
 									default:						break;
-								}								
+								}
 								DpSTR_GuiLeft_KOR(box_val_x0, str_y0+(str_yg*i), _cMNU_STR_IDLE, _cMNU_BOX_BG, _fE17HsBKOR, gDpStr.Text_list);
-								DpSTR_GuiList(TEXT_LIST_CH2_OPERATION); 
+								DpSTR_GuiList(TEXT_LIST_CH2_OPERATION);
 								DpSTR_GuiLeft_KOR(box_itm_x0, str_y0+(str_yg*i), text_color, back_color, _fE17HsBKOR, gDpStr.Text_list);
-								break;	
+								break;
 							default:
 								DpSTR_GuiLeft_KOR(box_itm_x0, str_y0+(str_yg*i), text_color, back_color, _fE17HsBKOR, pItm);
-								DpSTR_GuiLeft(box_val_x0, str_y0+(str_yg*i), _cMNU_STR_IDLE, _cMNU_BOX_BG, _fE17HsB, pVal); 							
+								DpSTR_GuiLeft(box_val_x0, str_y0+(str_yg*i), _cMNU_STR_IDLE, _cMNU_BOX_BG, _fE17HsB, pVal);
 								break;
 						}
 						break;
-					case MnMSR_SUB_CAL: 	
-						pItm = lDpMsr.sIt1[id]; 	pVal = lDpMsr.sVl1[id]; 
+					case MnMSR_SUB_CAL:
+						pItm = lDpMsr.sIt1[id]; 	pVal = lDpMsr.sVl1[id];
 						switch(id)
 						{
-							case MnMS1_OPT_CH1_ASF_LIGHT:			
-								DpSTR_GuiList(TEXT_LIST_CH1_LIGHT); 
+							case MnMS1_OPT_CH1_ASF_LIGHT:
+								DpSTR_GuiList(TEXT_LIST_CH1_LIGHT);
 								DpSTR_GuiLeft_KOR(box_itm_x0, str_y0+(str_yg*i), text_color, back_color, _fE17HsBKOR, gDpStr.Text_list);
 								DpSTR_GuiLeft(box_itm_x0+150, str_y0+(str_yg*i)-2, text_color, back_color, _fE17HsB, "ASF");
-								DpSTR_GuiList(TEXT_LIST_SET);	
+								DpSTR_GuiList(TEXT_LIST_SET);
 								DpSTR_GuiLeft_KOR(box_itm_x0+200, str_y0+(str_yg*i), text_color, back_color, _fE17HsBKOR, gDpStr.Text_list);
 								DpSTR_GuiLeft(box_val_x0, str_y0+(str_yg*i), _cMNU_STR_IDLE, _cMNU_BOX_BG, _fE17HsB, pVal);
 								break;
-							case MnMS1_OPT_CH1_ASF_HEAVY:			
-								DpSTR_GuiList(TEXT_LIST_CH1_HEAVY); 
+							case MnMS1_OPT_CH1_ASF_HEAVY:
+								DpSTR_GuiList(TEXT_LIST_CH1_HEAVY);
 								DpSTR_GuiLeft_KOR(box_itm_x0, str_y0+(str_yg*i), text_color, back_color, _fE17HsBKOR, gDpStr.Text_list);
 								DpSTR_GuiLeft(box_itm_x0+150, str_y0+(str_yg*i)-2, text_color, back_color, _fE17HsB, "ASF");
-								DpSTR_GuiList(TEXT_LIST_SET);	
-								DpSTR_GuiLeft_KOR(box_itm_x0+200, str_y0+(str_yg*i), text_color, back_color, _fE17HsBKOR, gDpStr.Text_list);
-								DpSTR_GuiLeft(box_val_x0, str_y0+(str_yg*i), _cMNU_STR_IDLE, _cMNU_BOX_BG, _fE17HsB, pVal);
-								break;								
-							case MnMS1_OPT_CH2_ASF_LIGHT:			
-								DpSTR_GuiList(TEXT_LIST_CH2_LIGHT); 
-								DpSTR_GuiLeft_KOR(box_itm_x0, str_y0+(str_yg*i), text_color, back_color, _fE17HsBKOR, gDpStr.Text_list);
-								DpSTR_GuiLeft(box_itm_x0+150, str_y0+(str_yg*i)-2, text_color, back_color, _fE17HsB, "ASF");
-								DpSTR_GuiList(TEXT_LIST_SET);	
+								DpSTR_GuiList(TEXT_LIST_SET);
 								DpSTR_GuiLeft_KOR(box_itm_x0+200, str_y0+(str_yg*i), text_color, back_color, _fE17HsBKOR, gDpStr.Text_list);
 								DpSTR_GuiLeft(box_val_x0, str_y0+(str_yg*i), _cMNU_STR_IDLE, _cMNU_BOX_BG, _fE17HsB, pVal);
 								break;
-							case MnMS1_OPT_CH2_ASF_HEAVY:			
-								DpSTR_GuiList(TEXT_LIST_CH2_HEAVY); 
+							case MnMS1_OPT_CH2_ASF_LIGHT:
+								DpSTR_GuiList(TEXT_LIST_CH2_LIGHT);
 								DpSTR_GuiLeft_KOR(box_itm_x0, str_y0+(str_yg*i), text_color, back_color, _fE17HsBKOR, gDpStr.Text_list);
 								DpSTR_GuiLeft(box_itm_x0+150, str_y0+(str_yg*i)-2, text_color, back_color, _fE17HsB, "ASF");
-								DpSTR_GuiList(TEXT_LIST_SET);	
+								DpSTR_GuiList(TEXT_LIST_SET);
+								DpSTR_GuiLeft_KOR(box_itm_x0+200, str_y0+(str_yg*i), text_color, back_color, _fE17HsBKOR, gDpStr.Text_list);
+								DpSTR_GuiLeft(box_val_x0, str_y0+(str_yg*i), _cMNU_STR_IDLE, _cMNU_BOX_BG, _fE17HsB, pVal);
+								break;
+							case MnMS1_OPT_CH2_ASF_HEAVY:
+								DpSTR_GuiList(TEXT_LIST_CH2_HEAVY);
+								DpSTR_GuiLeft_KOR(box_itm_x0, str_y0+(str_yg*i), text_color, back_color, _fE17HsBKOR, gDpStr.Text_list);
+								DpSTR_GuiLeft(box_itm_x0+150, str_y0+(str_yg*i)-2, text_color, back_color, _fE17HsB, "ASF");
+								DpSTR_GuiList(TEXT_LIST_SET);
 								DpSTR_GuiLeft_KOR(box_itm_x0+200, str_y0+(str_yg*i), text_color, back_color, _fE17HsBKOR, gDpStr.Text_list);
 								DpSTR_GuiLeft(box_val_x0, str_y0+(str_yg*i), _cMNU_STR_IDLE, _cMNU_BOX_BG, _fE17HsB, pVal);
 								break;
@@ -2550,7 +2557,7 @@ void DpMSR_StrDualCntts(U08 idx)
 					default:				return;
 				}
 			}
-			break;			
+			break;
 	}
 
 }
@@ -2565,7 +2572,7 @@ void DpMSR_StrSingleCntts(U08 idx)
 	U16 str_y0 = DpMNU_STR_Y0;
 	U16 str_yg = DpMNU_STR_YG;
 	U08 iIt = MnLY2_GetIdxItem();
-	U08 lang = MnSYS_PrGetBase_Item(MnSYS_OPT_LANG);	
+	U08 lang = MnSYS_PrGetBase_Item(MnSYS_OPT_LANG);
 	U08 sel;
 	U64 back_color = _cMNU_BOX_BG;
 	U64 text_color = _cMNU_STR_IDLE;
@@ -2586,14 +2593,14 @@ void DpMSR_StrSingleCntts(U08 idx)
 
 	switch(page)
 	{
-		case DpMNU_PG_0:	
+		case DpMNU_PG_0:
 			if(n>DpMNU_ITM_PAGE)		iN=DpMNU_ITM_PAGE;
 			else						iN=n;
 			break;
 		case DpMNU_PG_1:
 			if(n>(DpMNU_ITM_PAGE*2))	iN=DpMNU_ITM_PAGE;
 			else						iN=n-DpMNU_ITM_PAGE;
-			break;			
+			break;
 		case DpMNU_PG_2:
 			if(n>(DpMNU_ITM_PAGE*3))	iN=DpMNU_ITM_PAGE;
 			else						iN=n-(DpMNU_ITM_PAGE*2);
@@ -2601,7 +2608,7 @@ void DpMSR_StrSingleCntts(U08 idx)
 		case DpMNU_PG_3:
 			if(n>(DpMNU_ITM_PAGE*4))	iN=DpMNU_ITM_PAGE;
 			else						iN=n-(DpMNU_ITM_PAGE*3);
-			break;					
+			break;
 		default:			return;
 	}
 
@@ -2637,7 +2644,7 @@ void DpMSR_StrSingleCntts(U08 idx)
 
 				DpSTR_GuiLeft(box_itm_x0, str_y0+(str_yg*i), text_color, back_color, _fE17HsB, pItm);
 				DpSTR_GuiLeft(box_val_x0, str_y0+(str_yg*i), _cMNU_STR_IDLE, _cMNU_BOX_BG, _fE17HsB, pVal);
-			}			
+			}
 			break;
 		case MnSYS_LANG_KOR:
 				for(i=0; i<iN; i++)
@@ -2657,47 +2664,47 @@ void DpMSR_StrSingleCntts(U08 idx)
 						text_color = _cMNU_STR_IDLE;
 
 					}
-				}				
+				}
 				switch(idx)
 				{
-					case MnMSR_SUB_BASE:	
-						pItm = lDpMsr.sIt0[id]; 	pVal = lDpMsr.sVl0[id]; 
+					case MnMSR_SUB_BASE:
+						pItm = lDpMsr.sIt0[id]; 	pVal = lDpMsr.sVl0[id];
 						switch(id)
 						{
-							case MnMS0_OPT_SINGLE_OPERATION: 
+							case MnMS0_OPT_SINGLE_OPERATION:
 								switch(MnMSR_BaseGet_Value(MnMS0_OPT_SINGLE_OPERATION))
 								{
-									case MnMS0_OPERATION_SLUDGE:	DpSTR_GuiList(TEXT_LIST_SLUDGE);				break;	
+									case MnMS0_OPERATION_SLUDGE:	DpSTR_GuiList(TEXT_LIST_SLUDGE);				break;
 									case MnMS0_OPERATION_DISTANCE:	DpSTR_GuiList(TEXT_LIST_DISTANCE);				break;
 									default:						break;
-								}				
+								}
 								DpSTR_GuiLeft_KOR(box_val_x0, str_y0+(str_yg*i), _cMNU_STR_IDLE, _cMNU_BOX_BG, _fE17HsBKOR, gDpStr.Text_list);
-								DpSTR_GuiList(TEXT_LIST_OPERATION); 
+								DpSTR_GuiList(TEXT_LIST_OPERATION);
 								DpSTR_GuiLeft_KOR(box_itm_x0, str_y0+(str_yg*i), text_color, back_color, _fE17HsBKOR, gDpStr.Text_list);
-								break;	
+								break;
 							default:
 								DpSTR_GuiLeft_KOR(box_itm_x0, str_y0+(str_yg*i), text_color, back_color, _fE17HsBKOR, pItm);
-								DpSTR_GuiLeft(box_val_x0, str_y0+(str_yg*i), _cMNU_STR_IDLE, _cMNU_BOX_BG, _fE17HsB, pVal); 							
+								DpSTR_GuiLeft(box_val_x0, str_y0+(str_yg*i), _cMNU_STR_IDLE, _cMNU_BOX_BG, _fE17HsB, pVal);
 								break;
 						}
 						break;
-					case MnMSR_SUB_CAL: 	
-						pItm = lDpMsr.sIt1[id]; 	pVal = lDpMsr.sVl1[id]; 
+					case MnMSR_SUB_CAL:
+						pItm = lDpMsr.sIt1[id]; 	pVal = lDpMsr.sVl1[id];
 						switch(id)
 						{
-							case MnMS1_OPT_SINGLE_ASF_LIGHT:			
-								DpSTR_GuiList(TEXT_LIST_LIGHT); 
+							case MnMS1_OPT_SINGLE_ASF_LIGHT:
+								DpSTR_GuiList(TEXT_LIST_LIGHT);
 								DpSTR_GuiLeft_KOR(box_itm_x0, str_y0+(str_yg*i), text_color, back_color, _fE17HsBKOR, gDpStr.Text_list);
 								DpSTR_GuiLeft(box_itm_x0+80, str_y0+(str_yg*i)-2, text_color, back_color, _fE17HsB, "ASF");
-								DpSTR_GuiList(TEXT_LIST_SET);	
+								DpSTR_GuiList(TEXT_LIST_SET);
 								DpSTR_GuiLeft_KOR(box_itm_x0+130, str_y0+(str_yg*i), text_color, back_color, _fE17HsBKOR, gDpStr.Text_list);
 								DpSTR_GuiLeft(box_val_x0, str_y0+(str_yg*i), _cMNU_STR_IDLE, _cMNU_BOX_BG, _fE17HsB, pVal);
 								break;
-							case MnMS1_OPT_SINGLE_ASF_HEAVY:			
-								DpSTR_GuiList(TEXT_LIST_HEAVY); 
+							case MnMS1_OPT_SINGLE_ASF_HEAVY:
+								DpSTR_GuiList(TEXT_LIST_HEAVY);
 								DpSTR_GuiLeft_KOR(box_itm_x0, str_y0+(str_yg*i), text_color, back_color, _fE17HsBKOR, gDpStr.Text_list);
 								DpSTR_GuiLeft(box_itm_x0+80, str_y0+(str_yg*i)-2, text_color, back_color, _fE17HsB, "ASF");
-								DpSTR_GuiList(TEXT_LIST_SET);	
+								DpSTR_GuiList(TEXT_LIST_SET);
 								DpSTR_GuiLeft_KOR(box_itm_x0+130, str_y0+(str_yg*i), text_color, back_color, _fE17HsBKOR, gDpStr.Text_list);
 								DpSTR_GuiLeft(box_val_x0, str_y0+(str_yg*i), _cMNU_STR_IDLE, _cMNU_BOX_BG, _fE17HsB, pVal);
 								break;

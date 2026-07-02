@@ -53,3 +53,7 @@ Release/
 *.o
 *.d
 *.su
+
+# Intentionally committed release artifacts
+!artifacts/
+!artifacts/**
